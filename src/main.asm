@@ -5,7 +5,7 @@ bits 16 ;tell nasm to generate 16bit code
 main:
     hlt ;just halt the cpu
 
-.halt ;in some cases might execute other istruction after the end, this loop prevents that
+.halt: ;in some cases might execute other istruction after the end, this loop prevents that
     jmp .halt
 
 times 510-($-$$) db 0 ;put all zeros till byte 510, so write 0 for 510-(program size)
