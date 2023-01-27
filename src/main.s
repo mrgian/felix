@@ -14,7 +14,9 @@ main:
     #set stack segment to zero
     mov ss, ax
 
-    #set stack pointer to beginning of program
+    #set stack pointer to beginning of program, so it grows before the program
+    #the stack grows downwards when you push, so putting the stack after the program would overwrite the program
+    #rember that bios loads the program at 0x7c00 in memory, so everything before is empty (not sure about this)
     mov sp, 0x7c00
 
     #just halt the cpu
