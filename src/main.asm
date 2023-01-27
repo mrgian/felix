@@ -20,7 +20,7 @@ print:
     push bx
 
 ;loop for each character
-.loop
+.loop:
     lodsb ;loads a byte (the next character) from ds:si in the al register
     or al, al ;performs bitwise or on al, if al is null sets the zero flag to true, so we can check if we reached end of the string
     jz .done ;jumps to done if zero flag is true (reached end of the string)
@@ -33,7 +33,7 @@ print:
 
     jmp .loop ;start again
 
-.done
+.done:
     ;restore bx, ax and si
     pop bx
     pop ax
@@ -55,6 +55,10 @@ main:
     ;the stack grows downwards when you push, so putting the stack after the program would overwrite the program
     ;rember that bios loads the program at 0x7c00 in memory, so everything before is empty (not sure about this)
     mov sp, 0x7c00
+
+    ;setting video mode to clear the screen
+    mov ah, 0
+    int 0x10
 
     ;print message
     mov si, message
