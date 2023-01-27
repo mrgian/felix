@@ -64,7 +64,7 @@ main:
     hlt
 
 ;in some cases other istruction after the end might be executed, this loop prevents that
-halt:
+.halt:
     jmp .halt
 
 ; DATA
