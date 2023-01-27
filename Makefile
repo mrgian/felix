@@ -10,6 +10,6 @@ $(BUILD_DIR)/main_floppy.img: $(BUILD_DIR)/main.bin
 
 # create build dir if not exists
 # assemble main.asm
-$(BUILD_DIR)/main.bin: $(SRC_DIR)/main.asm
+$(BUILD_DIR)/main.bin: $(SRC_DIR)/main.s
 	mkdir -p $(BUILD_DIR)
-	$(ASM) $(SRC_DIR)/main.asm -f bin -o $(BUILD_DIR)/main.bin
+	$(ASM) $(SRC_DIR)/main.s -f bin -o $(BUILD_DIR)/main.bin

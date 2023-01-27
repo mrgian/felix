@@ -4,6 +4,9 @@ org 0x7c00
 #tell nasm to generate 16bit code
 bits 16
 
+##define endl as line feed + carriage return
+%define ENDL 0x0d, 0x0a
+
 #there are other functions before main, with this we keep main the entry point
 start:
     jmp main
@@ -14,23 +17,25 @@ print:
     #save si and ax, since we modify them, we need to restore its content after the end of function
     push si
     push ax
+    push bx
 
 #loop for each character
 .loop
-    loadsb #loads a byte (the next character) from ds:si in the al register
+    lodsb #loads a byte (the next character) from ds:si in the al register
     or al, al #performs bitwise or on al, if al is null sets the zero flag to true, so we can check if we reached end of the string
     jz .done #jumps to done if zero flag is true (reached end of the string)
 
     #bios interrupts
     #this tells the bios to write content of al to screen
-    mov ah, 0x0e #ffunction to write character to tty
-    mov bh, 0x00 #page number
+    mov ah, 0x0e ##function to write character to tty
+    mov bh, 0 #page number
     int 0x10 #bios video category
 
     jmp .loop #start again
 
 .done
-    #restore ax and si
+    #restore bx, ax and si
+    pop bx
     pop ax
     pop si
     ret
@@ -63,7 +68,7 @@ halt:
     jmp .halt
 
 # DATA
-message: db 'Porco Dio', 0x0d, 0x0a, 0 #text, line feed, carriage return and zero
+message: db 'Porco Dio', ENDL, 0
 
 #put all zeros till byte 510, so write 0 for 510-(program size)
 times 510-($-$$) db 0
