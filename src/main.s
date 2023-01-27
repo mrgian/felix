@@ -5,6 +5,18 @@ org 0x7c00
 bits 16
 
 main:
+    #setup data segments to zero
+    #set ax to zero and then ds and es to ax, because you can't set ds and es directly in 16 bit mode
+    mov ax, 0
+    mov ds, ax
+    mov es, ax
+
+    #set stack segment to zero
+    mov ss, ax
+
+    #set stack pointer to beginning of program
+    mov sp, 0x7c00
+
     #just halt the cpu
     hlt
 
