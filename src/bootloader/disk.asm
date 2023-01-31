@@ -88,11 +88,11 @@ read_disk:
 .done:
     popa
 
-    push di
-    push dx
-    push cx
-    push bx
-    push ax
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
 
 disk_reset:
     pusha

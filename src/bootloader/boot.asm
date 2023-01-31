@@ -56,7 +56,7 @@ main:
 ;    jmp .halt
 
 ; DATA
-message: db 'Porcaccissimo Dio', ENDL, 0
+message: db 'Hello World!', ENDL, 0
 message_read_failed: db 'Read failed!', ENDL, 0
 
 ;put all zeros till byte 510, so write 0 for 510-(program size)
