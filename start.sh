@@ -1,5 +1,7 @@
 #!/bin/bash
 
+make clean
+
 # Builds os and starts it in a vm
 echo "Building Felix..."
 make
