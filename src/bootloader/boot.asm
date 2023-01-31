@@ -39,14 +39,15 @@ main:
     mov [ebr_drive_number], dl
     mov ax, 1               ;lba = 1
     mov cl, 1               ;read one sector
-    mov bx, 0x7e00          ;where to read data
+    mov bx, 0x7e00          ;where to write data
     call read_disk
 
     ;print message
     mov si, message
     call print
 
-    ;just halt the cpu
+    ;disable interrupts and halt the cpu
+    cli
     hlt
 
 %include "src/bootloader/disk.asm"
