@@ -20,7 +20,8 @@ $(BUILD_DIR)/floppy.img: bootloader kernel
 	mkfs.fat -F 12 $(BUILD_DIR)/floppy.img
 	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/floppy.img conv=notrunc
 	mcopy -i $(BUILD_DIR)/floppy.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
-	dd if=data.txt of=$(BUILD_DIR)/floppy.img bs=1 seek=512 count=16 conv=notrunc
+#	mcopy -i $(BUILD_DIR)/floppy.img data.txt "::data.txt"
+	dd if=data.txt of=$(BUILD_DIR)/floppy.img bs=1 seek=512 conv=notrunc
 	
 ## BOOTLOADER
 # Assemble the bootloader

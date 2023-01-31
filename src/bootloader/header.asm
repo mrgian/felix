@@ -1,5 +1,5 @@
 ;FAT12 header
-jmp short start
+jmp short main
 nop
 
 bdb_oem:                    db 'MSWIN4.1'           ; 8 bytes

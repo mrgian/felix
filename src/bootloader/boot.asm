@@ -10,10 +10,6 @@ bits 16
 ;we need to put this because the bootloader will overwrite the first sector of fat12 formatted image
 %include "src/bootloader/header.asm"
 
-;there are other functions before main, with this we keep main the entry point
-start:
-    jmp main
-
 %include "src/bootloader/print.asm"
 
 main:
