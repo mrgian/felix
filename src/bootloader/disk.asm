@@ -6,6 +6,9 @@
 ;   cx (bits 6-15) -> cylinder
 ;   dh -> head 
 lba_to_chs:
+    push ax
+    push dx
+
     xor dx, dx                          ;dx = 0
     div word [bdb_sectors_per_track]    ;ax = LBA / sectors_per_track
                                         ;dx = LBA % sectors_per_track
@@ -21,6 +24,11 @@ lba_to_chs:
     shl ah, 6
     or cl, ah                           ;now we put upper 2 bits of cylinder in cl
 
+    pop ax
+    mov dl,al
+    pop ax
+    ret
+    
 ;Representation of this mess:
 ;cx         = [  CH  ] [  CL  ]
 ;cylinder   = XXXXXXXX XX
