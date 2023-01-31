@@ -55,20 +55,14 @@ lba_to_chs:
 ;   dl -> drive number
 ;   es:bx -> memory address where to store read data
 read_disk:
-    push ax
-    push bx
-    push cx
-    push dx
-    push di
+    pusha
 
     push cx                 ;save cl
     call lba_to_chs         ;calculate chs
     pop ax                  ;al = number of sectors to read
 
     mov ah, 0x02
-    mov di, 3
 
-.retry:
     pusha
     stc
     int 0x13
@@ -77,22 +71,11 @@ read_disk:
     ;if fails
     popa
     call disk_reset
-
-    dec di
-    test di, di
-    jnz .retry
-
-.fail:
     jmp floppy_error
 
 .done:
     popa
-
-    pop di
-    pop dx
-    pop cx
-    pop bx
-    pop ax
+    popa
 
 disk_reset:
     pusha
