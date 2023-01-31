@@ -1,3 +1,17 @@
+floppy_error:
+    mov si, message_read_failed
+    call print
+    jmp wait_key_and_reboot
+
+wait_key_and_reboot:
+    mov ah, 0
+    int 0x16                ;waits for keypress
+    jmp 0xfffffff0          ;jump to first instruction of bios (reboot the system)
+
+.halt:
+    cli                     ;disable interrupts
+    htl
+
 ;converts LBA address (Logical Block Addrress) to CHS address (cylinder, head, sector)
 ;parameter:
 ;   ax -> LBA address
@@ -33,3 +47,58 @@ lba_to_chs:
 ;cx         = [  CH  ] [  CL  ]
 ;cylinder   = XXXXXXXX XX
 ;sector     =            XXXXXX
+
+;reads sectors from a disk
+;parameters:
+;   ax -> LBA address
+;   cl -> number of sectors to read
+;   dl -> drive number
+;   es:bx -> memory address where to store read data
+read_disk:
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+
+    push cx                 ;save cl
+    call lba_to_chs         ;calculate chs
+    pop ax                  ;al = number of sectors to read
+
+    mov ah, 0x02
+    mov di, 3
+
+.retry:
+    pusha
+    stc
+    int 0x13
+    jnc .done
+
+    ;if fails
+    popa
+    call disk_reset
+
+    dec di
+    test di, di
+    jnz .retry
+
+.fail:
+    jmp floppy_error
+
+.done:
+    popa
+
+    push di
+    push dx
+    push cx
+    push bx
+    push ax
+
+disk_reset:
+    pusha
+    mov ah, 0
+    stc
+    int 0x13
+    jc floppy_error
+    popa
+    ret

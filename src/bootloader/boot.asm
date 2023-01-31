@@ -35,6 +35,13 @@ main:
     mov ah, 0
     int 0x10
 
+    ;read from floppy
+    mov [ebr_drive_number], dl
+    mov ax, 1               ;lba = 1
+    mov cl, 1               ;read one sector
+    mov bx, 0x7e00          ;where to read data
+    call read_disk
+
     ;print message
     mov si, message
     call print
@@ -42,12 +49,15 @@ main:
     ;just halt the cpu
     hlt
 
+%include "src/bootloader/disk.asm"
+
 ;in some cases other istruction after the end might be executed, this loop prevents that
-.halt:
-    jmp .halt
+;.halt:
+;    jmp .halt
 
 ; DATA
-message: db 'Porcaccio Dio', ENDL, 0
+message: db 'Porcaccissimo Dio', ENDL, 0
+message_read_failed: db 'Read failed!', ENDL, 0
 
 ;put all zeros till byte 510, so write 0 for 510-(program size)
 times 510-($-$$) db 0
