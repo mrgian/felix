@@ -7,7 +7,6 @@ bits 16
 ;define endl as line feed + carriage return
 %define ENDL 0x0d, 0x0a
 
-;we need to put this because the bootloader will overwrite the first sector of fat12 formatted image
 %include "src/bootloader/header.asm"
 
 %include "src/bootloader/print.asm"
@@ -35,7 +34,8 @@ main:
     mov si, message
     call print
 
-    ;read kernel to memory
+    ;loads kernel to memory
+    ;TODO: find a more suitable memory location to put kernel
     mov [ebr_drive_number], dl
     mov ax, 1               ;lba = 1 (0x200 in floppy.img)
     mov cl, 1               ;read one sector
@@ -50,10 +50,6 @@ main:
     hlt
 
 %include "src/bootloader/disk.asm"
-
-;in some cases other istruction after the end might be executed, this loop prevents that
-;.halt:
-;    jmp .halt
 
 ; DATA
 message: db 'Welcome to Felix!', ENDL, 'Loading kernel...', ENDL, 0

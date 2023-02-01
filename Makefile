@@ -9,10 +9,8 @@ BUILD_DIR=build
 
 ## FLOPPY IMAGE
 # Create an empty floppy
-# Initialize it with FAT12
 # Copy the bootloader
-# Copy the kernel
-# Add the content of data.txt to sector 1
+# Copy the kernel to sector 1
 floppy_image: $(BUILD_DIR)/floppy.img
 
 $(BUILD_DIR)/floppy.img: bootloader kernel
@@ -20,7 +18,6 @@ $(BUILD_DIR)/floppy.img: bootloader kernel
 #	mkfs.fat -F 12 $(BUILD_DIR)/floppy.img
 	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/floppy.img conv=notrunc
 #	mcopy -i $(BUILD_DIR)/floppy.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
-#	mcopy -i $(BUILD_DIR)/floppy.img data.txt "::data.txt"
 	dd if=$(BUILD_DIR)/kernel.bin of=$(BUILD_DIR)/floppy.img bs=1 seek=512 conv=notrunc
 	
 ## BOOTLOADER
