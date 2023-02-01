@@ -35,16 +35,15 @@ main:
     mov si, message
     call print
 
-    ;read from floppy
+    ;read kernel to memory
     mov [ebr_drive_number], dl
     mov ax, 1               ;lba = 1 (0x200 in floppy.img)
     mov cl, 1               ;read one sector
     mov bx, 0x7e00          ;where to write data
     call read_disk
 
-    ;print message read before
-    mov si, 0x7e00
-    call print
+    ;jump to kernel
+    jmp 0x7e00
 
     ;disable interrupts and halt the cpu
     cli
@@ -57,7 +56,7 @@ main:
 ;    jmp .halt
 
 ; DATA
-message: db 'Welcome to Felix!', ENDL, 0
+message: db 'Welcome to Felix!', ENDL, 'Loading kernel...', ENDL, 0
 message_read_failed: db 'Read failed!', ENDL, 0
 
 ;put all zeros till byte 510, so write 0 for 510-(program size)
