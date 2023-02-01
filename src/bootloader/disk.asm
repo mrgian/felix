@@ -66,6 +66,7 @@ read_disk:
     pusha
     stc
     int 0x13
+    popa
     jnc .done
 
     ;if fails
@@ -74,7 +75,6 @@ read_disk:
     jmp floppy_error
 
 .done:
-    popa
     popa
 
 disk_reset:
