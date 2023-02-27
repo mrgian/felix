@@ -4,8 +4,8 @@
 use core::panic::PanicInfo;
 use core::arch::global_asm;
 
-const x: &str = "Hello world";
-global_asm!(include_str!("bootloader/boot.s"));
+global_asm!(include_str!("bootloader/boot.asm"));
+global_asm!("message: .string \"Hello world from Rust!\r\n\"");
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
