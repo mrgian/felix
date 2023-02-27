@@ -18,3 +18,4 @@ The script will take care of everything (assembling, making the image and runnin
 - *27/01/23* - Bootloader can print to screen
 - *31/01/23* - Bootloader can read data from disk to memory
 - *01/02/23* - Bootloader can load kernel to memory
+- *27/02/23* - Moved to Rust environment using inline assembly
