@@ -1,5 +1,6 @@
 [unstable]
 build-std = ["core", "compiler_builtins"]
+build-std-features = ["compiler-builtins-mem"]
 
 [build]
 target = "x86_16-felix.json"
