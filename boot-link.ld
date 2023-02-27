@@ -6,14 +6,26 @@ SECTIONS {
     . = 0x7c00;
     _stack_end = .;
 
-    _message = .;
-
-    .message :
+    _mbr_start = .;
+    .boot :
     {
-        BYTE(0X48)
-        BYTE(0X0d)
-        BYTE(0X0a)
+        *(.boot .boot.*)
     }
+    .text :
+    {
+        *(.text .text.*)
+    }
+    .rodata :
+    {
+        *(.rodata .rodata.*)
+    }
+    .data :
+    {
+        *(.rodata .rodata.*)
+        *(.data .data.*)
+        *(.got .got.*)
+    }
+    _mbr_end = .;
 
     . = 0x7c00 + 510;
 

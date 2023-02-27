@@ -4,6 +4,7 @@
 use core::panic::PanicInfo;
 use core::arch::global_asm;
 
+const x: &str = "Hello world";
 global_asm!(include_str!("bootloader/boot.s"));
 
 #[panic_handler]

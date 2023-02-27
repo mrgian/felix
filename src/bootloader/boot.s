@@ -1,37 +1,34 @@
 .section .boot, "awx"
 .global _start
 .code16
+.intel_syntax noprefix
 
-# print a string to the screen
-# parameters: ds:si that points to the start of the string
-print:
-    # save si and ax, since we modify them, we need to restore its content after the end of function
+_start:
+    jmp main
+
+puts:
     push si
     push ax
     push bx
 
-# loop for each character
 .loop:
-    lodsb # loads a byte (the next character) from ds:si in the al register
-    or al, al # performs bitwise or on al, if al is null sets the zero flag to true, so we can check if we reached end of the string
-    jz .done # jumps to done if zero flag is true (reached end of the string)
+    lodsb
+    or al, al
+    jz .done
 
-    # bios interrupts
-    # this tells the bios to write content of al to screen
-    mov ah, 0x0e # function to write character to tty
-    mov bh, 0 # page number
-    int 0x10 # bios video category
+    mov ah, 0x0E
+    mov bh, 0
+    int 0x10
 
-    jmp .loop # start again
+    jmp .loop
 
 .done:
-    # restore bx, ax and si
     pop bx
     pop ax
-    pop si
+    pop si    
     ret
-
-_start:
+    
+main:
     xor ax, ax
     mov ds, ax
     mov es, ax
@@ -43,19 +40,12 @@ _start:
 
     mov sp, 0x7c00
 
-    # setting video mode to clear the screen
-    mov ah, 0
-    int 0x10
-
-    # print message
-    mov si, _message
-    call print
-
-# rust:
-#    push dx
-#    call first_stage
+    lea si, message
+    call puts
 
 spin:
     hlt
     jmp spin
+
+message: .string "Hello world\r\n"
 

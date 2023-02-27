@@ -1,62 +1,66 @@
-;bios puts the os in ram at 0x7c00, so tell nasm to calculate addresses from this address
-org 0x7c00
-
-;tell nasm to generate 16bit code
+org 0x7C00
 bits 16
 
-;define endl as line feed + carriage return
-%define ENDL 0x0d, 0x0a
 
-%include "src/bootloader/header.asm"
+%define ENDL 0x0D, 0x0A
 
-%include "src/bootloader/print.asm"
 
-main:
-    ;setup data segments to zero
-    ;set ax to zero and then ds and es to ax, because you can't set ds and es directly in 16 bit mode
-    mov ax, 0
-    mov ds, ax
-    mov es, ax
+start:
+    jmp main
 
-    ;set stack segment to zero
-    mov ss, ax
 
-    ;set stack pointer to beginning of program, so it grows before the program
-    ;the stack grows downwards when you push, so putting the stack after the program would overwrite the program
-    ;rember that bios loads the program at 0x7c00 in memory, so everything before is empty (not sure about this)
-    mov sp, 0x7c00
+;
+; Prints a string to the screen
+; Params:
+;   - ds:si points to string
+;
+puts:
+    ; save registers we will modify
+    push si
+    push ax
+    push bx
 
-    ;setting video mode to clear the screen
-    mov ah, 0
+.loop:
+    lodsb               ; loads next character in al
+    or al, al           ; verify if next character is null?
+    jz .done
+
+    mov ah, 0x0E        ; call bios interrupt
+    mov bh, 0           ; set page number to 0
     int 0x10
 
-    ;print message
-    mov si, message
-    call print
+    jmp .loop
 
-    ;loads kernel to memory
-    ;TODO: find a more suitable memory location to put kernel
-    mov [ebr_drive_number], dl
-    mov ax, 1               ;lba = 1 (0x200 in floppy.img)
-    mov cl, 1               ;read one sector
-    mov bx, 0x7e00          ;where to write data
-    call read_disk
+.done:
+    pop bx
+    pop ax
+    pop si    
+    ret
+    
 
-    ;jump to kernel
-    jmp 0x7e00
+main:
+    ; setup data segments
+    mov ax, 0           ; can't set ds/es directly
+    mov ds, ax
+    mov es, ax
+    
+    ; setup stack
+    mov ss, ax
+    mov sp, 0x7C00      ; stack grows downwards from where we are loaded in memory
 
-    ;disable interrupts and halt the cpu
-    cli
+    ; print hello world message
+    mov si, msg_hello
+    call puts
+
     hlt
 
-%include "src/bootloader/disk.asm"
+.halt
+    jmp .halt
 
-; DATA
-message: db 'Welcome to Felix!', ENDL, 'Loading kernel...', ENDL, 0
-message_read_failed: db 'Read failed!', ENDL, 0
 
-;put all zeros till byte 510, so write 0 for 510-(program size)
+
+msg_hello: db 'Hello worlddddaaaa!', ENDL, 0
+
+
 times 510-($-$$) db 0
-
-;put 0xaa55 signature as two last bytes of program
-dw 0xaa55
+dw 0AA55h
