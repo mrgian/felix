@@ -1,2 +1,4 @@
-build
+/build
+/target
 bx_enh_dbg.ini
+
