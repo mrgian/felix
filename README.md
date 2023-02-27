@@ -7,9 +7,11 @@ Felix is a wannabe x86 microkernel
 ## Compiling and running
 (Only for Linux)
 
-Make sure you have QEMU and NASM installed on your system.
+Make sure you have BOCHS installed on your system.
 
-Then just enter `./start.sh` in a terminal.
+Then just enter `./debug.sh` in a terminal.
+
+The Bochs emulator should start, press "continue" to cotinue with the execution.
 
 The script will take care of everything (assembling, making the image and running)
 
