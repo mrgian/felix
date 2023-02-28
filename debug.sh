@@ -17,3 +17,4 @@ dd if=build/kernel.bin of=build/floppy.img bs=1 seek=512 conv=notrunc
 
 echo "Debugging Felix with Bochs..."
 bochs -q -f bochs.conf
+#qemu-system-i386 -drive file=build/floppy.img,index=0,if=floppy,format=raw

@@ -7,7 +7,7 @@ Felix is a wannabe x86 microkernel
 ## Compiling and running
 (Only for Linux)
 
-Make sure you have BOCHS installed on your system.
+Make sure you have BOCHS and RUST installed on your system.
 
 Then just enter `./debug.sh` in a terminal.
 
