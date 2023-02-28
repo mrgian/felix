@@ -7,7 +7,7 @@ use core::arch::asm;
 
 global_asm!(include_str!("bootloader/boot.asm"));
 
-const msg: &str = "Hello from rust porco diooooo\r\n";
+const msg: &str = "Hello from Rust!\r\n";
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
