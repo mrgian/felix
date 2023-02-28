@@ -17,8 +17,10 @@ _start:
     cld
     mov sp, 0x7c00
 
-    call print
+    # call main rust function
+    call main
 
+# spin to avoid running after the end of the program
 spin:
     hlt
     jmp spin

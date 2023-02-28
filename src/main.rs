@@ -15,10 +15,15 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 #[no_mangle]
-pub extern "C" fn print() {
+pub extern "C" fn print(message: &str) {
     unsafe{
-        asm!(include_str!("bootloader/print.asm"), in(reg) msg.as_ptr());
+        asm!(include_str!("bootloader/print.asm"), in(reg) message.as_ptr());
     }
+}
+
+#[no_mangle]
+pub extern "C" fn main() {
+    print(msg);
 }
 
 /*#[no_mangle]
