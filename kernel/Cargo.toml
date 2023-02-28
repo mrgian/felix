@@ -1,5 +1,5 @@
 [package]
-name = "felix-bootloader"
+name = "felix-kernel"
 version = "0.1.0"
 authors = ["Gianmatteo Palmieri <mail@gian.im>"]
 edition = "2021"
