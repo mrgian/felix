@@ -1,8 +1,8 @@
 #![no_std]
 #![no_main]
 
-use core::panic::PanicInfo;
 use core::arch::asm;
+use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -10,7 +10,7 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 fn print(message: &str) {
-    unsafe{
+    unsafe {
         asm!(include_str!("print.asm"), in(reg) message.as_ptr());
     }
 }
@@ -20,5 +20,5 @@ pub extern "C" fn _start() -> ! {
     let hello = "Hello world from Rust Kernel!";
     print(hello);
 
-    loop{}
+    loop {}
 }
