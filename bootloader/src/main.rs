@@ -5,7 +5,7 @@ use core::panic::PanicInfo;
 use core::arch::global_asm;
 use core::arch::asm;
 
-global_asm!(include_str!("bootloader/boot.asm"));
+global_asm!(include_str!("boot.asm"));
 
 //const MSG: &[u8] = b"Hello from Rust!\r\n\0";
 
@@ -23,7 +23,7 @@ pub extern "C" fn print(message_pointer: *const u8) {
 
 fn print(message: &str) {
     unsafe{
-        asm!(include_str!("bootloader/print.asm"), in(reg) message.as_ptr());
+        asm!(include_str!("print.asm"), in(reg) message.as_ptr());
     }
 }
 
