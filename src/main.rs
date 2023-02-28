@@ -7,23 +7,30 @@ use core::arch::asm;
 
 global_asm!(include_str!("bootloader/boot.asm"));
 
-const MSG: &[u8] = b"Hello from Rust!\r\n\0";
+//const MSG: &[u8] = b"Hello from Rust!\r\n\0";
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[no_mangle]
+/*#[no_mangle]
 pub extern "C" fn print(message_pointer: *const u8) {
     unsafe{
         asm!(include_str!("bootloader/print.asm"), in(reg) message_pointer);
+    }
+}*/
+
+fn print(message: &str) {
+    unsafe{
+        asm!(include_str!("bootloader/print.asm"), in(reg) message.as_ptr());
     }
 }
 
 #[no_mangle]
 pub extern "C" fn main() {
-    print(MSG.as_ptr());
+    let hello = "Hello world from Rust!";
+    print(hello);
 }
 
 /*#[no_mangle]
