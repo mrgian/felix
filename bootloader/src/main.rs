@@ -16,8 +16,9 @@ extern "C" {
 #[no_mangle]
 pub extern "C" fn main() {
     clean();
-    print("Hello!\r\n\0");
+    print("Loading Felix...\r\n\0");
     load_kernel();
+    jump_to_kernel();
 }
 
 fn clean() {
@@ -33,7 +34,6 @@ fn print(message: &str) {
 }
 
 fn load_kernel() {
-    print("ld kernl\r\n\0");
     let kernel_start_address: *const u8 = unsafe { &_kernel_start };
 
     let lba: u64 = 1;
@@ -49,6 +49,12 @@ fn load_kernel() {
     );
     unsafe {
         dap.perform_load();
+    }
+}
+
+fn jump_to_kernel() {
+    unsafe {
+        asm!("jmp {}", in(reg) 0x7e00);
     }
 }
 

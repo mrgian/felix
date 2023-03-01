@@ -16,9 +16,9 @@ fn print(message: &str) {
 }
 
 #[no_mangle]
+#[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    let hello = "Hello world from Rust Kernel!";
-    print(hello);
+    print("Hello world from Rust Kernel!");
 
     loop {}
 }
