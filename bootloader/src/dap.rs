@@ -1,5 +1,8 @@
 use core::arch::asm;
 
+//disk address packet
+//contains all info needed by bios to read from disk
+//you need to write this data structure in memory and then set si register to point to this
 #[repr(C, packed)]
 #[allow(dead_code)]
 pub struct DiskAddressPacket {
@@ -28,6 +31,10 @@ impl DiskAddressPacket {
         }
     }
 
+    //actual loading using bios interrumpt
+    //backup si register and then put dap data address in si
+    //carry flag becomes 1 if read fails
+    //TODO: handle fail
     pub unsafe fn load_sectors(&self) {
         let self_addr = self as *const Self as u16;
         unsafe {
