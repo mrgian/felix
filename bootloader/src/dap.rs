@@ -3,6 +3,7 @@ use core::arch::asm;
 //disk address packet
 //contains all info needed by bios to read from disk
 //you need to write this data structure in memory and then set si register to point to this
+//osdev wiki: https://wiki.osdev.org/Disk_access_using_the_BIOS_(INT_13h)#LBA_in_Extended_Mode
 #[repr(C, packed)]
 #[allow(dead_code)]
 pub struct DiskAddressPacket {

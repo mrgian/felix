@@ -37,6 +37,7 @@ fn clear() {
 }
 
 //bios interrupt to print to the screen
+#[allow(dead_code)]
 fn print(message: &str) {
     unsafe {
         asm!(include_str!("print.asm"), in(reg) message.as_ptr());
