@@ -15,33 +15,36 @@ extern "C" {
 
 #[no_mangle]
 pub extern "C" fn main() {
-    clean();
+    clear();
 
+    //don't make this string too big, you might exceed the 512 byte limit
     print("Loading...\r\n\0");
 
-    load_kernel();
+    let kernel_start: *const u16 = unsafe { &_kernel_start };
 
-    jump_to_kernel();
+    load_kernel(kernel_start);
+    jump(kernel_start);
 }
 
-fn clean() {
+//sets bios video mode to clear the screen
+fn clear() {
     unsafe {
         asm!("mov ah, 0x00", "mov al, 0x03", "int 0x10");
     }
 }
 
+//uses bios interrupt to print to the screen
+//check print.asm for more info
 fn print(message: &str) {
     unsafe {
         asm!(include_str!("print.asm"), in(reg) message.as_ptr());
     }
 }
 
-fn load_kernel() {
-    let kernel_start: *const u16 = unsafe { &_kernel_start };
-
+fn load_kernel(address: *const u16) {
     let lba: u64 = 1;
     let sectors: u16 = 1;
-    let kernel_offset = kernel_start as u16;
+    let kernel_offset = address as u16;
     let kernel_segment = 0x0000 as u16;
 
     let dap = dap::DiskAddressPacket::from_lba(lba, sectors, kernel_offset, kernel_segment);
@@ -51,9 +54,9 @@ fn load_kernel() {
     }
 }
 
-fn jump_to_kernel() {
+fn jump(address: *const u16) {
     unsafe {
-        asm!("jmp {}", in(reg) 0x7e00);
+        asm!("jmp {0:x}", in(reg) address as u16);
     }
 }
 
