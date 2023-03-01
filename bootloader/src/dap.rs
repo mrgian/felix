@@ -28,7 +28,7 @@ impl DiskAddressPacket {
         }
     }
 
-    pub unsafe fn perform_load(&self) {
+    pub unsafe fn load_sectors(&self) {
         let self_addr = self as *const Self as u16;
         unsafe {
             asm!(
@@ -41,8 +41,8 @@ impl DiskAddressPacket {
                 "mov si, {1:x}",
                 in(reg) self_addr,
                 out(reg) _,
-                in("ax") 0x4200u16,
-                in("dx") 0x0080u16,
+                in("ax") 0x4200,
+                in("dx") 0x0080,
             );
         }
     }

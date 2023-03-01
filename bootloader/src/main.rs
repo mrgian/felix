@@ -10,14 +10,17 @@ mod dap;
 global_asm!(include_str!("boot.asm"));
 
 extern "C" {
-    static _kernel_start: u8;
+    static _kernel_start: u16;
 }
 
 #[no_mangle]
 pub extern "C" fn main() {
     clean();
-    print("Loading Felix...\r\n\0");
+
+    print("Loading...\r\n\0");
+
     load_kernel();
+
     jump_to_kernel();
 }
 
@@ -34,21 +37,17 @@ fn print(message: &str) {
 }
 
 fn load_kernel() {
-    let kernel_start_address: *const u8 = unsafe { &_kernel_start };
+    let kernel_start: *const u16 = unsafe { &_kernel_start };
 
     let lba: u64 = 1;
     let sectors: u16 = 1;
-    let target = kernel_start_address as u16;
+    let kernel_offset = kernel_start as u16;
+    let kernel_segment = 0x0000 as u16;
 
+    let dap = dap::DiskAddressPacket::from_lba(lba, sectors, kernel_offset, kernel_segment);
 
-    let dap = dap::DiskAddressPacket::from_lba(
-        lba,
-        sectors,
-        0x7e00 as u16,
-        0x0000 as u16,
-    );
     unsafe {
-        dap.perform_load();
+        dap.load_sectors();
     }
 }
 
