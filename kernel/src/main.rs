@@ -9,7 +9,7 @@ use core::panic::PanicInfo;
 fn panic(_info: &PanicInfo) -> ! {
 
     //loops but it shouldn't
-    //like people when they get a panic attack
+    //like people when they have a panic attack
     //their mind loops instead of dealing with problems
     loop {}
 }
@@ -35,6 +35,7 @@ fn print(message: &str) {
 }
 
 //set bios video mode to clear the screen
+#[allow(dead_code)]
 fn clear() {
     unsafe {
         asm!("mov ah, 0x00", "mov al, 0x03", "int 0x10");

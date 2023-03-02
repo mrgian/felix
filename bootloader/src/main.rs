@@ -76,6 +76,13 @@ fn jump(address: *const u16) {
     }
 }
 
+#[no_mangle]
+pub extern "C" fn fail() -> ! {
+    print("Failed loading kernel!");
+
+    loop {}
+}
+
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}

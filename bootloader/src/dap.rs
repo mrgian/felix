@@ -35,7 +35,6 @@ impl DiskAddressPacket {
     //actual loading using bios interrumpt
     //backup si register and then put dap data address in si
     //carry flag becomes 1 if read fails
-    //TODO: handle fail
     pub unsafe fn load_sectors(&self) {
         let self_addr = self as *const Self as u16;
         unsafe {
@@ -44,13 +43,13 @@ impl DiskAddressPacket {
                 "mov {1:x}, si",
                 "mov si, {0:x}",
                 "int 0x13",
-                //"jc fail",
+                "jc fail",
                 "pop si",
                 "mov si, {1:x}",
                 in(reg) self_addr,
                 out(reg) _,
-                in("ax") 0x4200,
-                in("dx") 0x0080,
+                in("ax") 0x4200, //required
+                in("dx") 0x0080, //0x80 for disk, 0x00 for floppy
             );
         }
     }
