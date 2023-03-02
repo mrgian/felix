@@ -25,5 +25,5 @@ dd if=build/boot.bin of=build/disk.img conv=notrunc
 dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
 
 echo "Debugging Felix with Bochs..."
-bochs -q -f bochs.conf
-#qemu-system-i386 -drive file=build/disk.img,index=0,if=floppy,format=raw
+#bochs -q -f bochs.conf
+qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0
