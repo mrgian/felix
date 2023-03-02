@@ -18,9 +18,7 @@ extern "C" {
 pub extern "C" fn main() {
     clear();
 
-    //uncommenting this makes the executable bigger than the 512 byte limit in debug mode
-    //TODO: optimize to make it fit or print only in release mode
-    //print("Loading...\r\n\0");
+    print("Loading Felix...\r\n\0");
 
     //get kernel address from linker, currently is 0x7e00 (the end of mbr)
     let kernel_start: *const u16 = unsafe { &_kernel_start };
