@@ -32,3 +32,8 @@ jobs:
       run: dd if=build/boot.bin of=build/disk.img conv=notrunc
     - name: Put kernel
       run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: felix-disk-image
+        path: build/disk.img
