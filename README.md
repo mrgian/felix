@@ -4,7 +4,7 @@ Felix is a wannabe x86 microkernel
 
 ![felix](https://user-images.githubusercontent.com/10211171/216172754-36cc3d1b-fad0-48da-9a58-0991be15c1b5.png)
 
-## Compiling and running
+## Compiling and debugging
 (Only for Linux)
 
 Make sure you have BOCHS and RUST installed on your system.
@@ -13,7 +13,7 @@ Then just enter `./debug.sh` in a terminal.
 
 The Bochs emulator should start, press "continue" to cotinue with the execution.
 
-The script will take care of everything (assembling, making the image and running)
+The script will take care of everything (compiling, making the image and running the debugger)
 
 ## Progress
 - *22/10/22* - Project start

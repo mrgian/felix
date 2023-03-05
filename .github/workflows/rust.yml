@@ -32,11 +32,8 @@ jobs:
       run: dd if=build/boot.bin of=build/disk.img conv=notrunc
     - name: Put kernel
       run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
-    - name: Get current date
-      id: date
-      run: echo "build_date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Upload disk image
       uses: actions/upload-artifact@v3
       with:
-        name: felix-disk-image-${{ env.build_date }}
-        path: build/disk.img
+        name: felix-disk-image-${{ github.event.repository.updated_at }}
+        path: build
