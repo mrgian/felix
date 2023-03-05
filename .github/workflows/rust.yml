@@ -38,5 +38,5 @@ jobs:
     - name: Upload disk image
       uses: actions/upload-artifact@v3
       with:
-        name: felix-disk-image-${{ env.date }}
+        name: felix-disk-image-${{ env.build_date }}
         path: build/disk.img
