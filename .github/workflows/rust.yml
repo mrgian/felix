@@ -34,9 +34,9 @@ jobs:
       run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      run: echo "date=$(date +'%Y-%m-%d')" >> $BUILD_DATE
     - name: Upload disk image
       uses: actions/upload-artifact@v3
       with:
-        name: felix-disk-image-${{ steps.date.outputs.date }}
+        name: felix-disk-image-$BUILD_DATE
         path: build/disk.img
