@@ -7,13 +7,13 @@ Felix is a wannabe x86 microkernel
 ## Compiling and debugging
 (Only for Linux)
 
-Make sure you have BOCHS and RUST installed on your system.
+Make sure you have the Bochs emulator and Rust installed on your system.
 
-Then just enter `./debug.sh` in a terminal.
-
-The Bochs emulator should start, press "continue" to cotinue with the execution.
+Then run the debug script `./debug.sh`.
 
 The script will take care of everything (compiling, making the image and running the debugger)
+
+The Bochs emulator should start, press "continue" to cotinue with the execution.
 
 ## Progress
 - *22/10/22* - Project start
