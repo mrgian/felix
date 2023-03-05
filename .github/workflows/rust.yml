@@ -1,0 +1,36 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install binutils
+      run: cargo install cargo-binutils
+    - name: Build
+      run: cargo build --release
+    - name: Build
+      run: cargo build --release
+    - name: Make build directory
+      run: mkdir build
+    - name: Objcopy bootloader
+      run: cargo objcopy --bin felix-bootloader -- -I elf32-i386 -O binary build/boot.bin
+    - name: Objcopy kernel
+      run: cargo objcopy --bin felix-kernel -- -I elf32-i386 -O binary build/kernel.bin
+    - name: Create empty disk image
+      run: dd if=/dev/zero of=build/disk.img bs=512 count=20808 
+    - name: Put bootloader
+      run: dd if=build/boot.bin of=build/disk.img conv=notrunc
+    - name: Put kernel
+      run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
