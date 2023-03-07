@@ -54,8 +54,11 @@ fn print(message: &str) {
 }
 
 fn load_kernel(address: *const u16) {
+    //TODO: Make a loop that reads one sector at the time instead of telling bios to read multiple sectors,
+    //because some bioses have a limit on how many sector you can read
+
     let lba: u64 = 1; //read from lba 1, 512 bytes after lba 0 (i think)
-    let sectors: u16 = 1; //read only one sector
+    let sectors: u16 = 127; //number of sectors to read
     let kernel_offset = address as u16; //offset and
     let kernel_segment = 0x0000 as u16; //segment where to write the read data
 
