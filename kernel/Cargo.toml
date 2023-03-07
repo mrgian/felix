@@ -6,3 +6,4 @@ description.workspace = true
 edition.workspace = true
 
 [dependencies]
+itoa = "1.0.6"
