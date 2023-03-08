@@ -47,10 +47,10 @@ macro_rules! print {
 
 #[macro_export]
 macro_rules! println {
-    () => ($crate::print!("\n"));
+    () => ($crate::print!("\r\n"));
     ($($arg:tt)*) => {
         unsafe{
-            ($crate::print!("{}\n", format_args!($($arg)*)))
+            ($crate::print!("{}\r\n", format_args!($($arg)*)))
         }
     };
 }

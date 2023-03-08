@@ -6,19 +6,18 @@ use core::panic::PanicInfo;
 
 mod print;
 
-//TODO: Handle kernel panic, instead of looping
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    //loops but it shouldn't
-    //like people when they have a panic attack
-    //their mind loops instead of dealing with problems
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
+    wait_key_and_reboot();
+
     loop {}
 }
 
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    println!("Loaded! Welcome to Felix!\n\r");
+    println!("Loaded! Welcome to Felix!");
 
     let mut sp: u16;
     unsafe {
@@ -28,7 +27,17 @@ pub extern "C" fn _start() -> ! {
         );
     }
 
-    println!("Current stack pointer: {:X}\r\n", sp);
+    println!("Current stack pointer: {:X}", sp);
 
     loop {}
+}
+
+//TODO: Fix, it's not working
+#[allow(overflowing_literals)]
+fn wait_key_and_reboot() {
+    println!("Press any key to reboot...");
+
+    unsafe {
+        asm!("mov ah, 0", "int 0x16", "jmp {0:x}", in(reg) 0x7c00 as u16);
+    }
 }
