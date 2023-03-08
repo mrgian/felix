@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-//use core::arch::asm;
+use core::arch::asm;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 
@@ -21,19 +21,19 @@ fn panic(_info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     //TODO: make a println macro
     let mut printer = print::Printer {};
-    write!(printer, "Loaded!\n\rWelcome to Felix\n\r").unwrap();
-    write!(printer, "Hello {}\n\r", "world").unwrap();
-    write!(printer, "{} {}\n\r", 69, 420).unwrap();
+    write!(printer, "Loaded! Welcome to Felix!\n\r").unwrap();
+    //write!(printer, "Hello {}\n\r", "world").unwrap();
+    //write!(printer, "{} {}\n\r", 69, 420).unwrap();
 
-    /*let mut x: u16;
+    let mut sp: u16;
     unsafe {
         asm!(
-            "mov {x}, ebx",
-            x = out(reg) x
+            "mov {0:x}, sp",
+            out(reg) sp
         );
-    }*/
+    }
 
-    //write!(printer, "Current ebx reg: {:X}", x).unwrap();
+    write!(printer, "Current stack pointer: {:X}\r\n", sp).unwrap();
 
     loop {}
 }
