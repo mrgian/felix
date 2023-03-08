@@ -7,6 +7,9 @@ use core::arch::asm;
 // - support disk and floppy, if can't read from disk then read from floppy
 //Remeber that if something doesn't work, it may be because this is not loading all the code
 
+// FLOPPY SUPPORT
+// Floppy support is needed because the bios emulated by uefi emulates the usb drive as a floppy disk
+
 //disk address packet
 //contains all info needed by bios to read from disk
 //you need to write this data structure in memory and then set si register to point to this
