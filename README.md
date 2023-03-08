@@ -1,20 +1,33 @@
-# 🐈 Felix
+<p align="center"><img src="https://user-images.githubusercontent.com/10211171/223741548-45ed1c96-a1da-40de-8544-8e10e4ddb072.png" height=100></p>
+<h1 align="center">Felix OS</h1>
+<h3 align="center">
+(not yet) an x86 operating system.
+</h3>
 
-Felix is (not yet) an x86 operating system.<br>
-It's **written completely from scratch** in Rust and Assembly and does't use any external dependecies.
+## Description
 
-![felix](https://user-images.githubusercontent.com/10211171/216172754-36cc3d1b-fad0-48da-9a58-0991be15c1b5.png)
+Felix is my attempt at writing an x86 operating system.
+
+It's **written completely from scratch** in Rust and Assembly and doesn't use any external dependecies.
+
+![felix2](https://user-images.githubusercontent.com/10211171/223734499-15768aff-6d6f-4013-9fb5-3e75022a907e.png)<br>
+*Felix running in Bochs emulator*
+
+![output](https://user-images.githubusercontent.com/10211171/223737198-9aa156ca-1c57-4db5-932d-e999a1471dc0.gif)<br>
+*Felix running on real hardware*
 
 ## Compiling and debugging
 (Only for Linux)
 
-Make sure you have the Bochs emulator and Rust installed on your system.
+Make sure you have the Bochs emulator and Rust installed on your system, then run the debug script:
 
-Then run the debug script `./debug.sh`.
+`./debug.sh`
 
-The script will take care of everything (compiling, making the image and running the debugger)
+after compiling the Bochs emulator should start, press "continue" to cotinue with the execution.
 
-The Bochs emulator should start, press "continue" to cotinue with the execution.
+The script takes care of everything (compiling, making the image and running the debugger).
+
+The first compilation may take a while since it has to recompile the Rust core library and the tool needed to copy the bin.
 
 ## Progress
 - *22/10/22* - Project start
