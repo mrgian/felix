@@ -1,6 +1,8 @@
 use core::arch::asm;
 use core::fmt;
 
+pub static mut PRINTER: Printer = Printer {};
+
 pub struct Printer {}
 
 impl fmt::Write for Printer {
@@ -35,6 +37,29 @@ impl Printer {
         unsafe {
             asm!("mov ah, 0x00", "mov al, 0x03", "int 0x10");
         }
+    }
+}
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::print::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => {
+        unsafe{
+            ($crate::print!("{}\n", format_args!($($arg)*)))
+        }
+    };
+}
+
+#[doc(hidden)]
+pub unsafe fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    unsafe {
+        PRINTER.write_fmt(args).unwrap();
     }
 }
 

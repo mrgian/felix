@@ -9,12 +9,3 @@ version = "0.1.0"
 [[package]]
 name = "felix-kernel"
 version = "0.1.0"
-dependencies = [
- "itoa",
-]
-
-[[package]]
-name = "itoa"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"

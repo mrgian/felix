@@ -45,6 +45,7 @@ impl DiskAddressPacket {
     //actual loading using bios interrumpt
     //backup si register and then put dap data address in si
     //carry flag becomes 1 if read fails
+    #[allow(dead_code)]
     pub unsafe fn load_sectors(&self) {
         let self_addr = self as *const Self as u16;
         unsafe {
