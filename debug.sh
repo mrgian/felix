@@ -16,7 +16,10 @@ cargo objcopy --bin felix-kernel -- -I elf32-i386 -O binary build/kernel.bin
 
 #create the disk image
 #306 cylinders, 4 heads, 17 sectors per track => 20808 sectors in total
-dd if=/dev/zero of=build/disk.img bs=512 count=20808 
+#dd if=/dev/zero of=build/disk.img bs=512 count=20808
+
+#create floppy image
+dd if=/dev/zero of=build/disk.img bs=512 count=2880
 
 #put the bootloader in first 512 bytes of disk...
 dd if=build/boot.bin of=build/disk.img conv=notrunc

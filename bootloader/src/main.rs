@@ -5,7 +5,7 @@ use core::arch::asm;
 use core::arch::global_asm;
 use core::panic::PanicInfo;
 
-mod dap;
+mod disk;
 
 //set data segments to zero and setup stack
 global_asm!(include_str!("boot.asm"));
@@ -63,12 +63,13 @@ fn load_kernel(address: *const u16) {
     let kernel_segment = 0x0000 as u16; //segment where to write the read data
 
     //bios needs disk address packet structure to read from disk
-    let dap = dap::DiskAddressPacket::from_lba(lba, sectors, kernel_offset, kernel_segment);
+    let disk = disk::DiskAddressPacket::from_lba(lba, sectors, kernel_offset, kernel_segment);
 
     //actual reading
     //TODO: read more than one sector
     unsafe {
-        dap.load_sectors();
+        //disk.load_sectors();
+        disk.load_sectors_floppy();
     }
 }
 

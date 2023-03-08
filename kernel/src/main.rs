@@ -2,9 +2,9 @@
 #![no_main]
 
 //use core::arch::asm;
-use core::panic::PanicInfo;
-use core::fmt::Write;
 use core::arch::asm;
+use core::fmt::Write;
+use core::panic::PanicInfo;
 
 mod print;
 

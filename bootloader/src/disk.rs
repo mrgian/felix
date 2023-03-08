@@ -1,5 +1,12 @@
 use core::arch::asm;
 
+//TODO: Rewrite this shit!!!
+//Things to do:
+// - implement a lba_to_chs algorithm
+// - make a loop that reads on sector at the time
+// - support disk and floppy, if can't read from disk then read from floppy
+//Remeber that if something doesn't work, it may be because this is not loading all the code
+
 //disk address packet
 //contains all info needed by bios to read from disk
 //you need to write this data structure in memory and then set si register to point to this
@@ -50,6 +57,19 @@ impl DiskAddressPacket {
                 out(reg) _,
                 in("ax") 0x4200, //required
                 in("dx") 0x0080, //0x80 for disk, 0x00 for floppy
+            );
+        }
+    }
+
+    pub unsafe fn load_sectors_floppy(&self) {
+        unsafe {
+            asm!(
+                "int 0x13",
+                "jc fail",
+                in("ax") 0x0240,
+                in("bx") self.offset,
+                in("cx") 0x0002,
+                in("dx") 0x0000,
             );
         }
     }
