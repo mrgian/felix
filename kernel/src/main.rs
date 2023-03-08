@@ -2,7 +2,6 @@
 #![no_main]
 
 //use core::arch::asm;
-use core::arch::asm;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 
@@ -26,15 +25,15 @@ pub extern "C" fn _start() -> ! {
     write!(printer, "Hello {}\n\r", "world").unwrap();
     write!(printer, "{} {}\n\r", 69, 420).unwrap();
 
-    let mut x: u16;
+    /*let mut x: u16;
     unsafe {
         asm!(
             "mov {x}, ebx",
             x = out(reg) x
         );
-    }
+    }*/
 
-    write!(printer, "Current ebx reg: {:X}", x).unwrap();
+    //write!(printer, "Current ebx reg: {:X}", x).unwrap();
 
     loop {}
 }

@@ -1,6 +1,6 @@
 # 🐈 Felix
 
-Felix is a wannabe x86 microkernel 
+Felix is (not yet) an x86 operating system written completely from scratch in Rust and Assembly.
 
 ![felix](https://user-images.githubusercontent.com/10211171/216172754-36cc3d1b-fad0-48da-9a58-0991be15c1b5.png)
 
