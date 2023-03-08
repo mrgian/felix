@@ -36,3 +36,4 @@ The first compilation may take a while since it has to recompile the Rust core l
 - *01/02/23* - Bootloader can load kernel to memory
 - *27/02/23* - Moved to Rust environment using inline assembly
 - *01/03/23* - Rewritten kernel loading code in Rust
+- *08/03/23* - Implemented println macro
