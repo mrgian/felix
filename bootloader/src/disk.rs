@@ -46,7 +46,7 @@ impl DiskAddressPacket {
     //backup si register and then put dap data address in si
     //carry flag becomes 1 if read fails
     #[allow(dead_code)]
-    pub unsafe fn load_sectors(&self) {
+    pub fn load_sectors(&self) {
         let self_addr = self as *const Self as u16;
         unsafe {
             asm!(
@@ -65,12 +65,13 @@ impl DiskAddressPacket {
         }
     }
 
-    pub unsafe fn load_sectors_floppy(&self) {
+    //this interrupt doesn't use dap, floppy read doesn't work using dap 
+    pub fn load_sectors_floppy(&self) {
         unsafe {
             asm!(
                 "int 0x13",
                 "jc fail",
-                in("ax") 0x0240,
+                in("ax") 0x0200 + self.number_of_sectors,
                 in("bx") self.offset,
                 in("cx") 0x0002,
                 in("dx") 0x0000,
