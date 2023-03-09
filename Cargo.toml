@@ -4,7 +4,6 @@ members = ["bootloader", "kernel"]
 [workspace.package]
 version = "0.1.0"
 authors = ["Gianmatteo Palmieri <mail@gian.im>"]
-description = "A short description of my package"
 edition = "2021"
 
 [profile.dev]
