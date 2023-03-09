@@ -29,6 +29,17 @@ The script takes care of everything (compiling, making the image and running the
 
 The first compilation may take a while since it has to recompile the Rust core library and the tool needed to copy the bin.
 
+## Versions
+### Felix 0.1
+**Bootloader:**
+- BIOS compatible (also works on UEFI with emulated BIOS)
+- can boot
+- can load kernel to memory
+- can execute kernel
+
+**Kernel:**
+- has a _println_ macro able to format any type of data
+
 ## Progress
 - *22/10/22* - Project start
 - *27/01/23* - Bootloader can print to screen
