@@ -6,6 +6,8 @@ use core::panic::PanicInfo;
 
 mod print;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
@@ -17,7 +19,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    println!("Loaded! Welcome to Felix!");
+    println!("Loaded! Welcome to Felix {}", VERSION);
 
     let mut sp: u16;
     unsafe {

@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: Install binutils
       run: cargo install cargo-binutils
     - name: Build
@@ -34,9 +36,12 @@ jobs:
       run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
     - name: Get current date
       id: build_date
-      run: echo "build_date=$(date +%Y-%m-%d_%H-%M)" >> $GITHUB_ENV
+      run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
+    - name: Get current commit count
+      id: commit_count
+      run: echo "commit_count=$(git log --oneline | wc -l)" >> $GITHUB_ENV
     - name: Upload build
       uses: actions/upload-artifact@v3
       with:
-        name: felix-${{ env.build_date }}
+        name: felix-${{ env.build_date }}-${{ env.commit_count }}
         path: build
