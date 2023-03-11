@@ -30,7 +30,7 @@ The script takes care of everything (compiling, making the image and running the
 The first compilation may take a while since it has to recompile the Rust core library and the tool needed to copy the bin.
 
 ## Versions
-### Felix 0.1
+### Felix 0.1.0
 **Bootloader:**
 - BIOS compatible (also works on UEFI with emulated BIOS)
 - can boot

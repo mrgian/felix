@@ -25,9 +25,9 @@ jobs:
     - name: Make build directory
       run: mkdir build
     - name: Objcopy bootloader
-      run: cargo objcopy --bin felix-bootloader -- -I elf32-i386 -O binary build/boot.bin
+      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/boot.bin
     - name: Objcopy kernel
-      run: cargo objcopy --bin felix-kernel -- -I elf32-i386 -O binary build/kernel.bin
+      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-kernel build/kernel.bin
     - name: Create empty disk image
       run: dd if=/dev/zero of=build/disk.img bs=512 count=20808 
     - name: Put bootloader

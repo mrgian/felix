@@ -4,15 +4,14 @@
 echo "Cleaning build directory..."
 rm -rf build
 echo "Building Felix..."
-cargo install cargo-binutils
 cargo build
 
 echo "Making boot image..."
 mkdir build
 
 #this is needed to shrink the bootloader to 512 bytes
-cargo objcopy --bin felix-bootloader -- -I elf32-i386 -O binary build/boot.bin
-cargo objcopy --bin felix-kernel -- -I elf32-i386 -O binary build/kernel.bin
+objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/boot.bin
+objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/kernel.bin
 
 #create the disk image
 #306 cylinders, 4 heads, 17 sectors per track => 20808 sectors in total
