@@ -1,81 +1,78 @@
 use core::arch::asm;
 
-//TODO: Rewrite this shit!!!
-//Things to do:
-// - implement a lba_to_chs algorithm
-// - make a loop that reads on sector at the time
-// - support disk and floppy, if can't read from disk then read from floppy
-//Remeber that if something doesn't work, it may be because this is not loading all the code
+const HEADS_PER_CYLINDER: u16 = 2;
+const SECTORS_PER_TRACK: u16 = 18;
 
-// FLOPPY SUPPORT
-// Floppy support is needed because the bios emulated by uefi emulates the usb drive as a floppy disk
-
-//disk address packet
-//contains all info needed by bios to read from disk
-//you need to write this data structure in memory and then set si register to point to this
-//osdev wiki: https://wiki.osdev.org/Disk_access_using_the_BIOS_(INT_13h)#LBA_in_Extended_Mode
-#[repr(C, packed)]
-#[allow(dead_code)]
-pub struct DiskAddressPacket {
-    packet_size: u8,
-    zero: u8,
-    number_of_sectors: u16,
-    offset: u16,
-    segment: u16,
-    start_lba: u64,
+pub struct DiskReader {
+    sector_count: u16, //how many sector to read
+    buffer: u16, //where to write data
+    chs: CHS,
+    drive_number: u16, //drive number (0x00 for floppy)
 }
 
-impl DiskAddressPacket {
+pub struct CHS {
+    cylinder: u16, //cylinder
+    head: u16, //head
+    sector: u16, //sector
+}
+
+impl DiskReader {
+    //create a diskreader using a logic block address
     pub fn from_lba(
-        start_lba: u64,
-        number_of_sectors: u16,
-        target_offset: u16,
-        target_segment: u16,
+        lba: u16,
+        sector_count: u16,
+        buffer: u16,
     ) -> Self {
         Self {
-            packet_size: 0x10,
-            zero: 0,
-            number_of_sectors,
-            offset: target_offset,
-            segment: target_segment,
-            start_lba,
+            sector_count: sector_count,
+            buffer: buffer,
+            chs: Self::lba_to_chs(lba),
+            drive_number: 0,
         }
     }
 
-    //actual loading using bios interrumpt
-    //backup si register and then put dap data address in si
-    //carry flag becomes 1 if read fails
-    #[allow(dead_code)]
+    //actual reading using bios interrupt 0x13
     pub fn load_sectors(&self) {
-        let self_addr = self as *const Self as u16;
+        //Link to bible: https://wiki.osdev.org/Disk_access_using_the_BIOS_(INT_13h)
+
+        //Before calling bios interrupt register should be like this:
+        //
+        //ah = 2
+        //al = sector_count
+        //dh = head
+        //dl = drive number
+        //bx = buffer
+
+        //cx         = [  CH  ] [  CL  ]
+        //cylinder   = XXXXXXXX XX          (bits 0-5)
+        //sector     =            XXXXXX    (bits 6-15)
+
         unsafe {
             asm!(
-                "push 0x7a",
-                "mov {1:x}, si",
-                "mov si, {0:x}",
                 "int 0x13",
                 "jc fail",
-                "pop si",
-                "mov si, {1:x}",
-                in(reg) self_addr,
-                out(reg) _,
-                in("ax") 0x4200, //required
-                in("dx") 0x0080, //0x80 for disk, 0x00 for floppy
+                in("ah") 0x02 as u8,
+                in("al") self.sector_count as u8,
+                in("ch") (self.chs.cylinder & 0xff) as u8,
+                in("cl") (self.chs.sector | ((self.chs.cylinder >>2) & 0xc0)) as u8,
+                in("dh") self.chs.head as u8,
+                in("dl") self.drive_number as u8,
+                in("bx") self.buffer as u16,
             );
         }
     }
 
-    //this interrupt doesn't use dap, floppy read doesn't work using dap 
-    pub fn load_sectors_floppy(&self) {
-        unsafe {
-            asm!(
-                "int 0x13",
-                "jc fail",
-                in("ax") 0x0200 + self.number_of_sectors,
-                in("bx") self.offset,
-                in("cx") 0x0002,
-                in("dx") 0x0000,
-            );
+    //alogorithm to convert from logic-block-address to cylinder-head-sector
+    fn lba_to_chs(lba: u16) -> CHS {
+        let cylinder = lba / (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
+	    let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
+	    let head = temp / SECTORS_PER_TRACK;
+	    let sector = temp % SECTORS_PER_TRACK + 1;
+
+        CHS {
+            cylinder: cylinder,
+            head: head,
+            sector: sector,
         }
     }
 }

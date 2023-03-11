@@ -54,19 +54,14 @@ fn print(message: &str) {
 }
 
 fn load_kernel(address: *const u16) {
-    //TODO: Make a loop that reads one sector at the time instead of telling bios to read multiple sectors,
-    //because some bioses have a limit on how many sector you can read
+    let lba: u16 = 1; //read from lba 1 (second sector of disk)
+    let sector_count: u16 = 32; //number of sectors to read
+    let buffer = address as u16; //address where to write the data
 
-    let lba: u64 = 1; //read from lba 1, 512 bytes after lba 0 (i think)
-    let sectors: u16 = 64; //number of sectors to read
-    let kernel_offset = address as u16; //offset and
-    let kernel_segment = 0x0000 as u16; //segment where to write the read data
-
-    //bios needs disk address packet structure to read from disk
-    let disk = disk::DiskAddressPacket::from_lba(lba, sectors, kernel_offset, kernel_segment);
+    let disk = disk::DiskReader::from_lba(lba, sector_count, buffer);
 
     //actual reading
-    disk.load_sectors_floppy();
+    disk.load_sectors();
 }
 
 //jump execution to given address
