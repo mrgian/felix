@@ -2,7 +2,7 @@
 .global _start
 .code16
 
-bdb_oem:                    .string "MSWIN4.1"
+bdb_oem:                    .byte 0x77, 0x83, 0x87, 0x73, 0x78, 0x52, 0x46, 0x49 # 8 byte "MSWIN4.1"
 bdb_bytes_per_sector:       .2byte 512
 bdb_sectors_per_cluster:    .byte 1
 bdb_reserved_sectors:       .2byte 1
@@ -20,8 +20,8 @@ ebr_drive_number:           .byte 0
 ebr_reserved:               .byte 0                
 ebr_signature:              .byte 0x29
 ebr_volume_id:              .byte 0x12, 0x34, 0x56, 0x78   
-ebr_volume_label:           .string "FELIX      "       
-ebr_system_id:              .string "FAT12   "
+ebr_volume_label:           .byte 0x70, 0x69, 0x76, 0x73, 0x88, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32 # 11 byte "FELIX      "
+ebr_system_id:              .byte 0x70, 0x65, 0x84, 0x49, 0x50, 0x32, 0x32, 0x32 # 8 byte "FAT12   "
 
 _start:
     # set data segments to zero
