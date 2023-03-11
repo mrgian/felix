@@ -7,6 +7,15 @@ SECTIONS {
     _stack_end = .;
 
     _mbr_start = .;
+
+    /* needed to jump to _start after the fat header */
+    .jump :
+    {
+        BYTE(0Xeb) 
+        BYTE(0X3f) 
+        BYTE(0X90) 
+    }
+
     .boot :
     {
         *(.boot .boot.*)

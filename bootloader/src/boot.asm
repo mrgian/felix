@@ -2,6 +2,27 @@
 .global _start
 .code16
 
+bdb_oem:                    .string "MSWIN4.1"
+bdb_bytes_per_sector:       .2byte 512
+bdb_sectors_per_cluster:    .byte 1
+bdb_reserved_sectors:       .2byte 1
+bdb_fat_count:              .byte 2
+bdb_dir_entries_count:      .2byte 0x0E0
+bdb_total_sectors:          .2byte 2880                
+bdb_media_descriptor_type:  .byte 0x0F0              
+bdb_sectors_per_fat:        .2byte 9                 
+bdb_sectors_per_track:      .2byte 18
+bdb_heads:                  .2byte 2
+bdb_hidden_sectors:         .4byte 0
+bdb_large_sector_count:     .4byte 0
+
+ebr_drive_number:           .byte 0                    
+ebr_reserved:               .byte 0                
+ebr_signature:              .byte 0x29
+ebr_volume_id:              .byte 0x12, 0x34, 0x56, 0x78   
+ebr_volume_label:           .string "FELIX      "       
+ebr_system_id:              .string "FAT12   "
+
 _start:
     # set data segments to zero
     xor ax, ax
