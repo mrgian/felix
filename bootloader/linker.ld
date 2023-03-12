@@ -12,7 +12,7 @@ SECTIONS {
     .jump :
     {
         BYTE(0Xeb) 
-        BYTE(0X3f) 
+        BYTE(0X3c) 
         BYTE(0X90) 
     }
 
