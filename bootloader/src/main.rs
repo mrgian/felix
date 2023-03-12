@@ -54,8 +54,8 @@ fn print(message: &str) {
 }
 
 fn load_kernel(address: *const u16) {
-    let lba: u16 = 1; //read from lba 1 (second sector of disk)
-    let sector_count: u16 = 32; //number of sectors to read
+    let lba: u16 = 2816; //read from lba 2816 (2880 - 64), last 64 sectors
+    let sector_count: u16 = 64; //number of sectors to read
     let buffer = address as u16; //address where to write the data
 
     let disk = disk::DiskReader::from_lba(lba, sector_count, buffer);

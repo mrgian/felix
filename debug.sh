@@ -19,12 +19,15 @@ objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/ker
 
 #create floppy image
 dd if=/dev/zero of=build/disk.img bs=512 count=2880
+mkfs.fat -F 12 -n "FELIX" build/disk.img
 
 #put the bootloader in first 512 bytes of disk...
 dd if=build/boot.bin of=build/disk.img conv=notrunc
 
-#and the kernel in the remaining space
-dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
+#put kernel in the last 64 sectors of disk (2880 - 64)
+dd if=build/kernel.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
+#mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
+#dd if=build/kernel.bin of=build/disk.img bs=512 seek=32 conv=notrunc
 
 echo "Debugging Felix with Bochs..."
 bochs -q -f bochs.conf

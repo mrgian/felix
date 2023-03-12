@@ -5,24 +5,20 @@ const SECTORS_PER_TRACK: u16 = 18;
 
 pub struct DiskReader {
     sector_count: u16, //how many sector to read
-    buffer: u16, //where to write data
+    buffer: u16,       //where to write data
     chs: CHS,
     drive_number: u16, //drive number (0x00 for floppy)
 }
 
 pub struct CHS {
     cylinder: u16, //cylinder
-    head: u16, //head
-    sector: u16, //sector
+    head: u16,     //head
+    sector: u16,   //sector
 }
 
 impl DiskReader {
     //create a diskreader using a logic block address
-    pub fn from_lba(
-        lba: u16,
-        sector_count: u16,
-        buffer: u16,
-    ) -> Self {
+    pub fn from_lba(lba: u16, sector_count: u16, buffer: u16) -> Self {
         Self {
             sector_count: sector_count,
             buffer: buffer,
@@ -44,8 +40,8 @@ impl DiskReader {
         //bx = buffer
 
         //cx         = [  CH  ] [  CL  ]
-        //cylinder   = XXXXXXXX XX          (bits 0-5)
-        //sector     =            XXXXXX    (bits 6-15)
+        //cylinder   = XXXXXXXX XX
+        //sector     =            XXXXXX
 
         unsafe {
             asm!(
@@ -53,10 +49,15 @@ impl DiskReader {
                 "jc fail",
                 in("ah") 0x02 as u8,
                 in("al") self.sector_count as u8,
-                in("ch") (self.chs.cylinder & 0xff) as u8,
-                in("cl") (self.chs.sector | ((self.chs.cylinder >>2) & 0xc0)) as u8,
-                in("dh") self.chs.head as u8,
-                in("dl") self.drive_number as u8,
+                in("ch") (self.chs.cylinder as u8 & 0xff) as u8,
+                in("cl") (self.chs.sector | ((self.chs.cylinder >> 2) & 0xc0)) as u8,
+
+                //in("dh") self.chs.head as u8,
+                //in("dl") self.drive_number as u8,
+
+                //rust doesn't let me set dh and dl, so i set dx with this trick
+                in("dx") ((self.chs.head << 8) + self.drive_number) as u16,
+
                 in("bx") self.buffer as u16,
             );
         }
@@ -65,9 +66,9 @@ impl DiskReader {
     //alogorithm to convert from logic-block-address to cylinder-head-sector
     fn lba_to_chs(lba: u16) -> CHS {
         let cylinder = lba / (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-	    let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-	    let head = temp / SECTORS_PER_TRACK;
-	    let sector = temp % SECTORS_PER_TRACK + 1;
+        let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
+        let head = temp / SECTORS_PER_TRACK;
+        let sector = temp % SECTORS_PER_TRACK + 1;
 
         CHS {
             cylinder: cylinder,
