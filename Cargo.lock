@@ -3,6 +3,10 @@
 version = 3
 
 [[package]]
+name = "felix-boot"
+version = "0.1.0"
+
+[[package]]
 name = "felix-bootloader"
 version = "0.1.0"
 

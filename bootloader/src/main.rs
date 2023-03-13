@@ -2,84 +2,75 @@
 #![no_main]
 
 use core::arch::asm;
-use core::arch::global_asm;
 use core::panic::PanicInfo;
 
-#[path="../../disk/disk.rs"]
-mod disk;
+mod print;
 
-//set data segments to zero and setup stack
-global_asm!(include_str!("boot.asm"));
+//const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-extern "C" {
-    static _kernel_start: u16;
-}
+const HEADS_PER_CYLINDER: u16 = 2;
+const SECTORS_PER_TRACK: u16 = 18;
 
-#[no_mangle]
-pub extern "C" fn main() {
-    clear();
-
-    print("Loading Felix...\r\n\0");
-
-    //get kernel address from linker, currently is 0x7e00 (the end of mbr)
-    let kernel_start: *const u16 = unsafe { &_kernel_start };
-
-    load_kernel(kernel_start);
-    jump(kernel_start);
-}
-
-//set bios video mode to clear the screen
-fn clear() {
-    unsafe {
-        asm!("mov ah, 0x00", "mov al, 0x03", "int 0x10");
-    }
-}
-
-//bios interrupt to print to the screen
-fn print(message: &str) {
-    unsafe {
-        asm!("mov si, {0:x}", //move given string address to si
-            "2:",
-            "lodsb", //load a byte (next character) from si to al
-            "or al, al", //bitwise or on al, if al is null set zf to true
-            "jz 1f", //if zf is true (end of string) jump to end
-
-            "mov ah, 0x0e",
-            "mov bh, 0",
-            "int 0x10", //tell the bios to write content of al to screen
-
-            "jmp 2b", //start again
-            "1:",
-            in(reg) message.as_ptr());
-    }
-}
-
-fn load_kernel(address: *const u16) {
-    let lba: u16 = 2816; //read from lba 2816 (2880 - 64), last 64 sectors
-    let sector_count: u16 = 64; //number of sectors to read
-    let buffer = address as u16; //address where to write the data
-
-    let disk = disk::DiskReader::from_lba(lba, sector_count, buffer);
-
-    //actual reading
-    disk.load_sectors();
-}
-
-//jump execution to given address
-fn jump(address: *const u16) {
-    unsafe {
-        asm!("jmp {0:x}", in(reg) address as u16);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn fail() -> ! {
-    print("Failed loading kernel!");
-
-    loop {}
+#[derive(Debug)]
+pub struct CHS {
+    cylinder: u16, //cylinder
+    head: u16,     //head
+    sector: u16,   //sector
 }
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
+    wait_key_and_reboot();
+
     loop {}
+}
+
+#[no_mangle]
+#[link_section = ".start"]
+pub extern "C" fn _start() -> ! {
+    println!("Bootloader loaded!");
+
+    /*let mut sp: u16;
+    unsafe {
+        asm!(
+            "mov {0:x}, sp",
+            out(reg) sp
+        );
+    }
+
+    println!("Current stack pointer: {:X}", sp);*/
+
+    println!("{:?}", lba_to_chs(2879));
+
+    let a: u16 = 0x01 as u16;
+    let b: u16 = 0x00 as u16;
+    let s: u16 = a << 8;
+
+    println!("a: {:X}  b: {:X}  s: {:X}", a, b, s);
+
+    loop {}
+}
+
+//TODO: Fix, it's not working
+#[allow(overflowing_literals)]
+fn wait_key_and_reboot() {
+    println!("Press any key to reboot...");
+
+    unsafe {
+        asm!("mov ah, 0", "int 0x16", "jmp {0:x}", in(reg) 0x7c00 as u16);
+    }
+}
+
+fn lba_to_chs(lba: u16) -> CHS {
+    let cylinder = lba / (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
+    let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
+    let head = temp / SECTORS_PER_TRACK;
+    let sector = temp % SECTORS_PER_TRACK + 1;
+
+    CHS {
+        cylinder: cylinder,
+        head: head,
+        sector: sector,
+    }
 }

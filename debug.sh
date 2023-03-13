@@ -10,8 +10,8 @@ echo "Making boot image..."
 mkdir build
 
 #this is needed to shrink the bootloader to 512 bytes
-objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/boot.bin
-objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/kernel.bin
+objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-boot build/boot.bin
+objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/bootloader.bin
 
 #create the disk image
 #306 cylinders, 4 heads, 17 sectors per track => 20808 sectors in total
@@ -21,11 +21,11 @@ objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/ker
 dd if=/dev/zero of=build/disk.img bs=512 count=2880
 mkfs.fat -F 12 -n "FELIX" build/disk.img
 
-#put the bootloader in first 512 bytes of disk...
+#put the boot sector in first 512 bytes of disk...
 dd if=build/boot.bin of=build/disk.img conv=notrunc
 
-#put kernel in the last 64 sectors of disk (2880 - 64)
-dd if=build/kernel.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
+#put bootloader in the last 64 sectors of disk (2880 - 64)
+dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
 #mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
 #dd if=build/kernel.bin of=build/disk.img bs=512 seek=32 conv=notrunc
 

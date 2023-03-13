@@ -1,47 +1,37 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x500;
-    _stack_start = .;
-    . = 0x7c00;
-    _stack_end = .;
+    . = 0x7c00 + 512;
 
-    _mbr_start = .;
-
-    /* needed to jump to _start after the fat header */
-    .jump :
-    {
-        BYTE(0Xeb) 
-        BYTE(0X3c) 
-        BYTE(0X90) 
+    .start : {
+        *(.start)
     }
-
-    .boot :
-    {
-        *(.boot .boot.*)
-    }
-    .text :
-    {
+    .text : {
         *(.text .text.*)
     }
-    .rodata :
-    {
+    .bss : {
+        *(.bss .bss.*)
+    }
+    .rodata : {
         *(.rodata .rodata.*)
     }
-    .data :
-    {
-        *(.rodata .rodata.*)
+    .data : {
         *(.data .data.*)
-        *(.got .got.*)
     }
-    _mbr_end = .;
+    .eh_frame : {
+        *(.eh_frame .eh_frame.*)
+    }
+    .eh_frame_hdr : {
+        *(.eh_frame_hdr .eh_frame_hdr.*)
+    }
 
-    . = 0x7c00 + 510;
+    . = ALIGN(512);
 
-    .magic_number :
+    _second_stage_end = .;
+
+    /*. = 0x0007FFFF - 2;*/
+    .end_marker :
     {
-        SHORT(0xaa55)
+        SHORT(0xdead)
     }
-
-    _kernel_start = .;
 }
