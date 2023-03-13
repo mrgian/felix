@@ -12,6 +12,7 @@ mkdir build
 #this is needed to shrink the bootloader to 512 bytes
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-boot build/boot.bin
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/bootloader.bin
+objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/kernel.bin
 
 #create the disk image
 #306 cylinders, 4 heads, 17 sectors per track => 20808 sectors in total

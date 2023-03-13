@@ -22,16 +22,20 @@ jobs:
       run: cargo build --release
     - name: Make build directory
       run: mkdir build
+    - name: Objcopy boot
+      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-boot build/boot.bin
     - name: Objcopy bootloader
-      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/boot.bin
+      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/bootloader.bin
     - name: Objcopy kernel
       run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-kernel build/kernel.bin
-    - name: Create empty disk image
-      run: dd if=/dev/zero of=build/disk.img bs=512 count=20808 
-    - name: Put bootloader
+    - name: Create empty floppy image
+      run: dd if=/dev/zero of=build/disk.img bs=512 count=2880
+    - name: Format floppy
+      run: mkfs.fat -F 12 -n "FELIX" build/disk.img
+    - name: Put boot
       run: dd if=build/boot.bin of=build/disk.img conv=notrunc
-    - name: Put kernel
-      run: dd if=build/kernel.bin of=build/disk.img bs=1 seek=512 conv=notrunc
+    - name: Put bootloader
+      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
