@@ -2,6 +2,8 @@
 .global _start
 .code16
 
+# FAT12 header
+
 bdb_oem:                    .byte 0x4D, 0x53, 0x57, 0x49, 0x4E, 0x34, 0x2E, 0x31 # 8 byte "MSWIN4.1"
 bdb_bytes_per_sector:       .2byte 512
 bdb_sectors_per_cluster:    .byte 1

@@ -12,7 +12,7 @@ mod disk;
 global_asm!(include_str!("boot.asm"));
 
 extern "C" {
-    static _kernel_start: u16;
+    static _bootloader_start: u16;
 }
 
 #[no_mangle]
@@ -22,10 +22,10 @@ pub extern "C" fn main() {
     print("Loading bootloader...\r\n\0");
 
     //get bootloader address from linker, currently is 0x7e00 (the end of mbr)
-    let kernel_start: *const u16 = unsafe { &_kernel_start };
+    let bootloader_start: *const u16 = unsafe { &_bootloader_start };
 
-    load_bootloader(kernel_start);
-    jump(kernel_start);
+    load_bootloader(bootloader_start);
+    jump(bootloader_start);
 }
 
 //set bios video mode to clear the screen

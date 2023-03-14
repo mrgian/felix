@@ -3,10 +3,11 @@ ENTRY(_start)
 SECTIONS {
     . = 0x500;
     _stack_start = .;
-    . = 0x7c00;
-    _stack_end = .;
 
-    _mbr_start = .;
+    . = 0x7c00;
+    _stack_end = .; /* linker need to know where boot will be when loaded in memory, bios loads boot at 0x7c00 */
+
+    _boot_start = .;
 
     /* needed to jump to _start after the fat header */
     .jump :
@@ -34,7 +35,7 @@ SECTIONS {
         *(.data .data.*)
         *(.got .got.*)
     }
-    _mbr_end = .;
+    _boot_end = .;
 
     . = 0x7c00 + 510;
 
@@ -43,5 +44,5 @@ SECTIONS {
         SHORT(0xaa55)
     }
 
-    _kernel_start = .;
+    _bootloader_start = .;
 }
