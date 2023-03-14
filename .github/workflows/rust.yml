@@ -36,6 +36,11 @@ jobs:
       run: dd if=build/boot.bin of=build/disk.img conv=notrunc
     - name: Put bootloader
       run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
+    - name: Copy kernel and data
+      run: > 
+        mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
+        mcopy -i build/disk.img test1.txt "::test1.txt"
+        mcopy -i build/disk.img test2.txt "::test2.txt"
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
