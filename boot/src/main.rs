@@ -5,8 +5,8 @@ use core::arch::asm;
 use core::arch::global_asm;
 use core::panic::PanicInfo;
 
-#[path = "../../disk/disk.rs"]
 mod disk;
+use disk::DiskReader;
 
 //set data segments to zero and setup stack
 global_asm!(include_str!("boot.asm"));
@@ -59,7 +59,7 @@ fn load_bootloader(address: *const u16) {
     let sector_count: u16 = 64; //number of sectors to read
     let buffer = address as u16; //address where to write the data
 
-    let disk = disk::DiskReader::from_lba(lba, sector_count, buffer);
+    let disk = DiskReader::from_lba(lba, sector_count, buffer);
 
     //actual reading
     disk.load_sectors();

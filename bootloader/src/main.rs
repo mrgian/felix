@@ -3,15 +3,12 @@
 
 //use core::arch::asm;
 use core::panic::PanicInfo;
-use core::ptr;
 
+#[macro_use]
 mod print;
 
-/*#[path = "../../disk/disk.rs"]
-mod disk;*/
-
-#[path = "../../disk/fat.rs"]
 mod fat;
+use fat::FatDriver;
 
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -27,33 +24,14 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     println!("Bootloader loaded!");
 
-    let root: [fat::Entry; 224] = [fat::Entry::default(); 224];
-    let root_address = ptr::addr_of!(root) as u16;
+    let driver = FatDriver::new();
+    driver.load_header();
+    driver.load_entries();
 
-    fat::load_root(root_address);
-
-    println!("Loaded root at: {:X}", root_address);
-
-    list_entries(&root);
+    driver.list_entries();
 
 
     loop {}
-}
-
-pub fn list_entries(entries: &[fat::Entry]) {
-    println!("Listing root directory:");
-
-    println!();
-
-    for e in 0..224 {
-        let name = entries[e].name;
-        if name[0] != 0 {
-            for c in 0..11 {
-                print!("{}", name[c] as char);
-            }
-            println!();
-        }
-    }
 }
 
 #[no_mangle]
