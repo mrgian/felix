@@ -1,27 +1,23 @@
 #![no_std]
 #![no_main]
 
-use core::arch::asm;
+//use core::arch::asm;
 use core::panic::PanicInfo;
+use core::ptr;
 
 mod print;
 
+/*#[path = "../../disk/disk.rs"]
+mod disk;*/
+
+#[path = "../../disk/fat.rs"]
+mod fat;
+
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-const HEADS_PER_CYLINDER: u16 = 2;
-const SECTORS_PER_TRACK: u16 = 18;
-
-#[derive(Debug)]
-pub struct CHS {
-    cylinder: u16, //cylinder
-    head: u16,     //head
-    sector: u16,   //sector
-}
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    wait_key_and_reboot();
 
     loop {}
 }
@@ -31,46 +27,38 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     println!("Bootloader loaded!");
 
-    /*let mut sp: u16;
-    unsafe {
-        asm!(
-            "mov {0:x}, sp",
-            out(reg) sp
-        );
-    }
+    let root: [fat::Entry; 224] = [fat::Entry::default(); 224];
+    let root_address = ptr::addr_of!(root) as u16;
 
-    println!("Current stack pointer: {:X}", sp);*/
+    fat::load_root(root_address);
 
-    println!("{:?}", lba_to_chs(2879));
+    println!("Loaded root at: {:X}", root_address);
 
-    let a: u16 = 0x01 as u16;
-    let b: u16 = 0x00 as u16;
-    let s: u16 = a << 8;
+    list_entries(&root);
 
-    println!("a: {:X}  b: {:X}  s: {:X}", a, b, s);
 
     loop {}
 }
 
-//TODO: Fix, it's not working
-#[allow(overflowing_literals)]
-fn wait_key_and_reboot() {
-    println!("Press any key to reboot...");
+pub fn list_entries(entries: &[fat::Entry]) {
+    println!("Listing root directory:");
 
-    unsafe {
-        asm!("mov ah, 0", "int 0x16", "jmp {0:x}", in(reg) 0x7c00 as u16);
+    println!();
+
+    for e in 0..224 {
+        let name = entries[e].name;
+        if name[0] != 0 {
+            for c in 0..11 {
+                print!("{}", name[c] as char);
+            }
+            println!();
+        }
     }
 }
 
-fn lba_to_chs(lba: u16) -> CHS {
-    let cylinder = lba / (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-    let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-    let head = temp / SECTORS_PER_TRACK;
-    let sector = temp % SECTORS_PER_TRACK + 1;
+#[no_mangle]
+pub extern "C" fn fail() -> ! {
+    println!("Failed loading root!");
 
-    CHS {
-        cylinder: cylinder,
-        head: head,
-        sector: sector,
-    }
+    loop {}
 }

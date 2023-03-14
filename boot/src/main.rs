@@ -5,7 +5,7 @@ use core::arch::asm;
 use core::arch::global_asm;
 use core::panic::PanicInfo;
 
-#[path="../../disk/disk.rs"]
+#[path = "../../disk/disk.rs"]
 mod disk;
 
 //set data segments to zero and setup stack

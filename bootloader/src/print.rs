@@ -48,15 +48,11 @@ macro_rules! print {
 #[macro_export]
 macro_rules! println {
     () => ($crate::print!("\r\n"));
-    ($($arg:tt)*) => {
-        unsafe{
-            ($crate::print!("{}\r\n", format_args!($($arg)*)))
-        }
-    };
+    ($($arg:tt)*) => ($crate::print!("{}\r\n", format_args!($($arg)*)));
 }
 
 #[doc(hidden)]
-pub unsafe fn _print(args: fmt::Arguments) {
+pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {
         PRINTER.write_fmt(args).unwrap();

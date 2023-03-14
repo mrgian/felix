@@ -27,8 +27,11 @@ dd if=build/boot.bin of=build/disk.img conv=notrunc
 
 #put bootloader in the last 64 sectors of disk (2880 - 64)
 dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
-#mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
-#dd if=build/kernel.bin of=build/disk.img bs=512 seek=32 conv=notrunc
+
+#copy kernel and data
+mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
+mcopy -i build/disk.img test1.txt "::test1.txt"
+mcopy -i build/disk.img test2.txt "::test2.txt"
 
 echo "Debugging Felix with Bochs..."
 bochs -q -f bochs.conf
