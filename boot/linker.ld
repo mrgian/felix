@@ -17,18 +17,24 @@ SECTIONS {
         BYTE(0X90) 
     }
 
+    /* boot.asm section */
     .boot :
     {
         *(.boot .boot.*)
     }
+
+    /* code section */
     .text :
     {
         *(.text .text.*)
     }
+
+    /* read-only data, es. string costants */
     .rodata :
     {
         *(.rodata .rodata.*)
     }
+    
     .data :
     {
         *(.rodata .rodata.*)
