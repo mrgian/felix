@@ -19,6 +19,7 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
+//bootloader entry point
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
@@ -36,7 +37,7 @@ pub extern "C" fn _start() -> ! {
 
 #[no_mangle]
 pub extern "C" fn fail() -> ! {
-    println!("Failed loading root!");
+    println!("Read fail!");
 
     loop {}
 }

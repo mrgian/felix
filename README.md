@@ -27,8 +27,6 @@ after compiling the Bochs emulator should start, press "continue" to cotinue wit
 
 The script takes care of everything (compiling, making the image and running the debugger).
 
-The first compilation may take a while since it has to recompile the Rust core library and the tool needed to copy the bin.
-
 ## Versions
 ### Felix 0.1.0
 **Bootloader:**

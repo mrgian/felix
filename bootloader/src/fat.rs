@@ -4,8 +4,11 @@ use disk::DiskReader;
 
 use core::ptr;
 
+const ENTRIES_COUNT: u16 = 224;
+
 //Link to bible: https://wiki.osdev.org/FAT#Implementation_Details
 
+//FAT12 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
 struct Header {
@@ -36,6 +39,7 @@ struct Header {
 }
 
 impl Default for Header {
+    //init header to all zeros
     fn default() -> Header {
         Header {
             boot_jump_instructions: [0; 3],
@@ -64,6 +68,7 @@ impl Default for Header {
     }
 }
 
+//FAT file entry struct
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
 pub struct Entry {
@@ -82,6 +87,7 @@ pub struct Entry {
 }
 
 impl Default for Entry {
+    //init entry to all zeros
     fn default() -> Entry {
         Entry {
             name: [0; 11],
@@ -102,17 +108,19 @@ impl Default for Entry {
 
 pub struct FatDriver {
     header: Header,
-    entries: [Entry; 224], //TODO: entries count is hardcoded but it shouldn't
+    entries: [Entry; ENTRIES_COUNT as usize], //the root directory is an array of file entries
 }
 
 impl FatDriver {
+    //init empty header and entries to allocate memory 
     pub fn new() -> Self {
         Self {
             header: Header::default(),
-            entries: [Entry::default(); 224], //TODO: entries count is hardcoded but it shouldn't
+            entries: [Entry::default(); ENTRIES_COUNT as usize],
         }
     }
 
+    //get header address and overwrite that mem location with data from boot sector
     pub fn load_header(&self) {
         let address = ptr::addr_of!(self.header) as u16;
 
@@ -123,11 +131,15 @@ impl FatDriver {
         disk.load_sectors();
     }
 
+    //get entries array address and overwrite that mem location with data from root directory
+    //calculate size and position of root direcotry based on data from header
     pub fn load_entries(&self) {
         let address = ptr::addr_of!(self.entries) as u16;
 
+        let entry_size = core::mem::size_of::<Entry>() as u16;
+
         let lba: u16 = self.header.reserved_sectors + self.header.sectors_per_fat * self.header.fat_count as u16;
-        let size: u16 = 32 * self.header.dir_entries_count; //TODO: entries size (32) is hardcoded but it shouldn't
+        let size: u16 = entry_size * self.header.dir_entries_count;
         let sector_count: u16 = size / self.header.bytes_per_sector;
 
         let disk = DiskReader::from_lba(lba, sector_count, address);
@@ -135,18 +147,19 @@ impl FatDriver {
         disk.load_sectors();
     }
 
+    //list each entry in root direcotry
+    //TODO: add other info like creation_date ecc
     pub fn list_entries(&self) {
         println!("Listing root directory entries:");
 
         println!();
 
-        for e in 0..224 { //TODO: entries count is hardcoded but it shouldn't
-            let name = self.entries[e].name;
-            if name[0] != 0 {
-                for c in 0..11 { //TODO: name lenght is hardcoded but it shouldn't
-                    print!("{}", name[c] as char);
+        for entry in self.entries {
+            if entry.name[0] != 0 {
+                for c in entry.name {
+                    print!("{}", c as char);
                 }
-                println!();
+                println!(); 
             }
         }
     }

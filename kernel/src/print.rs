@@ -1,10 +1,9 @@
 use core::arch::asm;
 use core::fmt;
 
-pub static mut PRINTER: Printer = Printer {};
-
 pub struct Printer {}
 
+//core lib needs to know how to print a string to implement its print formatted func
 impl fmt::Write for Printer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.prints(s);
@@ -17,14 +16,15 @@ impl Printer {
     pub fn printc(&self, c: char) {
         unsafe {
             asm!(
-            "mov ah, 0x0e",
-            "mov bh, 0",
-            "int 0x10", //tell the bios to write content of al to screen
-            in("ax") c as u16);
+                "int 0x10", //tell the bios to write content of al to screen
+                in("al") c as u8,
+                in("ah") 0x0e as u8,
+                in("bx") 0 as u16,
+            );
         }
     }
 
-    //print a string
+    //print a string by printing one char at the time
     pub fn prints(&self, s: &str) {
         for c in s.chars() {
             self.printc(c);
@@ -35,28 +35,32 @@ impl Printer {
     #[allow(dead_code)]
     pub fn clear() {
         unsafe {
-            asm!("mov ah, 0x00", "mov al, 0x03", "int 0x10");
+            asm!(
+                "int 0x10",
+                in("ax") 0x0003 as u16,
+            );
         }
     }
 }
 
+//macro for print!
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => ($crate::print::_print(format_args!($($arg)*)));
 }
 
+//macro for println!
 #[macro_export]
 macro_rules! println {
     () => ($crate::print!("\r\n"));
-    ($($arg:tt)*) => {
-        unsafe{
-            ($crate::print!("{}\r\n", format_args!($($arg)*)))
-        }
-    };
+    ($($arg:tt)*) => ($crate::print!("{}\r\n", format_args!($($arg)*)));
 }
 
+//global printer 
+pub static mut PRINTER: Printer = Printer {};
+
 #[doc(hidden)]
-pub unsafe fn _print(args: fmt::Arguments) {
+pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {
         PRINTER.write_fmt(args).unwrap();
@@ -64,7 +68,6 @@ pub unsafe fn _print(args: fmt::Arguments) {
 }
 
 //bios interrupt to print to the screen
-//TODO: Implement a printf function that is able to format strings
 /*pub fn print(message: &str) {
     unsafe {
         asm!("mov si, {0:x}", //move given string address to si
@@ -82,3 +85,4 @@ pub unsafe fn _print(args: fmt::Arguments) {
             in(reg) message.as_ptr());
     }
 }*/
+
