@@ -30,20 +30,24 @@ jobs:
       run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/bootloader.bin
     - name: Objcopy kernel
       run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-kernel build/kernel.bin
-    - name: Create empty floppy image
-      run: dd if=/dev/zero of=build/disk.img bs=512 count=2880
-    - name: Format floppy
-      run: mkfs.fat -F 12 -n "FELIX" build/disk.img
+    - name: Create empty disk
+      run: dd if=/dev/zero of=build/disk.img bs=1GiB count=1
+    - name: Partition disk
+      run: sfdisk build/disk.img < disk.layout
     - name: Put boot
       run: dd if=build/boot.bin of=build/disk.img conv=notrunc
+    - name: Mount main partition
+      run: sudo losetup --offset $((512*4096)) --show --find build/disk.img
+    - name: Format main partition
+      run: sudo mkfs.fat -F 16 /dev/loop0
     - name: Put bootloader
-      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
+      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
     - name: Copy kernel
-      run: mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
+      run: mcopy -i /dev/loop0 build/kernel.bin "::kernel.bin"
     - name: Copy test1.txt
-      run: mcopy -i build/disk.img test1.txt "::test1.txt"
+      run: mcopy -i /dev/loop0 test1.txt "::test1.txt"
     - name: Copy test2.txt
-      run: mcopy -i build/disk.img test2.txt "::test2.txt"
+      run: mcopy -i /dev/loop0 test2.txt "::test2.txt"
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
