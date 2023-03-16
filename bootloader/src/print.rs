@@ -56,7 +56,7 @@ macro_rules! println {
     ($($arg:tt)*) => ($crate::print!("{}\r\n", format_args!($($arg)*)));
 }
 
-//global printer 
+//global printer
 pub static mut PRINTER: Printer = Printer {};
 
 #[doc(hidden)]

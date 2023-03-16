@@ -1,17 +1,17 @@
 use core::arch::asm;
-use core::ptr;
 use core::mem;
+use core::ptr;
 
 const SECTOR_SIZE: u16 = 512; //sector size in bytes
 
 #[repr(C, packed)]
 struct DiskAddressPacket {
-    size: u8,       //size of dap
-    zero: u8,       //always zero
-    sectors: u16,   //sectors to read
-    offset: u16,    //target offset
-    segment: u16,   //target segment
-    lba: u64,       //logical block address 
+    size: u8,     //size of dap
+    zero: u8,     //always zero
+    sectors: u16, //sectors to read
+    offset: u16,  //target offset
+    segment: u16, //target segment
+    lba: u64,     //logical block address
 }
 
 pub struct DiskReader {
@@ -29,7 +29,6 @@ impl DiskReader {
 
     //read one sector from disk
     pub fn read_sector(&self) {
-
         //init dap
         let dap = DiskAddressPacket {
             size: mem::size_of::<DiskAddressPacket>() as u8,

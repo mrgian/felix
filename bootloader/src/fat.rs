@@ -2,8 +2,8 @@
 mod disk;
 use disk::DiskReader;
 
-use core::ptr;
 use core::mem;
+use core::ptr;
 
 const ENTRY_COUNT: u16 = 512;
 
@@ -113,7 +113,7 @@ pub struct FatDriver {
 }
 
 impl FatDriver {
-    //init empty header and entries to allocate memory 
+    //init empty header and entries to allocate memory
     pub fn new() -> Self {
         Self {
             header: Header::default(),
@@ -140,7 +140,9 @@ impl FatDriver {
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
-        let lba: u64 = 4095 + (self.header.reserved_sectors + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
+        let lba: u64 = 4095
+            + (self.header.reserved_sectors
+                + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
         let size: u16 = entry_size * self.header.dir_entries_count;
         let sectors: u16 = size / self.header.bytes_per_sector;
 
@@ -161,7 +163,7 @@ impl FatDriver {
                 for c in entry.name {
                     print!("{}", c as char);
                 }
-                println!(); 
+                println!();
             }
         }
     }

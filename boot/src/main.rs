@@ -9,7 +9,7 @@ mod disk;
 use disk::DiskReader;
 
 const BOOTLOADER_LBA: u64 = 2048; //bootloader location logical block address
-const BOOTLOADER_SIZE: u16 = 64;  //bootloader size in sectors
+const BOOTLOADER_SIZE: u16 = 64; //bootloader size in sectors
 
 //set data segments to zero and setup stack
 global_asm!(include_str!("boot.asm"));
