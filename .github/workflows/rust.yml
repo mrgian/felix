@@ -39,15 +39,15 @@ jobs:
     - name: Mount main partition
       run: sudo losetup --offset $((512*4096)) --show --find build/disk.img
     - name: Format main partition
-      run: sudo mkfs.fat -F 16 /dev/loop0
+      run: sudo mkfs.fat -F 16 /dev/loop3
     - name: Put bootloader
       run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
     - name: Copy kernel
-      run: mcopy -i /dev/loop0 build/kernel.bin "::kernel.bin"
+      run: mcopy -i /dev/loop3 build/kernel.bin "::kernel.bin"
     - name: Copy test1.txt
-      run: mcopy -i /dev/loop0 test1.txt "::test1.txt"
+      run: mcopy -i /dev/loop3 test1.txt "::test1.txt"
     - name: Copy test2.txt
-      run: mcopy -i /dev/loop0 test2.txt "::test2.txt"
+      run: mcopy -i /dev/loop3 test2.txt "::test2.txt"
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
