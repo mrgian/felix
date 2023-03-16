@@ -19,6 +19,7 @@ extern "C" {
 pub extern "C" fn main() {
     clear();
 
+    print("Felix 0.1\r\n\0");
     print("Loading bootloader...\r\n\0");
 
     //get bootloader address from linker, currently is 0x7e00 (the end of mbr)
@@ -34,7 +35,7 @@ pub extern "C" fn main() {
 
         print("Loading 32 sectors\r\n\0");
         disk.read_sector();
-        print("Loaded\r\n\0");
+        print("Loaded.\r\n\0");
 
         address += 512 * 32;
         count -= 1;

@@ -18,15 +18,8 @@ It's **written completely from scratch** in Rust and Assembly and doesn't use an
 *Felix running on real hardware*
 
 ## Compiling and debugging
-(Only for Linux)
-
-Make sure you have the Bochs emulator and Rust installed on your system, then run the debug script:
-
-`./debug.sh`
-
-after compiling the Bochs emulator should start, press "continue" to cotinue with the execution.
-
-The script takes care of everything (compiling, making the image and running the debugger).
+* Coming soon... *
+* I'm working on a Docker image that automates the build process *
 
 ## Versions
 ### Felix 0.1.0
