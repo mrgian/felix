@@ -14,25 +14,30 @@ objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-boot build/boot.
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/bootloader.bin
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/kernel.bin
 
-#create the disk image
-#306 cylinders, 4 heads, 17 sectors per track => 20808 sectors in total
-#dd if=/dev/zero of=build/disk.img bs=512 count=20808
+#create empty disk image
+dd if=/dev/zero of=build/disk.img bs=1GiB count=1
 
-#create floppy image
-dd if=/dev/zero of=build/disk.img bs=512 count=2880
-mkfs.fat -F 12 -n "FELIX" build/disk.img
+#partition disk
+sfdisk build/disk.img < disk.layout
 
-#put the boot sector in first 512 bytes of disk...
+#put the boot sector in first 512 bytes of disk
 dd if=build/boot.bin of=build/disk.img conv=notrunc
 
-#put bootloader in the last 64 sectors of disk (2880 - 64)
-dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2816 conv=notrunc
+#mount main partition
+sudo losetup -d /dev/loop0
+sudo losetup --offset $((512*4096)) --show --find build/disk.img
+
+#format main partition
+sudo mkfs.fat -F 16 /dev/loop0
+
+put bootloader in boot partition
+dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
 
 #copy kernel and data
-mcopy -i build/disk.img build/kernel.bin "::kernel.bin"
-mcopy -i build/disk.img test1.txt "::test1.txt"
-mcopy -i build/disk.img test2.txt "::test2.txt"
+sudo mcopy -i /dev/loop0 build/kernel.bin "::kernel.bin"
+sudo mcopy -i /dev/loop0 test1.txt "::test1.txt"
+sudo mcopy -i /dev/loop0 test2.txt "::test2.txt"
 
 echo "Debugging Felix with Bochs..."
-bochs -q -f bochs.conf
-#qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0
+#bochs -q -f bochs.conf
+qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0

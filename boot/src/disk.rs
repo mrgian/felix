@@ -6,14 +6,8 @@ const SECTORS_PER_TRACK: u16 = 18;
 pub struct DiskReader {
     sector_count: u16, //how many sector to read
     buffer: u16,       //where to write data
-    chs: CHS,
+    lba: u16,          //logic block address
     drive_number: u16, //drive number (0x00 for floppy)
-}
-
-pub struct CHS {
-    cylinder: u16, //cylinder
-    head: u16,     //head
-    sector: u16,   //sector
 }
 
 impl DiskReader {
