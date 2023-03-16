@@ -43,11 +43,11 @@ jobs:
     - name: Put bootloader
       run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
     - name: Copy kernel
-      run: mcopy -i /dev/loop3 build/kernel.bin "::kernel.bin"
+      run: sudo mcopy -i /dev/loop3 build/kernel.bin "::kernel.bin"
     - name: Copy test1.txt
-      run: mcopy -i /dev/loop3 test1.txt "::test1.txt"
+      run: sudo mcopy -i /dev/loop3 test1.txt "::test1.txt"
     - name: Copy test2.txt
-      run: mcopy -i /dev/loop3 test2.txt "::test2.txt"
+      run: sudo mcopy -i /dev/loop3 test2.txt "::test2.txt"
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
