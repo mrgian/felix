@@ -25,11 +25,9 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     println!("Bootloader loaded!");
 
-    //let driver = FatDriver::new();
-    //driver.load_header();
-    //driver.load_entries();
-
-    //driver.list_entries();
+    let driver = FatDriver::new();
+    driver.load_header();
+    driver.load_entries();
 
 
     loop {}

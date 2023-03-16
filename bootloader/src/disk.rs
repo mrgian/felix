@@ -1,79 +1,75 @@
 use core::arch::asm;
+use core::ptr;
+use core::mem;
 
-const HEADS_PER_CYLINDER: u16 = 2;
-const SECTORS_PER_TRACK: u16 = 18;
+const SECTOR_SIZE: u16 = 512; //sector size in bytes
 
-pub struct DiskReader {
-    sector_count: u16, //how many sector to read
-    buffer: u16,       //where to write data
-    chs: CHS,          //cylinder-head-sector
-    drive_number: u16, //drive number (0x00 for floppy)
+#[repr(C, packed)]
+struct DiskAddressPacket {
+    size: u8,       //size of dap
+    zero: u8,       //always zero
+    sectors: u16,   //sectors to read
+    offset: u16,    //target offset
+    segment: u16,   //target segment
+    lba: u64,       //logical block address 
 }
 
-pub struct CHS {
-    cylinder: u16, //cylinder
-    head: u16,     //head
-    sector: u16,   //sector
+pub struct DiskReader {
+    lba: u64,
+    target: u16,
 }
 
 impl DiskReader {
-    //create a diskreader using a logic block address
-    pub fn from_lba(lba: u16, sector_count: u16, buffer: u16) -> Self {
+    pub fn new(lba: u64, target: u16) -> Self {
         Self {
-            sector_count: sector_count,
-            buffer: buffer,
-            chs: Self::lba_to_chs(lba),
-            drive_number: 0,
+            lba: lba,
+            target: target,
         }
     }
 
-    //actual reading using bios interrupt 0x13
-    pub fn load_sectors(&self) {
-        //Link to bible: https://wiki.osdev.org/Disk_access_using_the_BIOS_(INT_13h)
+    //read one sector from disk
+    pub fn read_sector(&self) {
 
-        //Before calling bios interrupt register should be like this:
-        //
-        //ah = 2
-        //al = sector_count
-        //dh = head
-        //dl = drive number
-        //bx = buffer
+        //init dap
+        let dap = DiskAddressPacket {
+            size: mem::size_of::<DiskAddressPacket>() as u8,
+            zero: 0,
+            sectors: 1,
+            offset: self.target,
+            segment: 0x0000,
+            lba: self.lba,
+        };
 
-        //cx         = [  CH  ] [  CL  ]
-        //cylinder   = XXXXXXXX XX
-        //sector     =            XXXXXX
+        //get dap addrees
+        let dap_address = ptr::addr_of!(dap) as u16;
 
+        //bios int 0x13
         unsafe {
             asm!(
+                "mov {1:x}, si", //backup si
+                "mov si, {0:x}", //put dap address in si
                 "int 0x13",
                 "jc fail",
-                in("ah") 0x02 as u8,
-                in("al") self.sector_count as u8,
-                in("ch") (self.chs.cylinder as u8 & 0xff) as u8,
-                in("cl") (self.chs.sector | ((self.chs.cylinder >> 2) & 0xc0)) as u8,
-
-                //in("dh") self.chs.head as u8,
-                //in("dl") self.drive_number as u8,
-
-                //rust doesn't let me set dh and dl, so i set dx with this trick
-                in("dx") ((self.chs.head << 8) + self.drive_number) as u16,
-
-                in("bx") self.buffer as u16,
+                "mov si, {1:x}", //restore si
+                in(reg) dap_address,
+                out(reg) _,
+                in("ax") 0x4200 as u16,
+                in("dx") 0x0080 as u16,
             );
         }
     }
 
-    //alogorithm to convert from logic-block-address to cylinder-head-sector
-    fn lba_to_chs(lba: u16) -> CHS {
-        let cylinder = lba / (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-        let temp = lba % (HEADS_PER_CYLINDER * SECTORS_PER_TRACK);
-        let head = temp / SECTORS_PER_TRACK;
-        let sector = temp % SECTORS_PER_TRACK + 1;
+    pub fn read_sectors(&mut self, sectors: u16) {
+        let mut sectors_left = sectors;
 
-        CHS {
-            cylinder: cylinder,
-            head: head,
-            sector: sector,
+        //read one sector at a time and stop when there are no more sectors to read left
+        while sectors_left > 0 {
+            self.read_sector();
+
+            self.target += SECTOR_SIZE;
+            self.lba += 1;
+            sectors_left -= 1;
         }
     }
 }
+

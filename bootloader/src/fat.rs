@@ -3,15 +3,16 @@ mod disk;
 use disk::DiskReader;
 
 use core::ptr;
+use core::mem;
 
-const ENTRIES_COUNT: u16 = 224;
+const ENTRY_COUNT: u16 = 512;
 
 //Link to bible: https://wiki.osdev.org/FAT#Implementation_Details
 
 //FAT12 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
-struct Header {
+pub struct Header {
     boot_jump_instructions: [u8; 3],
 
     //bios parameter block
@@ -107,8 +108,8 @@ impl Default for Entry {
 }
 
 pub struct FatDriver {
-    header: Header,
-    entries: [Entry; ENTRIES_COUNT as usize], //the root directory is an array of file entries
+    pub header: Header,
+    entries: [Entry; ENTRY_COUNT as usize], //the root directory is an array of file entries
 }
 
 impl FatDriver {
@@ -116,7 +117,7 @@ impl FatDriver {
     pub fn new() -> Self {
         Self {
             header: Header::default(),
-            entries: [Entry::default(); ENTRIES_COUNT as usize],
+            entries: [Entry::default(); ENTRY_COUNT as usize],
         }
     }
 
@@ -124,11 +125,12 @@ impl FatDriver {
     pub fn load_header(&self) {
         let address = ptr::addr_of!(self.header) as u16;
 
-        let lba: u16 = 0;
-        let sector_count: u16 = 1;
-        let disk = DiskReader::from_lba(lba, sector_count, address);
+        let lba: u64 = 4096;
+        let sectors: u16 = 1;
 
-        disk.load_sectors();
+        let mut disk = DiskReader::new(lba, address);
+
+        disk.read_sectors(sectors);
     }
 
     //get entries array address and overwrite that mem location with data from root directory
@@ -136,15 +138,15 @@ impl FatDriver {
     pub fn load_entries(&self) {
         let address = ptr::addr_of!(self.entries) as u16;
 
-        let entry_size = core::mem::size_of::<Entry>() as u16;
+        let entry_size = mem::size_of::<Entry>() as u16;
 
-        let lba: u16 = self.header.reserved_sectors + self.header.sectors_per_fat * self.header.fat_count as u16;
+        let lba: u64 = 4095 + (self.header.reserved_sectors + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
         let size: u16 = entry_size * self.header.dir_entries_count;
-        let sector_count: u16 = size / self.header.bytes_per_sector;
+        let sectors: u16 = size / self.header.bytes_per_sector;
 
-        let disk = DiskReader::from_lba(lba, sector_count, address);
+        let mut disk = DiskReader::new(lba, address);
 
-        disk.load_sectors();
+        disk.read_sectors(sectors);
     }
 
     //list each entry in root direcotry
