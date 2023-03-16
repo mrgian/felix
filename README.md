@@ -18,8 +18,8 @@ It's **written completely from scratch** in Rust and Assembly and doesn't use an
 *Felix running on real hardware*
 
 ## Compiling and debugging
-* Coming soon... *
-* I'm working on a Docker image that automates the build process *
+*Coming soon...*
+*I'm working on a Docker image that automates the build process*
 
 ## Versions
 ### Felix 0.1.0
