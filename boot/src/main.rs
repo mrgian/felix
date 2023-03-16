@@ -6,7 +6,7 @@ use core::arch::global_asm;
 use core::panic::PanicInfo;
 
 mod disk;
-use disk::DiskReader;
+use disk::DiskAddressPacket;
 
 //set data segments to zero and setup stack
 global_asm!(include_str!("boot.asm"));
@@ -24,7 +24,22 @@ pub extern "C" fn main() {
     //get bootloader address from linker, currently is 0x7e00 (the end of mbr)
     let bootloader_start: *const u16 = unsafe { &_bootloader_start };
 
-    load_bootloader(bootloader_start);
+    let lba = 2048;
+    let mut count = 2;
+    let mut address = bootloader_start as u16;
+
+
+    while count > 0 {
+        let disk = DiskAddressPacket::new(lba, address);
+
+        print("Loading 32 sectors\r\n\0");
+        disk.read_sector();
+        print("Loaded\r\n\0");
+
+        address += 512 * 32;
+        count -= 1;
+    }
+
     jump(bootloader_start);
 }
 
@@ -52,17 +67,6 @@ fn print(message: &str) {
             "1:",
             in(reg) message.as_ptr());
     }
-}
-
-fn load_bootloader(address: *const u16) {
-    let lba: u16 = 2816; //read from lba 2816 (2880 - 64), last 64 sectors
-    let sector_count: u16 = 64; //number of sectors to read
-    let buffer = address as u16; //address where to write the data
-
-    let disk = DiskReader::from_lba(lba, sector_count, buffer);
-
-    //actual reading
-    disk.load_sectors();
 }
 
 //jump execution to given address

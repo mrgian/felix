@@ -30,7 +30,7 @@ sudo losetup --offset $((512*4096)) --show --find build/disk.img
 #format main partition
 sudo mkfs.fat -F 16 /dev/loop0
 
-put bootloader in boot partition
+#put bootloader in boot partition
 dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
 
 #copy kernel and data
@@ -39,5 +39,5 @@ sudo mcopy -i /dev/loop0 test1.txt "::test1.txt"
 sudo mcopy -i /dev/loop0 test2.txt "::test2.txt"
 
 echo "Debugging Felix with Bochs..."
-#bochs -q -f bochs.conf
-qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0
+bochs -q -f bochs.conf
+#qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0

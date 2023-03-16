@@ -13,3 +13,15 @@ opt-level = 2
 [profile.release]
 panic = "abort"
 opt-level = 2
+
+[profile.dev.package.felix-boot]
+opt-level = "s"
+codegen-units = 1
+debug = false
+overflow-checks = false
+
+[profile.dev.release.felix-boot]
+opt-level = "s"
+codegen-units = 1
+debug = false
+overflow-checks = false

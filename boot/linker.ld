@@ -104,4 +104,6 @@ SECTIONS {
     {
         SHORT(0xaa55)
     }
+
+    _bootloader_start = .;
 }
