@@ -17,9 +17,40 @@ It's **written completely from scratch** in Rust and Assembly and doesn't use an
 ![output](https://user-images.githubusercontent.com/10211171/223737198-9aa156ca-1c57-4db5-932d-e999a1471dc0.gif)<br>
 *Felix running on real hardware*
 
-## Compiling and debugging
-*Coming soon...*
-*I'm working on a Docker image that automates the build process*
+## Building
+
+You can download a pre-built image or you can build it by yourself using Docker or the build script.
+
+### Download pre-built image
+[![build](https://github.com/mrgian/felix/actions/workflows/rust.yml/badge.svg)](https://github.com/mrgian/felix/actions)
+
+A build is made for every commit.
+
+To download the latest build click on the badge above, then click on the most recent build and download the artifact.
+
+### Build using Docker
+First make sure you have Docker installed. Then:
+
+1. Clone the repo `git clone https://github.com/mrgian/felix`
+2. Change dir to repo `cd felix`
+3. Build the image `docker build -t felix .`
+4. Run the container `docker run felix`
+5. Copy build from container to host `docker cp felix:/root/felix/build build`
+
+### Build using script
+Make sure you have `Rust`,`mtools`,`dosfstools` and `fdisk` installed on your system. Then:
+
+1. Clone the repo `git clone https://github.com/mrgian/felix`
+2. Change dir to repo `cd felix`
+3. Run build script `./build.sh`
+
+## Running
+The final disk image is `build/disk.img`
+
+You can run it in QEMU using this command: `qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0`
+
+Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
+
 
 ## Versions
 ### Felix 0.1.0
@@ -40,3 +71,6 @@ It's **written completely from scratch** in Rust and Assembly and doesn't use an
 - *27/02/23* - Moved to Rust environment using inline assembly
 - *01/03/23* - Rewritten kernel loading code in Rust
 - *08/03/23* - Implemented println macro
+
+## Credits
+This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).
