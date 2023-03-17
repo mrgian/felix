@@ -157,14 +157,17 @@ impl FatDriver {
     pub fn list_entries(&self) {
         println!("Listing root directory entries:");
 
-        println!();
+        println!("Name          Size");
 
         //NOTE: if i scan to 512 it doesn't work, maybe stack is too small to contain all entries 
+
         for i in 0..64 {
             if self.entries[i].name[0] != 0 {
                 for c in self.entries[i].name {
                     print!("{}", c as char);
                 }
+                let size = self.entries[i].size;
+                print!("   {} bytes", size);
                 println!();
             }
         }

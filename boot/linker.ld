@@ -34,6 +34,9 @@ SECTIONS {
 
     . = 0x7c00 + 0x1b8;
 
+    /* MBR Data */
+
+    /* unique disk id */
     .diskid : 
     {
         BYTE(0Xfb) 
@@ -42,12 +45,14 @@ SECTIONS {
         BYTE(0Xe5) 
     }
 
+    /* reserved */
     .reserved : 
     {
         BYTE(0X00) 
         BYTE(0X00) 
     }
 
+    /* first partition table (used for storing bootloader) */
     .first_table : 
     {
         BYTE(0X80) /* drive attribute */
@@ -73,7 +78,8 @@ SECTIONS {
         BYTE(0X00) /* number of sectors */
     }
 
-    .first_table : 
+    /* second partition table (used as main partition) */
+    .second_table : 
     {
         BYTE(0X00) /* drive attribute */
 

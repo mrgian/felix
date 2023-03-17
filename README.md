@@ -9,7 +9,7 @@
 
 Felix is my attempt at writing an x86 operating system.
 
-It's **written completely from scratch** in Rust and Assembly and doesn't use any external dependecies.
+It's **written completely from scratch** in Rust and doesn't use any external dependecies.
 
 ![felix2](https://user-images.githubusercontent.com/10211171/223734499-15768aff-6d6f-4013-9fb5-3e75022a907e.png)<br>
 *Felix running in Bochs emulator*
