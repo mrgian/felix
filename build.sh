@@ -6,7 +6,9 @@ echo "Cleaning build directory..."
 rm -rf build
 
 echo "Building Felix..."
-cargo build
+cargo build --target=x86_16-felix.json --package=felix-boot
+cargo build --target=x86_16-felix.json --package=felix-bootloader
+cargo build --target=x86_16-felix.json --package=felix-kernel
 
 echo "Making build directory..."
 mkdir build

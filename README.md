@@ -33,9 +33,9 @@ First make sure you have Docker installed. Then:
 
 1. Clone the repo `git clone https://github.com/mrgian/felix`
 2. Change dir to repo `cd felix`
-3. Build the image `docker build -t felix .`
-4. Run the container `docker run --name felix felix`
-5. Copy build from container to host `docker cp felix:/root/felix/build build`
+3. Build the image `docker build -t felix-image .`
+4. Run the container `docker run --name felix-container felix-image`
+5. Copy build from container to host `docker cp felix-container:/root/felix/build build`
 
 ### Build using script
 Make sure you have `Rust`,`mtools`,`dosfstools` and `fdisk` installed on your system. Then:

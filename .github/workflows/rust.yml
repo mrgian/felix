@@ -20,8 +20,12 @@ jobs:
         fetch-depth: 0
     - name: Install mtools
       run: sudo apt-get install -y mtools
-    - name: Build
-      run: cargo build --release
+    - name: Build boot
+      run: cargo build --release --target=x86_16-felix.json --package=felix-boot
+    - name: Build bootloader
+      run: cargo build --release --target=x86_16-felix.json --package=felix-bootloader
+    - name: Build kernel
+      run: cargo build --release --target=x86_16-felix.json --package=felix-kernel
     - name: Make build directory
       run: mkdir build
     - name: Objcopy boot
