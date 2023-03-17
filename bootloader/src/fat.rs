@@ -6,6 +6,7 @@ use core::mem;
 use core::ptr;
 
 const ENTRY_COUNT: u16 = 512;
+const FAT_START: u16 = 4096;
 
 //Link to bible: https://wiki.osdev.org/FAT#Implementation_Details
 
@@ -109,7 +110,7 @@ impl Default for Entry {
 
 pub struct FatDriver {
     pub header: Header,
-    entries: [Entry; ENTRY_COUNT as usize], //the root directory is an array of file entries
+    pub entries: [Entry; ENTRY_COUNT as usize], //the root directory is an array of file entries
 }
 
 impl FatDriver {
@@ -125,7 +126,7 @@ impl FatDriver {
     pub fn load_header(&self) {
         let address = ptr::addr_of!(self.header) as u16;
 
-        let lba: u64 = 4096;
+        let lba: u64 = FAT_START as u64;
         let sectors: u16 = 1;
 
         let mut disk = DiskReader::new(lba, address);
@@ -140,7 +141,7 @@ impl FatDriver {
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
-        let lba: u64 = 4095
+        let lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
                 + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
         let size: u16 = entry_size * self.header.dir_entries_count;
@@ -158,13 +159,23 @@ impl FatDriver {
 
         println!();
 
-        for entry in self.entries {
+        //NOTE: if i scan to 512 it doesn't work, maybe stack is too small to contain all entries 
+        for i in 0..64 {
+            if self.entries[i].name[0] != 0 {
+                for c in self.entries[i].name {
+                    print!("{}", c as char);
+                }
+                println!();
+            }
+        }
+
+        /*for entry in self.entries {
             if entry.name[0] != 0 {
                 for c in entry.name {
                     print!("{}", c as char);
                 }
                 println!();
             }
-        }
+        }*/
     }
 }

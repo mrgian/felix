@@ -20,7 +20,7 @@ codegen-units = 1
 debug = false
 overflow-checks = false
 
-[profile.dev.release.felix-boot]
+[profile.release.package.felix-boot]
 opt-level = "s"
 codegen-units = 1
 debug = false

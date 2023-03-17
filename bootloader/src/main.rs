@@ -28,7 +28,11 @@ pub extern "C" fn _start() -> ! {
     let driver = FatDriver::new();
     driver.load_header();
 
-    //driver.load_entries();
+    println!("{:?}", driver.header);
+
+    driver.load_entries();
+
+    driver.list_entries();
 
     loop {}
 }

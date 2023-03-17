@@ -5,4 +5,4 @@ unit: sectors
 sector-size: 512
 
 disk.img1 : start=        2048, size=        2048, type=0, bootable
-disk.img2 : start=        4096, size=     2093056, type=6
+disk.img2 : start=        4096, size=      126976, type=6
