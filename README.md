@@ -71,6 +71,7 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *27/02/23* - Moved to Rust environment using inline assembly
 - *01/03/23* - Rewritten kernel loading code in Rust
 - *08/03/23* - Implemented println macro
+- *20/03/23* - Switch to 32bit protected mode
 
 ## Credits
 This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).

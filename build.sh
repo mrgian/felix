@@ -28,7 +28,7 @@ echo "Putting boot sector in disk image..."
 dd if=build/boot.bin of=build/disk.img conv=notrunc
 
 echo "Getting main partition from disk image..."
-dd if=build/disk.img of=build/partition.img bs=512 skip=4096
+dd if=build/disk.img of=build/partition.img bs=512 skip=36864
 
 echo "Formatting main partition..."
 mkfs.fat -F 16 build/partition.img
@@ -38,7 +38,7 @@ mcopy -i build/partition.img test1.txt "::test1.txt"
 mcopy -i build/partition.img test2.txt "::test2.txt"
 
 echo "Putting main partition to disk image..."
-dd if=build/partition.img of=build/disk.img bs=512 seek=4096 conv=notrunc
+dd if=build/partition.img of=build/disk.img bs=512 seek=36864 conv=notrunc
 
 echo "Removing temp partition file..."
 rm -rf build/partition.img
@@ -47,6 +47,6 @@ echo "Putting bootloader..."
 dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
 
 echo "Putting kernel..."
-dd if=build/kernel.bin of=build/disk.img bs=512 seek=2080 conv=notrunc
+dd if=build/kernel.bin of=build/disk.img bs=512 seek=4096 conv=notrunc
 
 echo "Felix has been successfully built!"

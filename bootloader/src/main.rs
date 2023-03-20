@@ -14,7 +14,7 @@ mod gdt;
 use gdt::GlobalDescriptorTable;
 
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
-const KERNEL_LBA: u64 = 2048 + 32; //kernel location logical block address (bootloader lba + bootloader size)
+const KERNEL_LBA: u64 = 4096; //kernel location logical block address
 const KERNEL_SIZE: u16 = 32; //kernel size in sectors
 const KERNEL_TARGET: u16 = 0xbe00; //where to put kernel in memory
 
