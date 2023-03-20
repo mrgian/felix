@@ -25,7 +25,7 @@ jobs:
     - name: Build bootloader
       run: cargo build --release --target=x86_16-felix.json --package=felix-bootloader
     - name: Build kernel
-      run: cargo build --release --target=x86_16-felix.json --package=felix-kernel
+      run: cargo build --release --target=x86_32-felix.json --package=felix-kernel
     - name: Make build directory
       run: mkdir build
     - name: Objcopy boot
@@ -33,7 +33,7 @@ jobs:
     - name: Objcopy bootloader
       run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/bootloader.bin
     - name: Objcopy kernel
-      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-kernel build/kernel.bin
+      run: objcopy -I elf32-i386 -O binary target/x86_32-felix/release/felix-kernel build/kernel.bin
     - name: Create empty disk
       run: dd if=/dev/zero of=build/disk.img bs=64MiB count=1
     - name: Partition disk
@@ -44,16 +44,16 @@ jobs:
       run: dd if=build/disk.img of=build/partition.img bs=512 skip=4096
     - name: Format main partition
       run: mkfs.fat -F 16 build/partition.img
-    - name: Copy kernel
-      run: sudo mcopy -i build/partition.img build/kernel.bin "::kernel.bin"
     - name: Copy test1.txt
-      run: sudo mcopy -i build/partition.img test1.txt "::test1.txt"
+      run: mcopy -i build/partition.img test1.txt "::test1.txt"
     - name: Copy test2.txt
-      run: sudo mcopy -i build/partition.img test2.txt "::test2.txt"
+      run: mcopy -i build/partition.img test2.txt "::test2.txt"
     - name: Put main partition
       run: dd if=build/partition.img of=build/disk.img bs=512 seek=4096 conv=notrunc
     - name: Put bootloader
       run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
+    - name: Put kernel
+      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2080 conv=notrunc
     - name: Remove temp partition file
       run: rm -rf build/partition.img
     - name: Get current date

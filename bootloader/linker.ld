@@ -36,10 +36,12 @@ SECTIONS {
         *(.eh_frame_hdr .eh_frame_hdr.*)
     }
 
-    /* in this way the bootloader size is exactly 32768 bytes (64 sectors) */
-    . = _bootloader_start + 0x8000 - 2;
+    /* in this way the bootloader size is exactly 16384 bytes (32 sectors) */
+    . = _bootloader_start + 0x4000 - 2;
     .end_marker :
     {
         SHORT(0xdead)
     }
+
+    _kernel_start = .;
 }

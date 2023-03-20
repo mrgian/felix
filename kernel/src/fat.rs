@@ -8,8 +8,6 @@ use core::ptr;
 const ENTRY_COUNT: u16 = 512;
 const FAT_START: u16 = 4096;
 
-//Link to bible: https://wiki.osdev.org/FAT#Implementation_Details
-
 //FAT12 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
@@ -159,7 +157,7 @@ impl FatDriver {
 
         println!("Name          Size");
 
-        //NOTE: if i scan to 512 it doesn't work, maybe stack is too small to contain all entries 
+        //NOTE: if i scan to 512 it doesn't work, maybe stack is too small to contain all entries
 
         for i in 0..64 {
             if self.entries[i].name[0] != 0 {

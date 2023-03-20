@@ -8,7 +8,7 @@ rm -rf build
 echo "Building Felix..."
 cargo build --target=x86_16-felix.json --package=felix-boot
 cargo build --target=x86_16-felix.json --package=felix-bootloader
-cargo build --target=x86_16-felix.json --package=felix-kernel
+cargo build --target=x86_32-felix.json --package=felix-kernel
 
 echo "Making build directory..."
 mkdir build
@@ -16,7 +16,7 @@ mkdir build
 echo "Objcopy..."
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-boot build/boot.bin
 objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/bootloader.bin
-objcopy -I elf32-i386 -O binary target/x86_16-felix/debug/felix-kernel build/kernel.bin
+objcopy -I elf32-i386 -O binary target/x86_32-felix/debug/felix-kernel build/kernel.bin
 
 echo "Making empty disk image..."
 dd if=/dev/zero of=build/disk.img bs=64MiB count=1
@@ -34,7 +34,6 @@ echo "Formatting main partition..."
 mkfs.fat -F 16 build/partition.img
 
 echo "Copying kernel and data to main partition..."
-mcopy -i build/partition.img build/kernel.bin "::kernel.bin"
 mcopy -i build/partition.img test1.txt "::test1.txt"
 mcopy -i build/partition.img test2.txt "::test2.txt"
 
@@ -46,5 +45,8 @@ rm -rf build/partition.img
 
 echo "Putting bootloader..."
 dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
+
+echo "Putting kernel..."
+dd if=build/kernel.bin of=build/disk.img bs=512 seek=2080 conv=notrunc
 
 echo "Felix has been successfully built!"

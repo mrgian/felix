@@ -9,7 +9,7 @@ mod disk;
 use disk::DiskReader;
 
 const BOOTLOADER_LBA: u64 = 2048; //bootloader location logical block address
-const BOOTLOADER_SIZE: u16 = 64; //bootloader size in sectors
+const BOOTLOADER_SIZE: u16 = 32; //bootloader size in sectors
 
 //set data segments to zero and setup stack
 global_asm!(include_str!("boot.asm"));
@@ -22,7 +22,8 @@ extern "C" {
 pub extern "C" fn main() {
     clear();
 
-    print("Loading bootloader...\r\n\0");
+    print("[!] Starting Felix...\r\n\0");
+    print("[!] Loading bootloader...\r\n\0");
 
     //get bootloader address from linker
     let bootloader_start: *const u16 = unsafe { &_bootloader_start };
@@ -72,7 +73,7 @@ fn jump(address: *const u16) {
 
 #[no_mangle]
 pub extern "C" fn fail() -> ! {
-    print("Failed loading bootloader!");
+    print("[!] Failed loading bootloader!");
 
     loop {}
 }
