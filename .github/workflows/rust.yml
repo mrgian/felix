@@ -20,42 +20,8 @@ jobs:
         fetch-depth: 0
     - name: Install mtools
       run: sudo apt-get install -y mtools
-    - name: Build boot
-      run: cargo build --release --target=x86_16-felix.json --package=felix-boot
-    - name: Build bootloader
-      run: cargo build --release --target=x86_16-felix.json --package=felix-bootloader
-    - name: Build kernel
-      run: cargo build --release --target=x86_32-felix.json --package=felix-kernel
-    - name: Make build directory
-      run: mkdir build
-    - name: Objcopy boot
-      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-boot build/boot.bin
-    - name: Objcopy bootloader
-      run: objcopy -I elf32-i386 -O binary target/x86_16-felix/release/felix-bootloader build/bootloader.bin
-    - name: Objcopy kernel
-      run: objcopy -I elf32-i386 -O binary target/x86_32-felix/release/felix-kernel build/kernel.bin
-    - name: Create empty disk
-      run: dd if=/dev/zero of=build/disk.img bs=64MiB count=1
-    - name: Partition disk
-      run: sfdisk build/disk.img < disk.layout
-    - name: Put boot
-      run: dd if=build/boot.bin of=build/disk.img conv=notrunc
-    - name: Get main partition
-      run: dd if=build/disk.img of=build/partition.img bs=512 skip=36864
-    - name: Format main partition
-      run: mkfs.fat -F 16 build/partition.img
-    - name: Copy test1.txt
-      run: mcopy -i build/partition.img test1.txt "::test1.txt"
-    - name: Copy test2.txt
-      run: mcopy -i build/partition.img test2.txt "::test2.txt"
-    - name: Put main partition
-      run: dd if=build/partition.img of=build/disk.img bs=512 seek=36864 conv=notrunc
-    - name: Put bootloader
-      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc
-    - name: Put kernel
-      run: dd if=build/bootloader.bin of=build/disk.img bs=512 seek=4096 conv=notrunc
-    - name: Remove temp partition file
-      run: rm -rf build/partition.img
+    - name: Build
+      run: ./build.sh
     - name: Get current date
       id: build_date
       run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
