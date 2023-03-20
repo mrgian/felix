@@ -43,5 +43,4 @@ SECTIONS {
         SHORT(0xdead)
     }
 
-    _kernel_start = .;
 }
