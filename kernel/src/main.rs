@@ -12,13 +12,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    unsafe { 
-        asm!(
-            "mov al, 0x58",
-            "mov ah, 0x0f",
-            "mov [0xb8000], ax"
-        ) 
-    }
+    unsafe { asm!("mov al, 0x58", "mov ah, 0x0f", "mov [0xb8000], ax") }
 
     loop {}
 }
