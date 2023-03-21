@@ -71,7 +71,7 @@ impl GlobalDescriptorTable {
         };
 
         unsafe {
-            asm!("cli", "lgdt [{0:e}]", in(reg) &descriptor);
+            asm!("lgdt [{0:e}]", in(reg) &descriptor);
         }
     }
 }

@@ -2,6 +2,8 @@ use core::arch::asm;
 use core::mem;
 use core::ptr;
 
+const SECTOR_SIZE: u64 = 512;
+
 #[repr(C, packed)]
 struct DiskAddressPacket {
     size: u8,     //size of dap
@@ -68,8 +70,7 @@ impl DiskReader {
             let mut byte_address = self.buffer;
 
             //for each sector copy byte by byte from buffer to target
-            for _i in 0..512 {
-
+            for _byte_index in 0..SECTOR_SIZE {
                 unsafe {
                     let mut byte: u8;
 
@@ -79,8 +80,8 @@ impl DiskReader {
                 }
 
                 //increment target and byte address by one byte
-                current_target += 0x0000_0001;
-                byte_address += 0x0000_0001;
+                current_target += 1;
+                byte_address += 1;
             }
 
             self.lba += 1;
@@ -92,6 +93,7 @@ impl DiskReader {
         println!();
     }
 
+    //print a period every 1024 sectors read
     fn print_status(sectors: u16, sectors_left: u16) {
         let sectors_read = sectors - sectors_left;
         if (sectors_read % 1024) == 0 {

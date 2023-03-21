@@ -30,19 +30,27 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
+    //disable interrupts
+    unsafe {
+        asm!("cli");
+    }
+
     //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
     println!("[!] Switching to 16bit unreal mode...");
     unreal_mode();
 
+    //load kernel
     print!("[!] Loading kernel");
     let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_BUFFER);
     disk.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
     println!("[!] Kernel loaded to memory.");
 
+    //load dgt
     println!("[!] Loading Global Descriptor Table...");
     let gdt = GlobalDescriptorTable::new();
     gdt.load();
 
+    //switch to protected mode
     println!("[!] Switching to 32bit protected mode and jumping to kernel...");
     protected_mode();
 
@@ -124,8 +132,5 @@ fn unreal_mode() {
         //restore segment registers
         asm!("mov ds, {0:x}", in(reg) ds);
         asm!("mov ss, {0:x}", in(reg) ss);
-
-        //set inerrupt flag
-        asm!("sti");
     }
 }
