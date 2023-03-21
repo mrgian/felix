@@ -33,7 +33,7 @@ impl GlobalDescriptorTable {
         let access = {
             let p = 0b1 << 47; //present bit (1 for any segment)
             let dpl = 0b00 << 46; //descriptor privilege level (ring, 0 for highest privilege, 3 for lowest)
-            let s = 0b1 << 44; //descriptor type bit 
+            let s = 0b1 << 44; //descriptor type bit
             let e = 0b0 << 43; //executable bit
             let dc = 0b0 << 42; //direction bit/conforming bit
             let rw = 0b1 << 41; //readable bit/writable bit
@@ -60,7 +60,7 @@ impl GlobalDescriptorTable {
         Self {
             zero: 0,
             code: limit | base | access | flags | executable,
-            data: limit | base | access | flags ,
+            data: limit | base | access | flags,
         }
     }
 
@@ -71,7 +71,7 @@ impl GlobalDescriptorTable {
         };
 
         unsafe {
-            asm!("cli", "lgdt [{}]", in(reg) &descriptor, options(readonly, nostack, preserves_flags));
+            asm!("cli", "lgdt [{0:e}]", in(reg) &descriptor);
         }
     }
 }

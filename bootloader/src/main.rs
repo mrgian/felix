@@ -13,7 +13,6 @@ use disk::DiskReader;
 mod gdt;
 use gdt::GlobalDescriptorTable;
 
-
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
 const KERNEL_LBA: u64 = 4096; //kernel location logical block address
 const KERNEL_SIZE: u16 = 32768; //kernel size in sectors
@@ -32,12 +31,13 @@ fn panic(info: &PanicInfo) -> ! {
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
     //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
-    println!("[!] Switching to unreal mode...");
+    println!("[!] Switching to 16bit unreal mode...");
     unreal_mode();
 
-    println!("[!] Loading kernel...");
+    print!("[!] Loading kernel");
     let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_BUFFER);
     disk.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
+    println!("[!] Kernel loaded to memory.");
 
     println!("[!] Loading Global Descriptor Table...");
     let gdt = GlobalDescriptorTable::new();
@@ -65,7 +65,7 @@ fn protected_mode() {
 
         //push kernel address
         asm!(
-            "push {}",
+            "push {0:e}",
             in(reg) KERNEL_TARGET,
         );
 
@@ -77,14 +77,14 @@ fn protected_mode() {
             ".code32",
 
             //setup segment registers
-            "mov {0}, 0x10",
-            "mov ds, {0}",
-            "mov es, {0}",
-            "mov ss, {0}",
+            "mov {0:e}, 0x10",
+            "mov ds, {0:e}",
+            "mov es, {0:e}",
+            "mov ss, {0:e}",
 
             //jump to kernel
-            "pop {1}",
-            "call {1}",
+            "pop {1:e}",
+            "call {1:e}",
 
             out(reg) _,
             in(reg) KERNEL_TARGET,
@@ -93,13 +93,13 @@ fn protected_mode() {
 }
 
 //switch to 16bit unreal mode, this mode allows to use 32bit registers in 16bit mode
-fn unreal_mode() {  
+fn unreal_mode() {
     //backup segment registers
     let ds: u16;
     let ss: u16;
     unsafe {
-        asm!("mov {0:x}, ds", out(reg) ds, options(nomem, nostack, preserves_flags));
-        asm!("mov {0:x}, ss", out(reg) ss, options(nomem, nostack, preserves_flags));
+        asm!("mov {0:x}, ds", out(reg) ds);
+        asm!("mov {0:x}, ss", out(reg) ss);
     }
 
     //load gdt
@@ -109,28 +109,23 @@ fn unreal_mode() {
     unsafe {
         //backup cr0 register
         let mut cr0: u32;
-        asm!("mov {:e}, cr0", out(reg) cr0);
+        asm!("mov {0:e}, cr0", out(reg) cr0);
 
         //set cr0 protected bit
         let cr0_protected = cr0 | 1;
-        asm!("mov cr0, {:e}", in(reg) cr0_protected);
+        asm!("mov cr0, {0:e}", in(reg) cr0_protected);
 
         //setup segment registers
-        asm!("mov {0}, 0x10", "mov ds, {0}", "mov ss, {0}", out(reg) _);
+        asm!("mov {0:x}, 0x10", "mov ds, {0:x}", "mov ss, {0:x}", out(reg) _);
 
         //restore cr0 register
-        asm!("mov cr0, {:e}", in(reg) cr0);
+        asm!("mov cr0, {0:e}", in(reg) cr0);
 
         //restore segment registers
         asm!("mov ds, {0:x}", in(reg) ds);
         asm!("mov ss, {0:x}", in(reg) ss);
 
         //set inerrupt flag
-        //asm!("sti");
-    }
-
-    unsafe {
-        asm!("mov [{}], {}", in(reg) 0x0010_0000, in(reg_byte) 0xde as u8);
+        asm!("sti");
     }
 }
-

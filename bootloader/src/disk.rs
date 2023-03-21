@@ -73,9 +73,9 @@ impl DiskReader {
                 unsafe {
                     let mut byte: u8;
 
-                    asm!("mov {}, [{:x}]", out(reg_byte) byte, in(reg) byte_address);
+                    asm!("mov {0}, [{1:e}]", out(reg_byte) byte, in(reg) byte_address);
 
-                    asm!("mov [{}], {}", in(reg) current_target, in(reg_byte) byte);
+                    asm!("mov [{0:e}], {1}", in(reg) current_target, in(reg_byte) byte);
                 }
 
                 //increment target and byte address by one byte
@@ -85,6 +85,17 @@ impl DiskReader {
 
             self.lba += 1;
             sectors_left -= 1;
+
+            Self::print_status(sectors, sectors_left);
+        }
+
+        println!();
+    }
+
+    fn print_status(sectors: u16, sectors_left: u16) {
+        let sectors_read = sectors - sectors_left;
+        if (sectors_read % 1024) == 0 {
+            print!(".");
         }
     }
 }
