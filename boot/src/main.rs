@@ -19,7 +19,7 @@ extern "C" {
 }
 
 #[no_mangle]
-pub extern "C" fn main() {
+pub extern "C" fn main() -> ! {
     clear();
 
     print("[!] Starting Felix...\r\n\0");
@@ -34,8 +34,11 @@ pub extern "C" fn main() {
     //read bootloader to target
     disk.read_sectors(BOOTLOADER_SIZE);
 
-    //jump to first bootloader instrction
+    //jump to first bootloader instruction
     jump(bootloader_start);
+
+    //loop in case bootloader returns
+    loop {}
 }
 
 //set bios video mode to clear the screen

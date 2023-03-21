@@ -2,8 +2,6 @@ use core::arch::asm;
 use core::mem;
 use core::ptr;
 
-const SECTOR_SIZE: u16 = 512; //sector size in bytes
-
 #[repr(C, packed)]
 struct DiskAddressPacket {
     size: u8,     //size of dap
@@ -16,14 +14,14 @@ struct DiskAddressPacket {
 
 pub struct DiskReader {
     lba: u64,
-    target: u16,
+    buffer: u16,
 }
 
 impl DiskReader {
-    pub fn new(lba: u64, target: u16) -> Self {
+    pub fn new(lba: u64, buffer: u16) -> Self {
         Self {
             lba: lba,
-            target: target,
+            buffer: buffer,
         }
     }
 
@@ -34,7 +32,7 @@ impl DiskReader {
             size: mem::size_of::<DiskAddressPacket>() as u8,
             zero: 0,
             sectors: 1,
-            offset: self.target,
+            offset: self.buffer,
             segment: 0x0000,
             lba: self.lba,
         };
@@ -58,15 +56,33 @@ impl DiskReader {
         }
     }
 
-    //read multiple sectors
-    pub fn read_sectors(&mut self, sectors: u16) {
+    //read multiple sectors, and copy sectors to specified target
+    pub fn read_sectors(&mut self, sectors: u16, target: u32) {
         let mut sectors_left = sectors;
+        let mut current_target = target;
 
         //read one sector at a time and stop when there are no more sectors to read left
         while sectors_left > 0 {
             self.read_sector();
 
-            self.target += SECTOR_SIZE;
+            let mut byte_address = self.buffer;
+
+            //for each sector copy byte by byte from buffer to target
+            for _i in 0..512 {
+
+                unsafe {
+                    let mut byte: u8;
+
+                    asm!("mov {}, [{:x}]", out(reg_byte) byte, in(reg) byte_address);
+
+                    asm!("mov [{}], {}", in(reg) current_target, in(reg_byte) byte);
+                }
+
+                //increment target and byte address by one byte
+                current_target += 0x0000_0001;
+                byte_address += 0x0000_0001;
+            }
+
             self.lba += 1;
             sectors_left -= 1;
         }

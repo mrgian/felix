@@ -13,10 +13,12 @@ use disk::DiskReader;
 mod gdt;
 use gdt::GlobalDescriptorTable;
 
+
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
 const KERNEL_LBA: u64 = 4096; //kernel location logical block address
-const KERNEL_SIZE: u16 = 32; //kernel size in sectors
-const KERNEL_TARGET: u16 = 0xbe00; //where to put kernel in memory
+const KERNEL_SIZE: u16 = 32768; //kernel size in sectors
+const KERNEL_BUFFER: u16 = 0xbe00; //buffer location for copy
+const KERNEL_TARGET: u32 = 0x0010_0000; //where to put kernel in memory
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -29,24 +31,22 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
+    //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
     println!("[!] Switching to unreal mode...");
-
     unreal_mode();
 
     println!("[!] Loading kernel...");
-
-    let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_TARGET);
-    disk.read_sectors(KERNEL_SIZE);
+    let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_BUFFER);
+    disk.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
 
     println!("[!] Loading Global Descriptor Table...");
     let gdt = GlobalDescriptorTable::new();
-
     gdt.load();
 
     println!("[!] Switching to 32bit protected mode and jumping to kernel...");
-
     protected_mode();
 
+    //loop in case kernel returns
     loop {}
 }
 
@@ -57,7 +57,7 @@ pub extern "C" fn fail() -> ! {
     loop {}
 }
 
-//switch to 32bit protected mode
+//switch to 32bit protected mode and jump to kernel
 fn protected_mode() {
     unsafe {
         //enable protected mode in cr0 register
@@ -66,7 +66,7 @@ fn protected_mode() {
         //push kernel address
         asm!(
             "push {}",
-            in(reg) KERNEL_TARGET as u32,
+            in(reg) KERNEL_TARGET,
         );
 
         //jump to protected mode
@@ -87,13 +87,12 @@ fn protected_mode() {
             "call {1}",
 
             out(reg) _,
-            in(reg) KERNEL_TARGET as u32,
+            in(reg) KERNEL_TARGET,
         );
     }
 }
 
 //switch to 16bit unreal mode, this mode allows to use 32bit registers in 16bit mode
-//this mode is needed to copy from buffer to protected mode memory
 fn unreal_mode() {  
     //backup segment registers
     let ds: u16;
