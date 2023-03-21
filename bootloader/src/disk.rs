@@ -1,6 +1,5 @@
 use core::arch::asm;
 use core::mem;
-use core::ptr;
 
 const SECTOR_SIZE: u64 = 512;
 
@@ -39,8 +38,8 @@ impl DiskReader {
             lba: self.lba,
         };
 
-        //get dap addrees
-        let dap_address = ptr::addr_of!(dap) as u16;
+        //get dap address
+        let dap_address = &dap as *const DiskAddressPacket;
 
         //bios int 0x13
         unsafe {
@@ -50,7 +49,7 @@ impl DiskReader {
                 "int 0x13",
                 "jc fail",
                 "mov si, {1:x}", //restore si
-                in(reg) dap_address,
+                in(reg) dap_address as u16,
                 out(reg) _,
                 in("ax") 0x4200 as u16,
                 in("dx") 0x0080 as u16,

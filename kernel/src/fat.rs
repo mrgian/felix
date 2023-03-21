@@ -122,12 +122,12 @@ impl FatDriver {
 
     //get header address and overwrite that mem location with data from boot sector
     pub fn load_header(&self) {
-        let address = ptr::addr_of!(self.header) as u16;
+        let address = self.header as *const Header;
 
         let lba: u64 = FAT_START as u64;
         let sectors: u16 = 1;
 
-        let mut disk = DiskReader::new(lba, address);
+        let mut disk = DiskReader::new(lba, address as u16);
 
         disk.read_sectors(sectors);
     }
@@ -135,7 +135,7 @@ impl FatDriver {
     //get entries array address and overwrite that mem location with data from root directory
     //calculate size and position of root direcotry based on data from header
     pub fn load_entries(&self) {
-        let address = ptr::addr_of!(self.entries) as u16;
+        let address = self.header as *const Header;
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
@@ -145,7 +145,7 @@ impl FatDriver {
         let size: u16 = entry_size * self.header.dir_entries_count;
         let sectors: u16 = size / self.header.bytes_per_sector;
 
-        let mut disk = DiskReader::new(lba, address);
+        let mut disk = DiskReader::new(lba, address as u16);
 
         disk.read_sectors(sectors);
     }

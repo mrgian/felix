@@ -36,21 +36,3 @@ fn print(message: &str) {
             in(reg) message.as_ptr());
     }
 }
-
-/*pub fn print(message: &str) {
-    unsafe {
-        asm!("mov si, {0:x}", //move given string address to si
-            "2:",
-            "lodsb", //load a byte (next character) from si to al
-            "or al, al", //bitwise or on al, if al is null set zf to true
-            "jz 1f", //if zf is true (end of string) jump to end
-
-            "mov ah, 0x0e",
-            "mov bh, 0",
-            "int 0x10", //tell the bios to write content of al to screen
-
-            "jmp 2b", //start again
-            "1:",
-            in(reg) message.as_ptr());
-    }
-}*/

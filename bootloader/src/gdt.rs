@@ -5,7 +5,7 @@ const GDT_ENTRIES: usize = 3;
 #[repr(C)]
 pub struct GlobalDescriptorTable {
     zero: u64,
-    pub code: u64,
+    code: u64,
     data: u64,
 }
 
@@ -78,6 +78,6 @@ impl GlobalDescriptorTable {
 
 #[repr(C, packed(2))]
 pub struct GdtDescriptor {
-    pub limit: u16,                         //gdt size
-    pub base: *const GlobalDescriptorTable, //pointer to gdt
+    limit: u16, //gdt size
+    base: *const GlobalDescriptorTable, //pointer to gdt
 }
