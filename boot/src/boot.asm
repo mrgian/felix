@@ -3,6 +3,9 @@
 .code16
 
 _start:
+    # disable external interrupts
+    cli
+
     # set data segments to zero
     xor ax, ax
     mov ds, ax

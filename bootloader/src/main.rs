@@ -30,11 +30,6 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    //disable interrupts
-    unsafe {
-        asm!("cli");
-    }
-
     //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
     println!("[!] Switching to 16bit unreal mode...");
     unreal_mode();
