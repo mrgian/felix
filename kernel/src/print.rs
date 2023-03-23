@@ -15,21 +15,29 @@ impl fmt::Write for Printer {
 
 impl Printer {
     //copy given char to memory pointed to vga_pointer
-    pub fn printc(&mut self, c: char) {
+    pub fn printc(&mut self, c: char, foreground: u8, background: u8) {
         unsafe {
             asm!(
                 "mov [{0}], {1}",
                 in(reg) self.vga_pointer,
                 in(reg_byte) c as u8,
             );
-            self.vga_pointer += 2;
+            self.vga_pointer += 1;
+
+            let color = (background as u8) << 4 | (foreground as u8);
+            asm!(
+                "mov [{0}], {1}",
+                in(reg) self.vga_pointer,
+                in(reg_byte) color as u8,
+            );
+            self.vga_pointer += 1;
         }
     }
 
     //print a string by printing one char at the time
     pub fn prints(&mut self, s: &str) {
         for c in s.chars() {
-            self.printc(c);
+            self.printc(c, 0, 15);
         }
     }
 
