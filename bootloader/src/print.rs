@@ -59,7 +59,6 @@ macro_rules! println {
 //global printer
 pub static mut PRINTER: Printer = Printer {};
 
-#[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {

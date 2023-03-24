@@ -78,6 +78,6 @@ impl GlobalDescriptorTable {
 
 #[repr(C, packed(2))]
 pub struct GdtDescriptor {
-    limit: u16, //gdt size
+    limit: u16,                         //gdt size
     base: *const GlobalDescriptorTable, //pointer to gdt
 }

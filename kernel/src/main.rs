@@ -11,7 +11,8 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    print!("Welcome to Felix {}!", VERSION);
+    println!("Welcome to Felix {}!", VERSION);
+
 
     loop {}
 }
@@ -20,4 +21,3 @@ pub extern "C" fn _start() -> ! {
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
-

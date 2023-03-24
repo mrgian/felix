@@ -16,7 +16,7 @@ use gdt::GlobalDescriptorTable;
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
 const KERNEL_LBA: u64 = 4096; //kernel location logical block address
 
-const KERNEL_SIZE: u16 = 128; //kernel size in sectors
+const KERNEL_SIZE: u16 = 256; //kernel size in sectors
 
 //TODO: Remember to uncomment this when kernel gets bigger
 //const KERNEL_SIZE: u16 = 32768; //kernel size in sectors
