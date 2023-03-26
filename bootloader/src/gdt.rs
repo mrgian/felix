@@ -1,4 +1,5 @@
-use core::{arch::asm, mem::size_of};
+use core::arch::asm;
+use core::mem::size_of;
 
 const GDT_ENTRIES: usize = 3;
 

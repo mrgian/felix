@@ -6,6 +6,9 @@ use core::panic::PanicInfo;
 
 mod print;
 
+mod idt;
+use idt::InterruptDescriptorTable;
+
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[no_mangle]
@@ -13,7 +16,10 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub extern "C" fn _start() -> ! {
     println!("Welcome to Felix {}!", VERSION);
 
-    //crash();
+    let idt = InterruptDescriptorTable::new(handler as u32);
+    idt.load();
+
+    crash();
 
     println!("Not crashed!");
 
@@ -31,4 +37,9 @@ fn crash() {
     unsafe {
         asm!("div bl", in("al") 0x00 as u8, in("bl") 0x00 as u8);
     }
+}
+
+pub extern "C" fn handler() -> ! {
+    println!("CPU EXCEPTION!");
+    loop {}
 }
