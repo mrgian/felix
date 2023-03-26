@@ -1,9 +1,10 @@
 use core::mem::size_of;
 use core::arch::asm;
 
-const IDT_ENTRIES: usize = 256;
+//const IDT_ENTRIES: usize = 256;
+const IDT_ENTRIES: usize = 16;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
 pub struct IdtEntry {
     offset_low: u16,
@@ -35,8 +36,12 @@ impl InterruptDescriptorTable {
     pub fn load(&self) {
         let descriptor = IdtDescriptor {
             offset: self,
-            size: (IDT_ENTRIES * size_of::<IdtEntry>() - 1) as u16, //calculate size of gdt
+            size: (IDT_ENTRIES * size_of::<IdtEntry>() - 1) as u16, //calculate size of idt
         };
+
+        for i in 0..16 {
+            self.entries[i].print();
+        }
 
         unsafe {
             asm!("lidt [{0:e}]", in(reg) &descriptor);
@@ -77,5 +82,15 @@ impl IdtEntry {
             flags: flags,
             offset_high: offset_high,
         }
+    }
+
+    pub fn print(&self) {
+        let low = self.offset_low;
+        let sel = self.segment_selector;
+        let res = self.reserved;
+        let flags = self.flags;
+        let high = self.offset_high;
+
+        println!("Low: {:X}, Select: {:X}, Res: {:X}, Flags: {:X}, High: {:X}", low, sel, res, flags, high);
     }
 }
