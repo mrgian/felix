@@ -2,11 +2,20 @@ use core::{arch::asm, mem::size_of};
 
 const GDT_ENTRIES: usize = 3;
 
-#[repr(C)]
+#[repr(C, packed)]
+pub struct GdtEnrty {
+    entry: u64,
+}
+
+#[repr(C, packed)]
 pub struct GlobalDescriptorTable {
-    zero: u64,
-    code: u64,
-    data: u64,
+    entries: [GdtEnrty; GDT_ENTRIES],
+}
+
+#[repr(C, packed)]
+pub struct GdtDescriptor {
+    size: u16,                            //gdt size
+    offset: *const GlobalDescriptorTable, //pointer to gdt
 }
 
 //global descriptor table for flat memory model
@@ -57,27 +66,24 @@ impl GlobalDescriptorTable {
         //first entry is always zero
         //second entry is code segment (default + executable)
         //third entry is data segment (default)
+        let zero = GdtEnrty{entry: 0};
+        let code = GdtEnrty{entry: limit | base | access | flags | executable};
+        let data = GdtEnrty{entry: limit | base | access | flags};
+
         Self {
-            zero: 0,
-            code: limit | base | access | flags | executable,
-            data: limit | base | access | flags,
+            entries: [zero, code, data],
         }
     }
 
+    //load gdt using lgdt instruction
     pub fn load(&self) {
         let descriptor = GdtDescriptor {
-            base: self,
-            limit: (GDT_ENTRIES * size_of::<u64>() - 1) as u16, //calculate size of gdt
+            offset: self,
+            size: (GDT_ENTRIES * size_of::<GdtEnrty>() - 1) as u16, //calculate size of gdt
         };
 
         unsafe {
             asm!("lgdt [{0:e}]", in(reg) &descriptor);
         }
     }
-}
-
-#[repr(C, packed(2))]
-pub struct GdtDescriptor {
-    limit: u16,                         //gdt size
-    base: *const GlobalDescriptorTable, //pointer to gdt
 }

@@ -49,6 +49,12 @@ impl Printer {
                 self.x = 0;
                 self.y += 1;
             }
+
+            //if y coord overflow go back up
+            if self.y > HEIGHT {
+                self.x = 0;
+                self.y = 0;
+            }
         }
     }
 
@@ -73,7 +79,7 @@ impl Printer {
 
         unsafe {
             asm!("out dx, al", in("dx") 0x3d4 as u16, in("al") 0x0f as u8);
-            let mut a: u8 = 0;
+            let mut a: u8;
             asm!("in al, dx", out("al") a, in("dx") 0x3d5);
 
             index |= a as u16;
@@ -93,7 +99,7 @@ impl Printer {
 
     //set cursor position directly talking to vga hardware
     pub fn set_cursor_position(&self) {
-        let mut index: u16 = self.y * WIDTH + self.x;
+        let index: u16 = self.y * WIDTH + self.x;
 
         unsafe {
             asm!("out dx, al", in("dx") 0x3d4 as u16, in("al") 0x0f as u8);

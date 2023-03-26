@@ -26,7 +26,7 @@ const KERNEL_TARGET: u32 = 0x0010_0000; //where to put kernel in memory
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+    println!("PANIC! Info: {}", info);
 
     loop {}
 }
