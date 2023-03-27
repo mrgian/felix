@@ -79,8 +79,8 @@ impl GlobalDescriptorTable {
     //load gdt using lgdt instruction
     pub fn load(&self) {
         let descriptor = GdtDescriptor {
-            offset: self,
             size: (GDT_ENTRIES * size_of::<GdtEnrty>() - 1) as u16, //calculate size of gdt
+            offset: self, //pointer to gdt
         };
 
         unsafe {

@@ -30,19 +30,11 @@ pub extern "C" fn _start() -> ! {
     println!("Welcome to Felix {}!", VERSION);
 
     let idt = InterruptDescriptorTable::new(handler as u32);
+    idt.load();
 
-    let addr = &idt as *const InterruptDescriptorTable;
+    crash();
 
-    println!("Load: {:X}", addr as u32);
-
-    let a: [u64; 3001] = [0xffff_ffff; 3001];
-    let reff = &a[3000] as *const u64;
-
-    println!("Pos: {:X}, Value: {:X}", reff as u32, a[3000]);
-
-    //crash();
-
-    //println!("Not crashed!");
+    println!("Not crashed!");
 
     loop {}
 }
