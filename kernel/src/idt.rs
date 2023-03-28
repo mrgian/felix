@@ -1,14 +1,7 @@
 use core::arch::asm;
-use core::arch::global_asm;
 use core::mem::size_of;
 
 const IDT_ENTRIES: usize = 256;
-
-global_asm!(include_str!("exceptions.asm"));
-
-extern "C" {
-    static generic_handler: u32;
-}
 
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
@@ -22,7 +15,7 @@ pub struct IdtEntry {
 
 #[repr(C, packed)]
 pub struct InterruptDescriptorTable {
-    entries: [IdtEntry; IDT_ENTRIES],
+    pub entries: [IdtEntry; IDT_ENTRIES],
 }
 
 #[repr(C, packed)]
@@ -33,11 +26,9 @@ pub struct IdtDescriptor {
 
 impl InterruptDescriptorTable {
     pub fn new() -> Self {
-        let generic_handler_ptr: *const u32 = unsafe { &generic_handler };
-
         //fill table with entries with a generic handler
         Self {
-            entries: [IdtEntry::new(generic_handler_ptr as u32); IDT_ENTRIES],
+            entries: [IdtEntry::new(generic_handler as u32); IDT_ENTRIES],
         }
     }
 
@@ -60,28 +51,11 @@ impl InterruptDescriptorTable {
 
     //add exception handlers for various cpu exceptions
     pub fn add_exceptions(&mut self) {
-        extern "C" {
-            static div_error: u32;
-            static invalid_opcode: u32;
-            static double_fault: u32;
-            static general_protection_fault: u32;
-            static page_fault: u32;
-        }
-
-        let div_error_ptr: *const u32 = unsafe { &div_error };
-        self.add(0x0, div_error_ptr as u32);
-
-        let invalid_opcode_ptr: *const u32 = unsafe { &invalid_opcode };
-        self.add(0x6, invalid_opcode_ptr as u32);
-
-        let double_fault_ptr: *const u32 = unsafe { &double_fault };
-        self.add(0x8, double_fault_ptr as u32);
-
-        let general_protection_fault_ptr: *const u32 = unsafe { &general_protection_fault };
-        self.add(0xd, general_protection_fault_ptr as u32);
-
-        let page_fault_ptr: *const u32 = unsafe { &page_fault };
-        self.add(0xe, page_fault_ptr as u32);
+        self.add(0x0, div_error as u32);
+        self.add(0x6, invalid_opcode as u32);
+        self.add(0x8, double_fault as u32);
+        self.add(0xd, general_protection_fault as u32);
+        self.add(0xe, page_fault as u32);
     }
 }
 
@@ -124,7 +98,7 @@ impl IdtEntry {
 
 //handle excpetion based on interrupt number
 #[no_mangle]
-pub extern "C" fn exception_handler(int: u8) {
+pub extern "C" fn exception_handler(int: u32) -> ! {
     match int {
         0x00 => {
             println!("DIVISION ERROR!");
@@ -147,5 +121,49 @@ pub extern "C" fn exception_handler(int: u8) {
         _ => {
             println!("EXCEPTION!");
         }
+    }
+
+    loop {}
+}
+
+#[naked]
+pub extern "C" fn div_error() {
+    unsafe {
+        asm!("push 0x00", "call exception_handler", options(noreturn));
+    }
+}
+
+#[naked]
+pub extern "C" fn invalid_opcode() {
+    unsafe {
+        asm!("push 0x06", "call exception_handler", options(noreturn));
+    }
+}
+
+#[naked]
+pub extern "C" fn double_fault() {
+    unsafe {
+        asm!("push 0x08", "call exception_handler", options(noreturn));
+    }
+}
+
+#[naked]
+pub extern "C" fn general_protection_fault() {
+    unsafe {
+        asm!("push 0x0d", "call exception_handler", options(noreturn));
+    }
+}
+
+#[naked]
+pub extern "C" fn page_fault() {
+    unsafe {
+        asm!("push 0x0e", "call exception_handler", options(noreturn));
+    }
+}
+
+#[naked]
+pub extern "C" fn generic_handler() {
+    unsafe {
+        asm!("push 0xff", "call exception_handler", options(noreturn));
     }
 }

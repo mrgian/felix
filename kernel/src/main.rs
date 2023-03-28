@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+#![feature(naked_functions)]
 
 use core::arch::asm;
 use core::panic::PanicInfo;
@@ -34,9 +35,9 @@ pub extern "C" fn _start() -> ! {
     idt.add_exceptions();
 
     //generates invalid opcode exception
-    /*unsafe {
+    unsafe {
         asm!("ud2");
-    }*/
+    }
 
     //generates division error exception
     /*unsafe {
@@ -54,3 +55,5 @@ fn panic(info: &PanicInfo) -> ! {
 
     loop {}
 }
+
+
