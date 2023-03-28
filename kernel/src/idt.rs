@@ -98,7 +98,7 @@ impl IdtEntry {
 
 //handle excpetion based on interrupt number
 #[no_mangle]
-pub extern "C" fn exception_handler(int: u32) -> ! {
+pub extern "C" fn exception_handler(int: u32) {
     match int {
         0x00 => {
             println!("DIVISION ERROR!");
@@ -123,7 +123,7 @@ pub extern "C" fn exception_handler(int: u32) -> ! {
         }
     }
 
-    loop {}
+    //loop {}
 }
 
 #[naked]
@@ -136,7 +136,7 @@ pub extern "C" fn div_error() {
 #[naked]
 pub extern "C" fn invalid_opcode() {
     unsafe {
-        asm!("push 0x06", "call exception_handler", options(noreturn));
+        asm!("push 0x06", "call exception_handler", "iret", options(noreturn));
     }
 }
 
