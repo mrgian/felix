@@ -67,9 +67,13 @@ impl GlobalDescriptorTable {
         //first entry is always zero
         //second entry is code segment (default + executable)
         //third entry is data segment (default)
-        let zero = GdtEnrty{entry: 0};
-        let code = GdtEnrty{entry: limit | base | access | flags | executable};
-        let data = GdtEnrty{entry: limit | base | access | flags};
+        let zero = GdtEnrty { entry: 0 };
+        let code = GdtEnrty {
+            entry: limit | base | access | flags | executable,
+        };
+        let data = GdtEnrty {
+            entry: limit | base | access | flags,
+        };
 
         Self {
             entries: [zero, code, data],
@@ -80,7 +84,7 @@ impl GlobalDescriptorTable {
     pub fn load(&self) {
         let descriptor = GdtDescriptor {
             size: (GDT_ENTRIES * size_of::<GdtEnrty>() - 1) as u16, //calculate size of gdt
-            offset: self, //pointer to gdt
+            offset: self,                                           //pointer to gdt
         };
 
         unsafe {

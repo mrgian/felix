@@ -29,10 +29,19 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome to Felix {}!", VERSION);
 
-    let idt = InterruptDescriptorTable::new(handler as u32);
+    let mut idt = InterruptDescriptorTable::new();
     idt.load();
+    idt.add_exceptions();
 
-    crash();
+    //generates invalid opcode exception
+    /*unsafe {
+        asm!("ud2");
+    }*/
+
+    //generates division error exception
+    /*unsafe {
+        asm!("div bl", in("al") 0x00 as u8, in("bl") 0x00 as u8);
+    }*/
 
     println!("Not crashed!");
 
@@ -43,16 +52,5 @@ pub extern "C" fn _start() -> ! {
 fn panic(info: &PanicInfo) -> ! {
     println!("PANIC! Info: {}", info);
 
-    loop {}
-}
-
-fn crash() {
-    unsafe {
-        asm!("div bl", in("al") 0x00 as u8, in("bl") 0x00 as u8);
-    }
-}
-
-pub extern "C" fn handler() -> ! {
-    println!("CPU EXCEPTION!");
     loop {}
 }

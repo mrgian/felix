@@ -131,7 +131,7 @@ macro_rules! println {
 }
 
 //global printer
-pub static mut PRINTER: Printer = Printer{x: 0, y: 0};
+pub static mut PRINTER: Printer = Printer { x: 0, y: 0 };
 
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
