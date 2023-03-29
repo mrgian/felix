@@ -1,6 +1,9 @@
 #![no_std]
 #![no_main]
 
+#[macro_use]
+extern crate lazy_static;
+
 use core::arch::asm;
 use core::panic::PanicInfo;
 
@@ -20,6 +23,10 @@ const KERNEL_SIZE: u16 = 2048; //kernel size in sectors
 
 const KERNEL_BUFFER: u16 = 0xbe00; //buffer location for copy
 const KERNEL_TARGET: u32 = 0x0010_0000; //where to put kernel in memory
+
+lazy_static!{
+    static ref GDT: GlobalDescriptorTable = GlobalDescriptorTable::new();
+}
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -44,8 +51,8 @@ pub extern "C" fn _start() -> ! {
 
     //load dgt
     println!("[!] Loading Global Descriptor Table...");
-    let gdt = GlobalDescriptorTable::new();
-    gdt.load();
+    //let gdt = GlobalDescriptorTable::new();
+    GDT.load();
 
     //switch to protected mode
     println!("[!] Switching to 32bit protected mode and jumping to kernel...");
@@ -108,8 +115,8 @@ fn unreal_mode() {
     }
 
     //load gdt
-    let gdt = GlobalDescriptorTable::new();
-    gdt.load();
+    //let gdt = GlobalDescriptorTable::new();
+    GDT.load();
 
     unsafe {
         //backup cr0 register

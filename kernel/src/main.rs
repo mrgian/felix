@@ -2,6 +2,9 @@
 #![no_main]
 #![feature(naked_functions)]
 
+#[macro_use]
+extern crate lazy_static;
+
 use core::arch::asm;
 use core::panic::PanicInfo;
 
@@ -10,6 +13,15 @@ mod print;
 
 mod idt;
 use idt::InterruptDescriptorTable;
+
+lazy_static!{
+    static ref IDT: InterruptDescriptorTable = {
+        let mut idt = InterruptDescriptorTable::new();
+        idt.add_exceptions();
+
+        idt
+    };
+}
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -30,9 +42,8 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome to Felix {}!", VERSION);
 
-    let mut idt = InterruptDescriptorTable::new();
-    idt.load();
-    idt.add_exceptions();
+    //let mut idt = InterruptDescriptorTable::new();
+    IDT.load();
 
     //generates invalid opcode exception
     unsafe {

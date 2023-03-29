@@ -38,7 +38,7 @@ impl InterruptDescriptorTable {
     }
 
     //load idt using lidt instruction
-    pub fn load(&self) {
+    pub fn load(&'static self) {
         let descriptor = IdtDescriptor {
             size: (IDT_ENTRIES * size_of::<IdtEntry>() - 1) as u16, //calculate size of idt
             offset: self,                                           //pointer to idt
