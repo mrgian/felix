@@ -1,8 +1,6 @@
 use core::arch::asm;
 use core::mem::size_of;
 
-
-
 const GDT_ENTRIES: usize = 3;
 
 #[repr(C, packed)]
@@ -83,7 +81,7 @@ impl GlobalDescriptorTable {
     }
 
     //load gdt using lgdt instruction
-    pub fn load(&'static self) {
+    pub fn load(&self) {
         let descriptor = GdtDescriptor {
             size: (GDT_ENTRIES * size_of::<GdtEnrty>() - 1) as u16, //calculate size of gdt
             offset: self,                                           //pointer to gdt

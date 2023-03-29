@@ -38,7 +38,7 @@ impl InterruptDescriptorTable {
     }
 
     //load idt using lidt instruction
-    pub fn load(&'static self) {
+    pub fn load(&self) {
         let descriptor = IdtDescriptor {
             size: (IDT_ENTRIES * size_of::<IdtEntry>() - 1) as u16, //calculate size of idt
             offset: self,                                           //pointer to idt
@@ -122,8 +122,6 @@ pub extern "C" fn exception_handler(int: u32) {
             println!("EXCEPTION!");
         }
     }
-
-    //loop {}
 }
 
 #[naked]
