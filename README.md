@@ -51,18 +51,6 @@ You can run it in QEMU using this command: `qemu-system-i386 -drive id=disk,file
 
 Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
 
-
-## Versions
-### Felix 0.1.0
-**Bootloader:**
-- BIOS compatible (also works on UEFI with emulated BIOS)
-- can boot
-- can load kernel to memory
-- can execute kernel
-
-**Kernel:**
-- has a _println_ macro able to format any type of data
-
 ## Progress
 - *22/10/22* - Project start
 - *27/01/23* - Bootloader can print to screen
