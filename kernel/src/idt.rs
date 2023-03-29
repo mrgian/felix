@@ -69,7 +69,7 @@ impl IdtEntry {
             //segment selector of gdt entry
             let rpl = 0b00 << 0; //ring privilege level (0 for ring 0)
             let ti = 0b0 << 2; //0 to use gdt, 1 to use ldt
-            let index = 0b1 << 3; //entry index of gdt code segment, in my case code entry is the second (0b1)
+            let index = 0b1 << 3; //bits 3-15 of gdt code entry, in my case 0x8 (0b1000)
 
             rpl | ti | index
         };

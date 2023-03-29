@@ -46,14 +46,14 @@ pub extern "C" fn _start() -> ! {
     IDT.load();
 
     //generates invalid opcode exception
-    unsafe {
+    /*unsafe {
         asm!("ud2");
-    }
+    }*/
 
     //generates division error exception
-    /*unsafe {
+    unsafe {
         asm!("div bl", in("al") 0x00 as u8, in("bl") 0x00 as u8);
-    }*/
+    }
 
     println!("Not crashed!");
 
