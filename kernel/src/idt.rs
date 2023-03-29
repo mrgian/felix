@@ -129,14 +129,14 @@ pub extern "C" fn exception_handler(int: u32) {
 #[naked]
 pub extern "C" fn div_error() {
     unsafe {
-        asm!("iret", options(noreturn));
+        asm!("push 0x00", "call exception_handler","add esp, 4","iretd", options(noreturn));
     }
 }
 
 #[naked]
 pub extern "C" fn invalid_opcode() {
     unsafe {
-        asm!("push 0x06", "call exception_handler", "iret", options(noreturn));
+        asm!("push 0x06", "call exception_handler", "add esp, 4","iretd", options(noreturn));
     }
 }
 
