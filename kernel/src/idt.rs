@@ -129,7 +129,7 @@ pub extern "C" fn exception_handler(int: u32) {
 #[naked]
 pub extern "C" fn div_error() {
     unsafe {
-        asm!("push 0x00", "call exception_handler", options(noreturn));
+        asm!("iret", options(noreturn));
     }
 }
 
