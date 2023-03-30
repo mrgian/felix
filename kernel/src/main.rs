@@ -23,6 +23,9 @@ const STACK_START: u32 = KERNEL_START + KERNEL_SIZE + STACK_SIZE;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+const TIMER_INT: u8 = 32;
+const KEYBOARD_INT: u8 = 33;
+
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
@@ -33,26 +36,33 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome to Felix {}!", VERSION);
 
-    //let pics = Pics::new();
+    //init programmable interrupt controllers
     PICS.init();
 
+    //init interrupt descriptor table
     let mut idt = InterruptDescriptorTable::new();
+
+    //add CPU exceptions to idt
     idt.add_exceptions();
-    idt.add(32, timer as u32);
-    idt.add(33, keyboard as u32);
+
+    //add hardware interrupts to idt
+    idt.add(TIMER_INT as usize, timer as u32);
+    idt.add(KEYBOARD_INT as usize, keyboard as u32);
+
+    //load idt
     idt.load();
 
+    //enable hardware interrupts
     unsafe {
         asm!("sti");
     }
 
-    println!("Not crashed!");
-
-    unsafe {
-        asm!("hlt");
+    //halt cpu while waiting for interrupts
+    loop {
+        unsafe {
+            asm!("hlt");
+        }
     }
-
-    loop {}
 }
 
 #[panic_handler]
@@ -62,20 +72,23 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
+//timer handler
 #[naked]
 pub extern "C" fn timer() {
     unsafe {
-        asm!("call print_dot", "iretd", options(noreturn));
+        asm!("call timer_handler", "iretd", options(noreturn));
     }
 }
 
 #[no_mangle]
-pub extern "C" fn print_dot() {
+pub extern "C" fn timer_handler() {
     //print!(".");
 
-    PICS.end_interrupt(32);
+    PICS.end_interrupt(TIMER_INT);
 }
 
+
+//keyboard handler
 #[naked]
 pub extern "C" fn keyboard() {
     unsafe {
@@ -85,12 +98,13 @@ pub extern "C" fn keyboard() {
 
 #[no_mangle]
 pub extern "C" fn keyboard_handler() {
+    //read scancode from keyboard controller
     let scancode: u8;
     unsafe {
         asm!("in al, dx", out("al") scancode, in("dx") 0x60 as u16);
     }
 
-    print!("{} ", scancode);
+    println!("KEYBOARD INTERRUPT! Scancode: {:X} ", scancode);
 
-    PICS.end_interrupt(33);
+    PICS.end_interrupt(KEYBOARD_INT);
 }
