@@ -2,7 +2,7 @@
 members = ["boot", "bootloader", "kernel"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Gianmatteo Palmieri <mail@gian.im>"]
 edition = "2021"
 
