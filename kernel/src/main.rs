@@ -34,15 +34,9 @@ pub extern "C" fn _start() -> ! {
     idt.add_exceptions();
     idt.load();
 
-    //generates invalid opcode exception
     unsafe {
-        asm!("int 0x0");
+        asm!("int 0xff");
     }
-
-    //generates division error exception
-    /*unsafe {
-        asm!("div bl", in("al") 0x00 as u8, in("bl") 0x00 as u8);
-    }*/
 
     println!("Not crashed!");
 
@@ -55,5 +49,3 @@ fn panic(info: &PanicInfo) -> ! {
 
     loop {}
 }
-
-

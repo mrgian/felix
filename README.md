@@ -51,6 +51,22 @@ You can run it in QEMU using this command: `qemu-system-i386 -drive id=disk,file
 
 Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
 
+## Features
+
+### Bootloader
+ - boots (you don't say!)
+ - BIOS compatible (also works on UEFI with CSM enabled)
+ - loads a basic Global Descriptor Table
+ - switches to Unreal Mode (to use 32bit addresses in 16bit Real Mode)
+ - copies kernel from disk to protected memory
+ - switches to 32bit Protected Mode
+ - jumps to kernel
+
+ ### Kernel
+ - prints formatted text to screen by writing to VGA text buffer
+ - loads a basic Interrupt Descriptor Table
+ - has a basic handler for CPU exceptions
+
 ## Progress
 - *22/10/22* - Project start
 - *27/01/23* - Bootloader can print to screen
@@ -60,6 +76,7 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *01/03/23* - Rewritten kernel loading code in Rust
 - *08/03/23* - Implemented println macro
 - *20/03/23* - Switch to 32bit protected mode
+- *30/03/23* - Basic CPU exception handler
 
 ## Credits
 This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).
