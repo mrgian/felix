@@ -15,7 +15,7 @@ pub struct IdtEntry {
 
 #[repr(C, packed)]
 pub struct InterruptDescriptorTable {
-    pub entries: [IdtEntry; IDT_ENTRIES],
+    entries: [IdtEntry; IDT_ENTRIES],
 }
 
 #[repr(C, packed)]
