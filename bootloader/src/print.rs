@@ -1,6 +1,9 @@
 use core::arch::asm;
 use core::fmt;
 
+//global printer
+pub static mut PRINTER: Printer = Printer {};
+
 pub struct Printer {}
 
 //core lib needs to know how to print a string to implement its print formatted func
@@ -55,9 +58,6 @@ macro_rules! println {
     () => ($crate::print!("\r\n"));
     ($($arg:tt)*) => ($crate::print!("{}\r\n", format_args!($($arg)*)));
 }
-
-//global printer
-pub static mut PRINTER: Printer = Printer {};
 
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;

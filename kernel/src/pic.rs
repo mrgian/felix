@@ -13,6 +13,19 @@ const MODE: u8 = 0x01;
 
 const INT_OFFSET: u8 = 32;
 
+pub static PICS: Pics = Pics {
+    primary: Pic {
+        offset: INT_OFFSET,
+        command_port: PRIMARY_PIC_COMMAND_PORT,
+        data_port: PRIMARY_PIC_DATA_PORT,
+    },
+    secondary: Pic {
+        offset: INT_OFFSET + 8, //each pic can handle 8 interrupts, so secondary pic handles the ints after the primary ones
+        command_port: SECONDARY_PIC_COMMAND_PORT,
+        data_port: SECONDARY_PIC_DATA_PORT,
+    },
+};
+
 struct Pic {
     offset: u8,
     command_port: u8,
@@ -58,25 +71,6 @@ pub struct Pics {
 }
 
 impl Pics {
-    pub fn new() -> Self {
-        let primary_pic = Pic {
-            offset: INT_OFFSET,
-            command_port: PRIMARY_PIC_COMMAND_PORT,
-            data_port: PRIMARY_PIC_DATA_PORT,
-        };
-
-        let secondary_pic = Pic {
-            offset: INT_OFFSET + 8, //each pic can handle 8 interrupts, so secondary pic handles the ints after the primary ones
-            command_port: SECONDARY_PIC_COMMAND_PORT,
-            data_port: SECONDARY_PIC_DATA_PORT,
-        };
-
-        Self {
-            primary: primary_pic,
-            secondary: secondary_pic,
-        }
-    }
-
     pub fn init(&self) {
         let mask1 = self.primary.read_data();
         let mask2 = self.secondary.read_data();

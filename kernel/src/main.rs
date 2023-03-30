@@ -2,9 +2,6 @@
 #![no_main]
 #![feature(naked_functions)]
 
-#[macro_use]
-extern crate lazy_static;
-
 use core::arch::asm;
 use core::panic::PanicInfo;
 
@@ -15,7 +12,7 @@ mod idt;
 use idt::InterruptDescriptorTable;
 
 mod pic;
-use pic::Pics;
+use pic::PICS;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -25,10 +22,6 @@ const STACK_SIZE: u32 = 0x0010_0000;
 const STACK_START: u32 = KERNEL_START + KERNEL_SIZE + STACK_SIZE;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-lazy_static!{
-    static ref PICS: Pics = Pics::new();
-}
 
 #[no_mangle]
 #[link_section = ".start"]
@@ -45,7 +38,8 @@ pub extern "C" fn _start() -> ! {
 
     let mut idt = InterruptDescriptorTable::new();
     idt.add_exceptions();
-    idt.add(32,timer as u32);
+    idt.add(32, timer as u32);
+    idt.add(33, keyboard as u32);
     idt.load();
 
     unsafe {
@@ -53,6 +47,10 @@ pub extern "C" fn _start() -> ! {
     }
 
     println!("Not crashed!");
+
+    unsafe {
+        asm!("hlt");
+    }
 
     loop {}
 }
@@ -67,17 +65,32 @@ fn panic(info: &PanicInfo) -> ! {
 #[naked]
 pub extern "C" fn timer() {
     unsafe {
-        asm!(
-            "call print_dot",
-            "iretd",
-            options(noreturn)
-        );
+        asm!("call print_dot", "iretd", options(noreturn));
     }
 }
 
 #[no_mangle]
 pub extern "C" fn print_dot() {
-    print!(".");
+    //print!(".");
 
     PICS.end_interrupt(32);
+}
+
+#[naked]
+pub extern "C" fn keyboard() {
+    unsafe {
+        asm!("call keyboard_handler", "iretd", options(noreturn));
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn keyboard_handler() {
+    let scancode: u8;
+    unsafe {
+        asm!("in al, dx", out("al") scancode, in("dx") 0x60 as u16);
+    }
+
+    print!("{} ", scancode);
+
+    PICS.end_interrupt(33);
 }

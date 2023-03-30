@@ -5,7 +5,3 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-
-[dependencies.lazy_static]
-version = "1.4.0"
-features = ["spin_no_std"]
