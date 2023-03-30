@@ -35,7 +35,7 @@ pub extern "C" fn _start() -> ! {
     idt.load();
 
     unsafe {
-        asm!("int 0xff");
+        asm!("cli");
     }
 
     println!("Not crashed!");
