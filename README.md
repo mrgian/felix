@@ -17,6 +17,23 @@ It's **written completely from scratch** in Rust and doesn't use any external de
 ![output](https://user-images.githubusercontent.com/10211171/223737198-9aa156ca-1c57-4db5-932d-e999a1471dc0.gif)<br>
 *Felix running on real hardware*
 
+## Features
+
+### Bootloader
+ - boots (you don't say!)
+ - BIOS compatible (also works on UEFI with CSM enabled)
+ - Global Descriptor Table loading
+ - Unreal Mode switching (to use 32bit addresses in 16bit Real Mode)
+ - kernel copying from disk to protected memory
+ - 32bit Protected Mode switching
+ - kernel jumping
+
+ ### Kernel
+ - print macro able to write formatted text to VGA text buffer 
+ - Interrupt Descriptor Table loading
+ - handler for CPU exceptions
+ - PIC driver that handles hardware interrupts
+
 ## Building
 
 You can download a pre-built image or you can build it by yourself using Docker or the build script.
@@ -50,23 +67,6 @@ The final disk image is `build/disk.img`
 You can run it in QEMU using this command: `qemu-system-i386 -drive id=disk,file=build/disk.img,if=none,format=raw -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0`
 
 Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
-
-## Features
-
-### Bootloader
- - boots (you don't say!)
- - BIOS compatible (also works on UEFI with CSM enabled)
- - Global Descriptor Table loading
- - Unreal Mode switching (to use 32bit addresses in 16bit Real Mode)
- - kernel copying from disk to protected memory
- - 32bit Protected Mode switching
- - kernel jumping
-
- ### Kernel
- - print macro able to write formatted text to VGA text buffer 
- - Interrupt Descriptor Table loading
- - handler for CPU exceptions
- - PIC driver that handles hardware interrupts
 
 ## Progress
 - *22/10/22* - Project start
