@@ -13,6 +13,8 @@ It's **written completely from scratch** in Rust and doesn't use any external de
 
 ![felixx](https://user-images.githubusercontent.com/10211171/228872223-034a0790-48a6-4a35-b20e-46cd143c91fc.png)<br>
 
+This image shows Felix running in QEMU, but works on real x86 hardware too!
+
 ## Features
 
 ### Bootloader
