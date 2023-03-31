@@ -2,16 +2,18 @@
 #![no_main]
 #![feature(naked_functions)]
 
-use core::arch::asm;
-use core::panic::PanicInfo;
-
 #[macro_use]
 mod print;
 
+mod exceptions;
 mod idt;
-use idt::InterruptDescriptorTable;
-
+mod keyboard;
 mod pic;
+mod timer;
+
+use core::arch::asm;
+use core::panic::PanicInfo;
+use idt::IDT;
 use pic::PICS;
 
 //1MiB. TODO: Get those from linker
@@ -23,9 +25,6 @@ const STACK_START: u32 = KERNEL_START + KERNEL_SIZE + STACK_SIZE;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-const TIMER_INT: u8 = 32;
-const KEYBOARD_INT: u8 = 33;
-
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
@@ -36,21 +35,23 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome to Felix {}!", VERSION);
 
+    unsafe {
+        //init interrupt descriptor table
+        IDT.init();
+
+        //add CPU exceptions to idt
+        IDT.add_exceptions();
+
+        //add hardware interrupts to idt
+        IDT.add(timer::TIMER_INT as usize, timer::timer as u32);
+        IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
+
+        //load idt
+        IDT.load();
+    }
+
     //init programmable interrupt controllers
     PICS.init();
-
-    //init interrupt descriptor table
-    let mut idt = InterruptDescriptorTable::new();
-
-    //add CPU exceptions to idt
-    idt.add_exceptions();
-
-    //add hardware interrupts to idt
-    idt.add(TIMER_INT as usize, timer as u32);
-    idt.add(KEYBOARD_INT as usize, keyboard as u32);
-
-    //load idt
-    idt.load();
 
     //enable hardware interrupts
     unsafe {
@@ -70,41 +71,4 @@ fn panic(info: &PanicInfo) -> ! {
     println!("PANIC! Info: {}", info);
 
     loop {}
-}
-
-//timer handler
-#[naked]
-pub extern "C" fn timer() {
-    unsafe {
-        asm!("call timer_handler", "iretd", options(noreturn));
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn timer_handler() {
-    //print!(".");
-
-    PICS.end_interrupt(TIMER_INT);
-}
-
-
-//keyboard handler
-#[naked]
-pub extern "C" fn keyboard() {
-    unsafe {
-        asm!("call keyboard_handler", "iretd", options(noreturn));
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn keyboard_handler() {
-    //read scancode from keyboard controller
-    let scancode: u8;
-    unsafe {
-        asm!("in al, dx", out("al") scancode, in("dx") 0x60 as u16);
-    }
-
-    println!("KEYBOARD INTERRUPT! Scancode: {:X} ", scancode);
-
-    PICS.end_interrupt(KEYBOARD_INT);
 }

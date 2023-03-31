@@ -21,7 +21,6 @@ const OFFSET: u8 = 32;
 //how many interrupts a pic can handle
 const IRQ_COUNT: u8 = 8;
 
-
 //define a global PICS so it can be accessed from everywhere
 pub static PICS: Pics = Pics {
     master: Pic {

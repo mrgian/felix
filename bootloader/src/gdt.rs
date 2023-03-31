@@ -1,16 +1,26 @@
 use core::arch::asm;
 use core::mem::size_of;
 
+//GLOBAL DESCRIPTOR TABLE
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut GDT: GlobalDescriptorTable = GlobalDescriptorTable {
+    entries: [NULL_ENTRY; GDT_ENTRIES],
+};
+
 const GDT_ENTRIES: usize = 3;
 
+#[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
-pub struct GdtEnrty {
+pub struct GdtEntry {
     entry: u64,
 }
 
+static NULL_ENTRY: GdtEntry = GdtEntry { entry: 0 };
+
 #[repr(C, packed)]
 pub struct GlobalDescriptorTable {
-    entries: [GdtEnrty; GDT_ENTRIES],
+    entries: [GdtEntry; GDT_ENTRIES],
 }
 
 #[repr(C, packed)]
@@ -22,7 +32,7 @@ pub struct GdtDescriptor {
 //global descriptor table for flat memory model
 impl GlobalDescriptorTable {
     //left shifts are used to set bit from specified position
-    pub fn new() -> Self {
+    pub fn init(&mut self) {
         //segment lenght (0xffff means all 32bit memory)
         let limit = {
             let limit_low = 0xffff << 0;
@@ -67,23 +77,21 @@ impl GlobalDescriptorTable {
         //first entry is always zero
         //second entry is code segment (default + executable)
         //third entry is data segment (default)
-        let zero = GdtEnrty { entry: 0 };
-        let code = GdtEnrty {
+        let zero = GdtEntry { entry: 0 };
+        let code = GdtEntry {
             entry: limit | base | access | flags | executable,
         };
-        let data = GdtEnrty {
+        let data = GdtEntry {
             entry: limit | base | access | flags,
         };
 
-        Self {
-            entries: [zero, code, data],
-        }
+        self.entries = [zero, code, data];
     }
 
     //load gdt using lgdt instruction
     pub fn load(&self) {
         let descriptor = GdtDescriptor {
-            size: (GDT_ENTRIES * size_of::<GdtEnrty>() - 1) as u16, //calculate size of gdt
+            size: (GDT_ENTRIES * size_of::<GdtEntry>() - 1) as u16, //calculate size of gdt
             offset: self,                                           //pointer to gdt
         };
 

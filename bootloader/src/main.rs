@@ -1,17 +1,16 @@
 #![no_std]
 #![no_main]
 
-use core::arch::asm;
-use core::panic::PanicInfo;
-
 #[macro_use]
 mod print;
 
 mod disk;
-use disk::DiskReader;
-
 mod gdt;
-use gdt::GlobalDescriptorTable;
+
+use core::arch::asm;
+use core::panic::PanicInfo;
+use disk::DISK;
+use gdt::GDT;
 
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
 const KERNEL_LBA: u64 = 4096; //kernel location logical block address
@@ -38,14 +37,20 @@ pub extern "C" fn _start() -> ! {
 
     //load kernel
     print!("[!] Loading kernel");
-    let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_BUFFER);
-    disk.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
+
+    unsafe {
+        DISK.init(KERNEL_LBA, KERNEL_BUFFER);
+        DISK.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
+    }
     println!("[!] Kernel loaded to memory.");
 
     //load dgt
     println!("[!] Loading Global Descriptor Table...");
-    let gdt = GlobalDescriptorTable::new();
-    gdt.load();
+
+    unsafe {
+        GDT.init();
+        GDT.load();
+    }
 
     //switch to protected mode
     println!("[!] Switching to 32bit protected mode and jumping to kernel...");
@@ -108,8 +113,10 @@ fn unreal_mode() {
     }
 
     //load gdt
-    let gdt = GlobalDescriptorTable::new();
-    gdt.load();
+    unsafe {
+        GDT.init();
+        GDT.load();
+    }
 
     unsafe {
         //backup cr0 register

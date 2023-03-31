@@ -1,11 +1,11 @@
 #![no_std]
 #![no_main]
 
+mod disk;
+
 use core::arch::asm;
 use core::arch::global_asm;
 use core::panic::PanicInfo;
-
-mod disk;
 use disk::DiskReader;
 
 const BOOTLOADER_LBA: u64 = 2048; //bootloader location logical block address
@@ -28,6 +28,7 @@ pub extern "C" fn main() -> ! {
     //get bootloader address from linker
     let bootloader_start: *const u16 = unsafe { &_bootloader_start };
 
+    //init disk read
     let target = bootloader_start as u16;
     let mut disk = DiskReader::new(BOOTLOADER_LBA, target);
 

@@ -1,6 +1,11 @@
 use core::arch::asm;
 use core::fmt;
 
+//PRINTER
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut PRINTER: Printer = Printer { x: 0, y: 0 };
+
 const WIDTH: u16 = 80;
 const HEIGHT: u16 = 25;
 
@@ -129,9 +134,6 @@ macro_rules! println {
         $crate::print::new_line();
     };
 }
-
-//global printer
-pub static mut PRINTER: Printer = Printer { x: 0, y: 0 };
 
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;

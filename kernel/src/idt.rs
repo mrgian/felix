@@ -1,5 +1,12 @@
+use crate::exceptions;
 use core::arch::asm;
 use core::mem::size_of;
+
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable {
+    entries: [NULL_ENTRY; IDT_ENTRIES],
+};
 
 const IDT_ENTRIES: usize = 256;
 
@@ -13,6 +20,14 @@ pub struct IdtEntry {
     offset_high: u16,      //higher 16 bits of handler func address
 }
 
+static NULL_ENTRY: IdtEntry = IdtEntry {
+    offset_low: 0,
+    segment_selector: 0,
+    reserved: 0,
+    flags: 0,
+    offset_high: 0,
+};
+
 #[repr(C, packed)]
 pub struct InterruptDescriptorTable {
     entries: [IdtEntry; IDT_ENTRIES],
@@ -25,11 +40,9 @@ pub struct IdtDescriptor {
 }
 
 impl InterruptDescriptorTable {
-    pub fn new() -> Self {
-        //fill table with entries with a generic handler
-        Self {
-            entries: [IdtEntry::new(generic_handler as u32); IDT_ENTRIES],
-        }
+    //fill table with entries with a generic handler
+    pub fn init(&mut self) {
+        self.entries = [IdtEntry::new(exceptions::generic_handler as u32); IDT_ENTRIES];
     }
 
     pub fn add(&mut self, int: usize, handler: u32) {
@@ -51,11 +64,11 @@ impl InterruptDescriptorTable {
 
     //add exception handlers for various cpu exceptions
     pub fn add_exceptions(&mut self) {
-        self.add(0x0, div_error as u32);
-        self.add(0x6, invalid_opcode as u32);
-        self.add(0x8, double_fault as u32);
-        self.add(0xd, general_protection_fault as u32);
-        self.add(0xe, page_fault as u32);
+        self.add(0x0, exceptions::div_error as u32);
+        self.add(0x6, exceptions::invalid_opcode as u32);
+        self.add(0x8, exceptions::double_fault as u32);
+        self.add(0xd, exceptions::general_protection_fault as u32);
+        self.add(0xe, exceptions::page_fault as u32);
     }
 }
 
@@ -93,112 +106,5 @@ impl IdtEntry {
             flags: flags,
             offset_high: offset_high,
         }
-    }
-}
-
-//handle excpetion based on interrupt number
-#[no_mangle]
-pub extern "C" fn exception_handler(int: u32, eip: u32, cs: u32, eflags: u32) {
-    match int {
-        0x00 => {
-            println!("DIVISION ERROR!");
-        }
-        0x06 => {
-            println!("INVALID OPCODE!");
-        }
-        0x08 => {
-            println!("DOUBLE FAULT!");
-        }
-        0x0D => {
-            println!("GENERAL PROTECTION FAULT!");
-        }
-        0x0E => {
-            println!("PAGE FAULT!");
-        }
-        0xFF => {
-            println!("EXCEPTION!");
-        }
-        _ => {
-            println!("EXCEPTION!");
-        }
-    }
-    println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
-}
-
-#[naked]
-pub extern "C" fn div_error() {
-    unsafe {
-        asm!(
-            "push 0x00",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
-    }
-}
-
-#[naked]
-pub extern "C" fn invalid_opcode() {
-    unsafe {
-        asm!(
-            "push 0x06",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
-    }
-}
-
-#[naked]
-pub extern "C" fn double_fault() {
-    unsafe {
-        asm!(
-            "push 0x08",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
-    }
-}
-
-#[naked]
-pub extern "C" fn general_protection_fault() {
-    unsafe {
-        asm!(
-            "push 0x0d",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
-    }
-}
-
-#[naked]
-pub extern "C" fn page_fault() {
-    unsafe {
-        asm!(
-            "push 0x0e",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
-    }
-}
-
-#[naked]
-pub extern "C" fn generic_handler() {
-    unsafe {
-        asm!(
-            "push 0xff",
-            "call exception_handler",
-            "add esp, 4",
-            "iretd",
-            options(noreturn)
-        );
     }
 }

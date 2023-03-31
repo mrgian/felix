@@ -1,7 +1,9 @@
 use core::arch::asm;
 use core::fmt;
 
-//global printer
+//PRINT
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
 pub static mut PRINTER: Printer = Printer {};
 
 pub struct Printer {}
