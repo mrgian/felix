@@ -13,7 +13,11 @@ It's **written completely from scratch** in Rust and doesn't use any external de
 
 ![felixx](https://user-images.githubusercontent.com/10211171/228872223-034a0790-48a6-4a35-b20e-46cd143c91fc.png)<br>
 
-This image shows Felix running in QEMU, but works on real x86 hardware too!
+Felix running in QEMU
+
+![output](https://user-images.githubusercontent.com/10211171/229203561-9ac965d7-1918-4417-9585-3d4e24e4aeac.gif)<br>
+
+Felix running on real hardware
 
 ## Features
 
