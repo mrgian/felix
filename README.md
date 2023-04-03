@@ -31,10 +31,11 @@ Felix running on real hardware
  - kernel jumping
 
  ### Kernel
- - print macro able to write formatted text to VGA text buffer 
+ - print! macro able to write formatted text to VGA text buffer 
  - Interrupt Descriptor Table loading
- - handler for CPU exceptions
- - PIC driver that handles hardware interrupts
+ - CPU exceptions handler
+ - Programmable Interrupt Controller driver
+ - keyboard interrupt handler
 
 ## Building
 
