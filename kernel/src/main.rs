@@ -58,6 +58,10 @@ pub extern "C" fn _start() -> ! {
         asm!("sti");
     }
 
+    /*unsafe {
+        asm!("ud2");
+    }*/
+
     //halt cpu while waiting for interrupts
     loop {
         unsafe {

@@ -27,6 +27,8 @@ pub extern "C" fn exception_handler(int: u32, eip: u32, cs: u32, eflags: u32) {
         }
     }
     println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
+
+    loop {}
 }
 
 #[naked]

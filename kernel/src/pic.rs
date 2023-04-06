@@ -76,7 +76,7 @@ impl Pic {
 
     //check if pic is handling interrupt
     pub fn handles_interrupt(&self, interupt: u8) -> bool {
-        self.offset <= interupt && interupt < self.offset + 8
+        self.offset <= interupt && interupt < self.offset + IRQ_COUNT
     }
 }
 
