@@ -1,4 +1,5 @@
 use crate::pic::PICS;
+use crate::print::PRINTER;
 use core::arch::asm;
 
 pub const KEYBOARD_INT: u8 = 33;
@@ -30,14 +31,25 @@ pub extern "C" fn keyboard_handler() {
     PICS.end_interrupt(KEYBOARD_INT);
 
     unsafe {
-        if scancode == 0x2a {
-            KEYBOARD.lshift = true;
-            return;
-        }
+        match scancode {
+            //press left shift
+            0x2a => {
+                KEYBOARD.lshift = true;
+                return;
+            },
 
-        if scancode == 0xaa {
-            KEYBOARD.lshift = false;
-            return;
+            //release left shift
+            0xaa => {
+                KEYBOARD.lshift = false;
+                return;
+            },
+
+            //backspace
+            0x0e => {
+                PRINTER.backspace();
+                return;
+            },
+            _ => {},
         }
     }
 
@@ -65,12 +77,12 @@ fn scancode_to_char(scancode: u8) -> char {
 
     let mut key;
 
-    if index < 36 {
+    if index < chars.len() {
         key = chars[index];
 
         unsafe {
             if KEYBOARD.lshift {
-                key -= 0x20;
+                key -= 0x20; //make char uppercase
             }
         }
     } else {

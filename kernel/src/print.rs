@@ -78,6 +78,14 @@ impl Printer {
         self.set_cursor_position();
     }
 
+    pub fn backspace(&mut self) {
+        self.x -= 1;
+        self.printc('\0', 12, 0);
+        self.x -= 1;
+
+        self.set_cursor_position();
+    }
+
     //get cursor position directly talking to vga hardware
     pub fn get_cursor_position(&self) -> (u16, u16) {
         let mut index: u16 = 0;
