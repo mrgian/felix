@@ -66,5 +66,3 @@ fn equals(short: &str, long: &[char]) -> bool {
     }
     true
 }
-
-

@@ -9,8 +9,11 @@ mod interrupts;
 mod keyboard;
 mod shell;
 
+mod disk;
+
 use core::arch::asm;
 use core::panic::PanicInfo;
+use disk::DISK;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
 use shell::SHELL;
@@ -42,7 +45,10 @@ pub extern "C" fn _start() -> ! {
         IDT.add_exceptions();
 
         //add hardware interrupts to idt
-        IDT.add(interrupts::timer::TIMER_INT as usize, interrupts::timer::timer as u32);
+        IDT.add(
+            interrupts::timer::TIMER_INT as usize,
+            interrupts::timer::timer as u32,
+        );
         IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
 
         //load idt
@@ -59,6 +65,9 @@ pub extern "C" fn _start() -> ! {
 
     unsafe {
         SHELL.init();
+
+        let mut buf: [u32; 256] = [0; 256];
+        DISK.read(&mut buf, 0, 1);
     }
 
     /*unsafe {
