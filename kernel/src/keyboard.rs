@@ -1,5 +1,6 @@
 use crate::pic::PICS;
 use crate::print::PRINTER;
+use crate::shell::SHELL;
 use core::arch::asm;
 
 pub const KEYBOARD_INT: u8 = 33;
@@ -36,20 +37,27 @@ pub extern "C" fn keyboard_handler() {
             0x2a => {
                 KEYBOARD.lshift = true;
                 return;
-            },
+            }
 
             //release left shift
             0xaa => {
                 KEYBOARD.lshift = false;
                 return;
-            },
+            }
 
             //backspace
             0x0e => {
-                PRINTER.backspace();
+                SHELL.backspace();
                 return;
-            },
-            _ => {},
+            }
+
+            //enter
+            0x1c => {
+                SHELL.enter();
+                return;
+            }
+
+            _ => {}
         }
     }
 
@@ -57,7 +65,9 @@ pub extern "C" fn keyboard_handler() {
     let key = scancode_to_char(scancode);
 
     if key != '\0' {
-        print!("{}", key);
+        unsafe {
+            SHELL.add(key);
+        }
     }
 }
 

@@ -71,16 +71,16 @@ impl Printer {
         self.y = cursor.1;
 
         for c in s.chars() {
-            self.printc(c, 12, 0);
+            self.printc(c, 15, 0);
         }
 
         //set cursors position to new coords
         self.set_cursor_position();
     }
 
-    pub fn backspace(&mut self) {
+    pub fn delete(&mut self) {
         self.x -= 1;
-        self.printc('\0', 12, 0);
+        self.printc('\0', 15, 0);
         self.x -= 1;
 
         self.set_cursor_position();
@@ -139,6 +139,14 @@ macro_rules! println {
 
     ($($arg:tt)*) => {
         $crate::print!("{}", format_args!($($arg)*));
+        $crate::print::new_line();
+    };
+}
+
+//macro for newln!
+#[macro_export]
+macro_rules! newln {
+    () => {
         $crate::print::new_line();
     };
 }

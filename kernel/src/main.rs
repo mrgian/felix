@@ -9,12 +9,14 @@ mod exceptions;
 mod idt;
 mod keyboard;
 mod pic;
+mod shell;
 mod timer;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
 use idt::IDT;
 use pic::PICS;
+use shell::SHELL;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -56,6 +58,10 @@ pub extern "C" fn _start() -> ! {
     //enable hardware interrupts
     unsafe {
         asm!("sti");
+    }
+
+    unsafe {
+        SHELL.init();
     }
 
     /*unsafe {
