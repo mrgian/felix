@@ -1,4 +1,4 @@
-use crate::pic::PICS;
+use crate::interrupts::pic::PICS;
 use crate::print::PRINTER;
 use crate::shell::SHELL;
 use core::arch::asm;

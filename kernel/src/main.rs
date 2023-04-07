@@ -5,17 +5,14 @@
 #[macro_use]
 mod print;
 
-mod exceptions;
-mod idt;
+mod interrupts;
 mod keyboard;
-mod pic;
 mod shell;
-mod timer;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
-use idt::IDT;
-use pic::PICS;
+use interrupts::idt::IDT;
+use interrupts::pic::PICS;
 use shell::SHELL;
 
 //1MiB. TODO: Get those from linker
@@ -45,7 +42,7 @@ pub extern "C" fn _start() -> ! {
         IDT.add_exceptions();
 
         //add hardware interrupts to idt
-        IDT.add(timer::TIMER_INT as usize, timer::timer as u32);
+        IDT.add(interrupts::timer::TIMER_INT as usize, interrupts::timer::timer as u32);
         IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
 
         //load idt

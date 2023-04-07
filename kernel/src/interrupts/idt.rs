@@ -1,4 +1,4 @@
-use crate::exceptions;
+use crate::interrupts::exceptions;
 use core::arch::asm;
 use core::mem::size_of;
 
