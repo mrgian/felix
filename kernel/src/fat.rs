@@ -34,35 +34,30 @@ pub struct Header {
     system_id: [u8; 8],
 }
 
-impl Default for Header {
-    //init header to all zeros
-    fn default() -> Header {
-        Header {
-            boot_jump_instructions: [0; 3],
+static NULL_HEADER: Header = Header {
+    boot_jump_instructions: [0; 3],
 
-            oem_identifier: [0; 8],
-            bytes_per_sector: 0,
-            sectors_per_cluster: 0,
-            reserved_sectors: 0,
-            fat_count: 0,
-            dir_entries_count: 0,
-            total_sectors: 0,
-            media_descriptor_type: 0,
-            sectors_per_fat: 0,
-            sectors_per_track: 0,
-            heads: 0,
-            hidden_sectors: 0,
-            large_sector_count: 0,
+    oem_identifier: [0; 8],
+    bytes_per_sector: 0,
+    sectors_per_cluster: 0,
+    reserved_sectors: 0,
+    fat_count: 0,
+    dir_entries_count: 0,
+    total_sectors: 0,
+    media_descriptor_type: 0,
+    sectors_per_fat: 0,
+    sectors_per_track: 0,
+    heads: 0,
+    hidden_sectors: 0,
+    large_sector_count: 0,
 
-            drive_number: 0,
-            reserved: 0,
-            signature: 0,
-            volume_id: 0,
-            volume_label: [0; 11],
-            system_id: [0; 8],
-        }
-    }
-}
+    drive_number: 0,
+    reserved: 0,
+    signature: 0,
+    volume_id: 0,
+    volume_label: [0; 11],
+    system_id: [0; 8],
+};
 
 //FAT file entry struct
 #[derive(Copy, Clone, Debug)]
@@ -82,40 +77,32 @@ pub struct Entry {
     size: u32,
 }
 
-impl Default for Entry {
-    //init entry to all zeros
-    fn default() -> Entry {
-        Entry {
-            name: [0; 11],
-            attributes: 0,
-            reserved: 0,
-            created_time_tenths: 0,
-            created_time: 0,
-            created_date: 0,
-            accessed_date: 0,
-            first_cluster_high: 0,
-            modified_time: 0,
-            modified_date: 0,
-            first_cluster_low: 0,
-            size: 0,
-        }
-    }
-}
+static NULL_ENTRY: Entry = Entry {
+    name: [0; 11],
+    attributes: 0,
+    reserved: 0,
+    created_time_tenths: 0,
+    created_time: 0,
+    created_date: 0,
+    accessed_date: 0,
+    first_cluster_high: 0,
+    modified_time: 0,
+    modified_date: 0,
+    first_cluster_low: 0,
+    size: 0,
+};
 
 pub struct FatDriver {
     pub header: Header,
     pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
 }
 
-impl FatDriver {
-    //init empty header and entries to allocate memory
-    pub fn new() -> Self {
-        Self {
-            header: Header::default(),
-            entries: [Entry::default(); ENTRY_COUNT],
-        }
-    }
+pub static mut FAT: FatDriver = FatDriver {
+    header: NULL_HEADER,
+    entries: [NULL_ENTRY; ENTRY_COUNT],
+};
 
+impl FatDriver {
     //get header address and overwrite that mem location with data from boot sector
     pub fn load_header(&self) {
         let address = &self.header as *const Header;

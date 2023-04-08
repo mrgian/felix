@@ -18,6 +18,7 @@ use core::panic::PanicInfo;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
 use shell::SHELL;
+use fat::FAT;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -71,18 +72,9 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         SHELL.init();
 
-        let fat = fat::FatDriver::new();
-        fat.load_header();
-        fat.load_entries();
-
-        fat.list_entries();
+        FAT.load_header();
+        FAT.load_entries();
     }
-
-    /*unsafe {
-        asm!("ud2");
-    }*/
-
-    println!("Not crashed!");
 
     //halt cpu while waiting for interrupts
     loop {

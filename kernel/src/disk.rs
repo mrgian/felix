@@ -63,6 +63,8 @@ impl Disk {
                     //read 16 bit from controller buffer
                     asm!("in eax, dx", out("eax") buffer, in("dx") DATA_REGISTER);
 
+                    //asm!("xchg bx, bx");
+
                     //copy buffer in memory pointed by target
                     asm!("mov [{0}], {1}", in(reg) target_address, in(reg) buffer);
                 }
