@@ -10,10 +10,11 @@ mod keyboard;
 mod shell;
 
 mod disk;
+mod fat;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
-use disk::DISK;
+//use disk::DISK;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
 use shell::SHELL;
@@ -44,12 +45,16 @@ pub extern "C" fn _start() -> ! {
         //add CPU exceptions to idt
         IDT.add_exceptions();
 
-        //add hardware interrupts to idt
+        //add timer interrupt to idt
         IDT.add(
             interrupts::timer::TIMER_INT as usize,
             interrupts::timer::timer as u32,
         );
+
+        //add keyboard interrupt to idt
         IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
+
+        //IDT.add(0x2e as usize, disk::ata_interrupt as u32);
 
         //load idt
         IDT.load();
@@ -66,21 +71,18 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         SHELL.init();
 
-        let buf: [u32; 128] = [0; 128];
+        let fat = fat::FatDriver::new();
+        fat.load_header();
+        fat.load_entries();
 
-        let address = &buf as *const u32;
-
-        println!("Addr: {:X}", address as u32);
-        DISK.read(address as u32, 4096, 1);
-        println!("aaa {:X}", buf[0]);
-        println!("aaa {:X}", buf[1]);
-        println!("aaa {:X}", buf[2]);
-        println!("aaa {:X}", buf[3]);
+        fat.list_entries();
     }
 
     /*unsafe {
         asm!("ud2");
     }*/
+
+    println!("Not crashed!");
 
     //halt cpu while waiting for interrupts
     loop {

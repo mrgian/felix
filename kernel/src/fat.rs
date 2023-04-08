@@ -1,12 +1,8 @@
-#[path = "disk.rs"]
-mod disk;
-use disk::DiskReader;
-
+use crate::disk::DISK;
 use core::mem;
-use core::ptr;
 
-const ENTRY_COUNT: u16 = 512;
-const FAT_START: u16 = 4096;
+const ENTRY_COUNT: usize = 512;
+const FAT_START: u16 = 36864;
 
 //FAT12 header
 #[derive(Copy, Clone, Debug)]
@@ -108,7 +104,7 @@ impl Default for Entry {
 
 pub struct FatDriver {
     pub header: Header,
-    pub entries: [Entry; ENTRY_COUNT as usize], //the root directory is an array of file entries
+    pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
 }
 
 impl FatDriver {
@@ -116,38 +112,39 @@ impl FatDriver {
     pub fn new() -> Self {
         Self {
             header: Header::default(),
-            entries: [Entry::default(); ENTRY_COUNT as usize],
+            entries: [Entry::default(); ENTRY_COUNT],
         }
     }
 
     //get header address and overwrite that mem location with data from boot sector
     pub fn load_header(&self) {
-        let address = self.header as *const Header;
+        let address = &self.header as *const Header;
 
         let lba: u64 = FAT_START as u64;
         let sectors: u16 = 1;
 
-        let mut disk = DiskReader::new(lba, address as u16);
-
-        disk.read_sectors(sectors);
+        unsafe {
+            DISK.read(address as u32, lba, sectors);
+        }
     }
 
     //get entries array address and overwrite that mem location with data from root directory
     //calculate size and position of root direcotry based on data from header
     pub fn load_entries(&self) {
-        let address = self.header as *const Header;
+        let address = &self.entries as *const Entry;
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
         let lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
                 + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
+
         let size: u16 = entry_size * self.header.dir_entries_count;
         let sectors: u16 = size / self.header.bytes_per_sector;
 
-        let mut disk = DiskReader::new(lba, address as u16);
-
-        disk.read_sectors(sectors);
+        unsafe {
+            DISK.read(address as u32, lba, sectors);
+        }
     }
 
     //list each entry in root direcotry
@@ -157,9 +154,7 @@ impl FatDriver {
 
         println!("Name          Size");
 
-        //NOTE: if i scan to 512 it doesn't work, maybe stack is too small to contain all entries
-
-        for i in 0..64 {
+        for i in 0..ENTRY_COUNT {
             if self.entries[i].name[0] != 0 {
                 for c in self.entries[i].name {
                     print!("{}", c as char);

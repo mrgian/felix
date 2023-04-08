@@ -13,14 +13,14 @@ const STATUS_COMMAND_REGISTER: u16 = 0x1f7;
 
 //read write command codes
 const READ_COMMAND: u8 = 0x20;
-const WRITE_COMMAND: u8 = 0x30;
+//const WRITE_COMMAND: u8 = 0x30;
 
 //status register bits
 const STATUS_BSY: u8 = 0b10000000;
 const STATUS_RDY: u8 = 0b01000000;
-const STATUS_DFE: u8 = 0b00100000;
-const STATUS_DRQ: u8 = 0b00001000;
-const STATUS_ERR: u8 = 0b00000001;
+//const STATUS_DFE: u8 = 0b00100000;
+//const STATUS_DRQ: u8 = 0b00001000;
+//const STATUS_ERR: u8 = 0b00000001;
 
 pub static mut DISK: Disk = Disk {};
 
@@ -28,26 +28,23 @@ pub struct Disk {}
 
 impl Disk {
     //read multiple sectors from lba to specified adddress
-    pub fn read(&self, target: u32, lba: u32, sectors: u8) {
+    pub fn read(&self, target: u32, lba: u64, sectors: u16) {
         //wait until not busy
         while self.is_busy() {}
 
         unsafe {
+            //disable ata interrupt
+            asm!("out dx, al", in("dx") 0x3f6, in("al") 0b00000010 as u8);
+
             //setup registers
-            asm!("out dx, al", in("dx") SECTOR_COUNT_REGISTER, in("al") sectors); //number of setcors to read
+            asm!("out dx, al", in("dx") SECTOR_COUNT_REGISTER, in("al") sectors as u8); //number of setcors to read
             asm!("out dx, al", in("dx") LBA_LOW_REGISTER, in("al") lba as u8); //low 8 bits of lba
             asm!("out dx, al", in("dx") LBA_MID_REGISTER, in("al") (lba >> 8) as u8); //next 8 bits of lba
             asm!("out dx, al", in("dx") LBA_HIGH_REGISTER, in("al") (lba >> 16) as u8); //next 8 bits of lba
             asm!("out dx, al", in("dx") DRIVE_REGISTER, in("al") (0xE0 | ((lba >> 24) & 0xF)) as u8); //0xe0 (master drive) ORed with highest 4 bits of lba
 
-            //disable interrupts before sending command (i still don't what int number the controller generates)
-            asm!("cli");
-
             //send read command to port
             asm!("out dx, al", in("dx") STATUS_COMMAND_REGISTER, in("al") READ_COMMAND);
-
-            //enable interrupts again
-            asm!("cli");
         }
 
         //wait until not busy
@@ -60,10 +57,10 @@ impl Disk {
         let mut target_address = target;
         while sectors_left > 0 {
             //a sector is 512 byte, buffer size is 4 byte, so loop for 512/4
-            for i in 0..128 {
+            for _i in 0..128 {
                 let buffer: u32;
                 unsafe {
-                    //read 16 bit from controller buffer 
+                    //read 16 bit from controller buffer
                     asm!("in eax, dx", out("eax") buffer, in("dx") DATA_REGISTER);
 
                     //copy buffer in memory pointed by target
@@ -71,7 +68,6 @@ impl Disk {
                 }
 
                 target_address += 4;
-                print!("{:X} ", buffer);
             }
             sectors_left -= 1;
         }
@@ -99,3 +95,17 @@ impl Disk {
         (status & STATUS_RDY) != 0
     }
 }
+
+/*#[naked]
+pub extern "C" fn ata_interrupt() {
+    unsafe {
+        asm!("call ata_handler", "iretd", options(noreturn));
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn ata_handler() {
+    println!("0x2e int");
+
+    PICS.end_interrupt(0x2e);
+}*/
