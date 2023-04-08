@@ -1,5 +1,5 @@
-use crate::print::PRINTER;
 use crate::fat::FAT;
+use crate::print::PRINTER;
 
 pub static mut SHELL: Shell = Shell {
     buffer: [0 as char; 256],
@@ -49,11 +49,9 @@ impl Shell {
         match self.buffer {
             b if equals("ping", &b) => {
                 println!("PONG!");
-            },
-            b if equals("ls", &b) => {
-                unsafe {
-                    FAT.list_entries();
-                }
+            }
+            b if equals("ls", &b) => unsafe {
+                FAT.list_entries();
             },
             _ => {
                 println!("Unknown command!");

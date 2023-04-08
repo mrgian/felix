@@ -96,6 +96,28 @@ impl Disk {
         //if rdy bit is not 0 return true
         (status & STATUS_RDY) != 0
     }
+
+    pub fn check_ata(&self) -> u8 {
+        unsafe {
+            asm!("out dx, al", in("dx") 0x3f6, in("al") 0b00000010 as u8);
+
+            /*asm!("out dx, al", in("dx") DRIVE_REGISTER, in("al") 0xa0 as u8);
+
+            asm!("out dx, al", in("dx") SECTOR_COUNT_REGISTER, in("al") 0 as u8);
+            asm!("out dx, al", in("dx") LBA_LOW_REGISTER, in("al") 0 as u8);
+            asm!("out dx, al", in("dx") LBA_MID_REGISTER, in("al") 0 as u8);
+            asm!("out dx, al", in("dx") LBA_HIGH_REGISTER, in("al") 0 as u8);
+
+            asm!("out dx, al", in("dx") STATUS_COMMAND_REGISTER, in("al") 0xec as u8);*/
+
+            let status: u8;
+            unsafe {
+                asm!("in al, dx", out("al") status, in("dx") STATUS_COMMAND_REGISTER);
+            }
+
+            status
+        }
+    }
 }
 
 /*#[naked]

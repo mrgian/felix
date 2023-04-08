@@ -14,11 +14,11 @@ mod fat;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
-//use disk::DISK;
+use disk::DISK;
+use fat::FAT;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
 use shell::SHELL;
-use fat::FAT;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -72,8 +72,12 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         SHELL.init();
 
-        FAT.load_header();
-        FAT.load_entries();
+        let ata = DISK.check_ata();
+
+        println!("ATA: {:X}", ata);
+
+        //FAT.load_header();
+        //FAT.load_entries();
     }
 
     //halt cpu while waiting for interrupts
