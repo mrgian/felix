@@ -66,8 +66,16 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         SHELL.init();
 
-        let mut buf: [u32; 256] = [0; 256];
-        DISK.read(&mut buf, 0, 1);
+        let buf: [u32; 128] = [0; 128];
+
+        let address = &buf as *const u32;
+
+        println!("Addr: {:X}", address as u32);
+        DISK.read(address as u32, 4096, 1);
+        println!("aaa {:X}", buf[0]);
+        println!("aaa {:X}", buf[1]);
+        println!("aaa {:X}", buf[2]);
+        println!("aaa {:X}", buf[3]);
     }
 
     /*unsafe {
