@@ -71,14 +71,20 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         //check if ata drive is working
         DISK.check();
-
-        //init filesystem
-        FAT.load_header();
-        FAT.load_entries();
-        FAT.load_table();
     }
 
     print_info();
+
+    unsafe {
+        if DISK.enabled {
+            //init filesystem
+            FAT.load_header();
+            FAT.load_entries();
+            FAT.load_table();
+        }
+    }
+
+    //print_info();
 
     unsafe {
         //init felix shell

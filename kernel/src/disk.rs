@@ -25,7 +25,7 @@ const STATUS_RDY: u8 = 0b01000000;
 pub static mut DISK: Disk = Disk { enabled: false };
 
 pub struct Disk {
-    enabled: bool,
+    pub enabled: bool,
 }
 
 impl Disk {
