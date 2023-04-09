@@ -11,13 +11,12 @@ Felix is my attempt at writing an x86 operating system.
 
 It's **written completely from scratch** in Rust and doesn't use any external dependecies.
 
-![felixx](https://user-images.githubusercontent.com/10211171/228872223-034a0790-48a6-4a35-b20e-46cd143c91fc.png)<br>
+## Pictures
+Felix running in QEMU:<br>
+![felix_qemu](https://user-images.githubusercontent.com/10211171/230795939-eab6ab78-5c88-4ece-8dc1-f0e7faca9df9.png)
 
-Felix running in QEMU
-
-![output](https://user-images.githubusercontent.com/10211171/229203561-9ac965d7-1918-4417-9585-3d4e24e4aeac.gif)<br>
-
-Felix running on real hardware
+Felix running on real hardware:<br>
+![felix_real](https://user-images.githubusercontent.com/10211171/230796141-b2c62d63-5c4e-4d8b-a9ee-3669bdee48b0.jpg)
 
 ## Features
 
