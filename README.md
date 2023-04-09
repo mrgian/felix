@@ -44,7 +44,7 @@ Felix running on real hardware:<br>
 You can download a pre-built image or you can build it by yourself using Docker.
 
 ### Download pre-built image
-[![build](https://github.com/mrgian/felix/actions/workflows/rust.yml/badge.svg)](https://github.com/mrgian/felix/actions)
+[![build](https://github.com/mrgian/felix/actions/workflows/docker.yml/badge.svg)](https://github.com/mrgian/felix/actions)
 
 A build is made for every commit.
 
