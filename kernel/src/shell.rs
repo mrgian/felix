@@ -53,6 +53,9 @@ impl Shell {
             b if equals("ls", &b) => unsafe {
                 FAT.list_entries();
             },
+            b if equals("cat", &b) => unsafe {
+                FAT.read_file(&FAT.entries[1]);
+            },
             _ => {
                 println!("Unknown command!");
             }

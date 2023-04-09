@@ -74,6 +74,7 @@ pub extern "C" fn _start() -> ! {
         //init filesystem
         FAT.load_header();
         FAT.load_entries();
+        FAT.load_table();
     }
 
     println!("Welcome to Felix {}!", VERSION);
@@ -82,6 +83,7 @@ pub extern "C" fn _start() -> ! {
         //init felix shell
         SHELL.init();
     }
+
 
     //halt cpu while waiting for interrupts
     loop {

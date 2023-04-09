@@ -4,6 +4,10 @@ use core::mem;
 const ENTRY_COUNT: usize = 512;
 const FAT_START: u16 = 36864;
 
+const FAT_SIZE: usize = 256;
+
+static mut FILE_BUFFER: [u8; 2048] = [0; 2048];
+
 //FAT12 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
@@ -95,11 +99,13 @@ static NULL_ENTRY: Entry = Entry {
 pub struct FatDriver {
     pub header: Header,
     pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
+    pub table: [u16; FAT_SIZE],
 }
 
 pub static mut FAT: FatDriver = FatDriver {
     header: NULL_HEADER,
     entries: [NULL_ENTRY; ENTRY_COUNT],
+    table: [0; FAT_SIZE],
 };
 
 impl FatDriver {
@@ -139,15 +145,21 @@ impl FatDriver {
     pub fn list_entries(&self) {
         println!("Listing root directory entries:");
 
-        println!("Name          Size");
+        println!("Name          Size          Cluster number");
 
         for i in 0..ENTRY_COUNT {
             if self.entries[i].name[0] != 0 {
+                //print name
                 for c in self.entries[i].name {
                     print!("{}", c as char);
                 }
+                //print size
                 let size = self.entries[i].size;
                 print!("   {} bytes", size);
+
+                //print cluster
+                let cluster = self.entries[i].first_cluster_low;
+                print!("     {}", cluster);
                 println!();
             }
         }
@@ -160,5 +172,64 @@ impl FatDriver {
                 println!();
             }
         }*/
+    }
+
+    pub fn load_table(&mut self) {
+        let address = &self.table as *const u16;
+
+        let lba: u64 = FAT_START as u64 + self.header.reserved_sectors as u64;
+
+        //let sectors: u16 = self.header.sectors_per_fat;
+        let sectors: u16 = 1;
+
+        unsafe {
+            DISK.read(address as u32, lba, sectors);
+        }
+    }
+
+    pub fn read_file(&self, entry: &Entry) {
+        unsafe {
+            let address = &FILE_BUFFER as *const u8;
+
+            let data_lba: u64 = FAT_START as u64
+                + (self.header.reserved_sectors
+                    + self.header.sectors_per_fat * self.header.fat_count as u16
+                    + 32) as u64;
+            let lba: u64 = data_lba + entry.first_cluster_low as u64 - 2;
+
+            let sectors: u16 = self.header.sectors_per_cluster as u16;
+
+            DISK.read(address as u32, lba, sectors);
+
+            for c in FILE_BUFFER {
+                if c != 0 {
+                    print!("{}", c as char);
+                }
+            }
+        }
+
+        println!();
+    }
+
+    pub fn search_file(&self, name: &str) -> Entry {
+        let mut result = NULL_ENTRY;
+
+        for entry in self.entries {
+            let mut found = true;
+            let mut i = 0;
+            
+            for c in name.chars() {
+                if c as u8 != entry.name[i] {
+                    found = false;
+                }
+                i += 1;
+            }
+
+            if found {
+                result = entry;
+            }
+        }
+
+        result
     }
 }
