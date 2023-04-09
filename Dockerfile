@@ -1,10 +1,7 @@
-FROM rust
+FROM archlinux
 COPY . /root/felix
 
-RUN apt-get -y update
-RUN apt-get -y install fdisk
-RUN apt-get -y install mtools
-RUN apt-get -y install dosfstools
+RUN pacman --noconfirm -Syu mtools dosfstools base-devel rustup
 
 WORKDIR /root/felix
 CMD ["./build.sh"]
