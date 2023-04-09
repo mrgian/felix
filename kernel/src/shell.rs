@@ -3,6 +3,7 @@ use crate::print::PRINTER;
 
 pub static mut SHELL: Shell = Shell {
     buffer: [0 as char; 256],
+    arg: [0 as char; 11],
     cursor: 0,
 };
 
@@ -10,6 +11,7 @@ const PROMPT: &str = "felix> ";
 
 pub struct Shell {
     buffer: [char; 256],
+    arg: [char; 11],
     cursor: usize,
 }
 
@@ -45,16 +47,35 @@ impl Shell {
         self.init();
     }
 
-    fn interpret(&self) {
+    fn interpret(&mut self) {
         match self.buffer {
+            //test command
             b if equals("ping", &b) => {
                 println!("PONG!");
             }
+            //list root directory
             b if equals("ls", &b) => unsafe {
                 FAT.list_entries();
             },
+            //display content of file
             b if equals("cat", &b) => unsafe {
-                FAT.read_file(&FAT.entries[1]);
+                for i in 4..15 {
+                    self.arg[i - 4] = b[i];
+                }
+
+                let entry = FAT.search_file(&self.arg);
+                if entry.name[0] != 0 {
+                    FAT.read_file(&entry);
+
+                    for c in FAT.buffer {
+                        if c != 0 {
+                            print!("{}", c as char);
+                        }
+                    }
+                    println!();
+                } else {
+                    println!("File not found!");
+                }
             },
             _ => {
                 println!("Unknown command!");

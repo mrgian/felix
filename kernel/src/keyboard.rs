@@ -91,7 +91,7 @@ fn scancode_to_char(scancode: u8) -> char {
 
         unsafe {
             if KEYBOARD.lshift {
-                key -= 0x20; //make char uppercase
+                key = key.to_ascii_uppercase();
             }
         }
     } else {

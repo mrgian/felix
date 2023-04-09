@@ -6,8 +6,6 @@ const FAT_START: u16 = 36864;
 
 const FAT_SIZE: usize = 256;
 
-static mut FILE_BUFFER: [u8; 2048] = [0; 2048];
-
 //FAT12 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
@@ -97,15 +95,17 @@ static NULL_ENTRY: Entry = Entry {
 };
 
 pub struct FatDriver {
-    pub header: Header,
-    pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
-    pub table: [u16; FAT_SIZE],
+    header: Header,
+    entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
+    table: [u16; FAT_SIZE],
+    pub buffer: [u8; 2048],
 }
 
 pub static mut FAT: FatDriver = FatDriver {
     header: NULL_HEADER,
     entries: [NULL_ENTRY; ENTRY_COUNT],
     table: [0; FAT_SIZE],
+    buffer: [0; 2048],
 };
 
 impl FatDriver {
@@ -163,15 +163,6 @@ impl FatDriver {
                 println!();
             }
         }
-
-        /*for entry in self.entries {
-            if entry.name[0] != 0 {
-                for c in entry.name {
-                    print!("{}", c as char);
-                }
-                println!();
-            }
-        }*/
     }
 
     pub fn load_table(&mut self) {
@@ -189,7 +180,7 @@ impl FatDriver {
 
     pub fn read_file(&self, entry: &Entry) {
         unsafe {
-            let address = &FILE_BUFFER as *const u8;
+            let address = &self.buffer as *const u8;
 
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
@@ -200,28 +191,27 @@ impl FatDriver {
             let sectors: u16 = self.header.sectors_per_cluster as u16;
 
             DISK.read(address as u32, lba, sectors);
-
-            for c in FILE_BUFFER {
-                if c != 0 {
-                    print!("{}", c as char);
-                }
-            }
         }
-
-        println!();
     }
 
-    pub fn search_file(&self, name: &str) -> Entry {
+    pub fn search_file(&self, name: &[char]) -> Entry {
         let mut result = NULL_ENTRY;
 
         for entry in self.entries {
             let mut found = true;
             let mut i = 0;
-            
-            for c in name.chars() {
-                if c as u8 != entry.name[i] {
+
+            for n in name {
+                let mut c = n.clone();
+
+                if c.is_ascii_lowercase() {
+                    c = c.to_ascii_uppercase();
+                }
+
+                if (c != entry.name[i] as char) && (name[i] != '\0') {
                     found = false;
                 }
+
                 i += 1;
             }
 

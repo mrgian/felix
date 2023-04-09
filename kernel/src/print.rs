@@ -27,6 +27,11 @@ impl fmt::Write for Printer {
 impl Printer {
     //copy given char to memory pointed to vga_pointer
     pub fn printc(&mut self, c: char, foreground: u8, background: u8) {
+        if c == '\n' {
+            new_line();
+            return;
+        }
+
         //calculate pointer from coords
         let pointer = VGA_START + ((self.y * WIDTH + self.x) * 2) as u32;
 

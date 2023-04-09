@@ -84,7 +84,6 @@ pub extern "C" fn _start() -> ! {
         SHELL.init();
     }
 
-
     //halt cpu while waiting for interrupts
     loop {
         unsafe {

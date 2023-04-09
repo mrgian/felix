@@ -34,8 +34,8 @@ echo "Formatting main partition..."
 mkfs.fat -F 16 build/partition.img
 
 echo "Copying kernel and data to main partition..."
-mcopy -i build/partition.img test1.txt "::test1.txt"
-mcopy -i build/partition.img test2.txt "::test2.txt"
+mcopy -i build/partition.img pacciani "::pacciani"
+mcopy -i build/partition.img test2 "::test2"
 
 echo "Putting main partition to disk image..."
 dd if=build/partition.img of=build/disk.img bs=512 seek=36864 conv=notrunc
