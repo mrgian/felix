@@ -41,7 +41,7 @@ Felix running on real hardware:<br>
 
 ## Building
 
-You can download a pre-built image or you can build it by yourself using Docker or the build script.
+You can download a pre-built image or you can build it by yourself using Docker.
 
 ### Download pre-built image
 [![build](https://github.com/mrgian/felix/actions/workflows/rust.yml/badge.svg)](https://github.com/mrgian/felix/actions)
@@ -58,13 +58,6 @@ First make sure you have Docker installed. Then:
 3. Build the image `docker build -t felix-image .`
 4. Run the container `docker run --name felix-container felix-image`
 5. Copy build from container to host `docker cp felix-container:/root/felix/build .`
-
-### Build using script
-Make sure you have `Rust`,`mtools`,`dosfstools` and `fdisk` installed on your system. Then:
-
-1. Clone the repo `git clone https://github.com/mrgian/felix`
-2. Change dir to repo `cd felix`
-3. Run build script `./build.sh`
 
 ## Running
 The final disk image is `build/disk.img`
