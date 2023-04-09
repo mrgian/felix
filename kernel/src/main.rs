@@ -18,6 +18,7 @@ use disk::DISK;
 use fat::FAT;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
+use print::PRINTER;
 use shell::SHELL;
 
 //1MiB. TODO: Get those from linker
@@ -77,7 +78,7 @@ pub extern "C" fn _start() -> ! {
         FAT.load_table();
     }
 
-    println!("Welcome to Felix {}!", VERSION);
+    print_info();
 
     unsafe {
         //init felix shell
@@ -97,4 +98,15 @@ fn panic(info: &PanicInfo) -> ! {
     println!("PANIC! Info: {}", info);
 
     loop {}
+}
+
+fn print_info() {
+    unsafe {
+        PRINTER.set_colors(0xf, 0);
+        println!();
+        println!("FELIX {}", VERSION);
+        println!("Copyright (c) 2023 Gianmatteo Palmieri");
+        println!();
+        PRINTER.reset_colors();
+    }
 }

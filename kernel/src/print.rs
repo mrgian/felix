@@ -7,7 +7,7 @@ use core::fmt;
 pub static mut PRINTER: Printer = Printer {
     x: 0,
     y: 0,
-    foreground: 15,
+    foreground: 0x7,
     background: 0,
 };
 
@@ -140,7 +140,7 @@ impl Printer {
     }
 
     pub fn reset_colors(&mut self) {
-        self.foreground = 15;
+        self.foreground = 0x7;
         self.background = 0;
     }
 }
