@@ -67,7 +67,7 @@ Make sure you have `Rust`,`mtools`,`dosfstools` and `fdisk` installed on your sy
 ## Running
 The final disk image is `build/disk.img`
 
-You can run it in QEMU using this command: `qemu-system-i386 -hda build/disk.img`
+You can run it in QEMU using this command: `qemu-system-i386 -drive file=build/disk.img,index=0,media=disk,format=raw,if=ide`
 
 Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
 

@@ -80,6 +80,8 @@ impl Disk {
             }
             sectors_left -= 1;
         }
+
+        self.reset();
     }
 
     //check if disk is busy
@@ -122,6 +124,13 @@ impl Disk {
                     status
                 );
             }
+        }
+    }
+
+    pub fn reset(&self) {
+        unsafe {
+            asm!("out dx, al", in("dx") 0x3f6, in("al") 0b00000110 as u8);
+            asm!("out dx, al", in("dx") 0x3f6, in("al") 0b00000010 as u8);
         }
     }
 }
