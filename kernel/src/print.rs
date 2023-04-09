@@ -4,7 +4,12 @@ use core::fmt;
 //PRINTER
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
-pub static mut PRINTER: Printer = Printer { x: 0, y: 0 };
+pub static mut PRINTER: Printer = Printer {
+    x: 0,
+    y: 0,
+    foreground: 15,
+    background: 0,
+};
 
 const WIDTH: u16 = 80;
 const HEIGHT: u16 = 25;
@@ -14,6 +19,8 @@ const VGA_START: u32 = 0x000b8000;
 pub struct Printer {
     x: u16,
     y: u16,
+    foreground: u8,
+    background: u8,
 }
 
 //core lib needs to know how to print a string to implement its print formatted func
@@ -26,7 +33,7 @@ impl fmt::Write for Printer {
 
 impl Printer {
     //copy given char to memory pointed to vga_pointer
-    pub fn printc(&mut self, c: char, foreground: u8, background: u8) {
+    pub fn printc(&mut self, c: char) {
         if c == '\n' {
             new_line();
             return;
@@ -44,7 +51,7 @@ impl Printer {
             );
 
             //calculate color byte and move it to pointer + 1
-            let color = (background as u8) << 4 | (foreground as u8);
+            let color = self.background << 4 | self.foreground;
             asm!(
                 "mov [{0}], {1}",
                 in(reg) pointer + 1,
@@ -76,7 +83,7 @@ impl Printer {
         self.y = cursor.1;
 
         for c in s.chars() {
-            self.printc(c, 15, 0);
+            self.printc(c);
         }
 
         //set cursors position to new coords
@@ -85,7 +92,7 @@ impl Printer {
 
     pub fn delete(&mut self) {
         self.x -= 1;
-        self.printc('\0', 15, 0);
+        self.printc('\0');
         self.x -= 1;
 
         self.set_cursor_position();
@@ -125,6 +132,16 @@ impl Printer {
             asm!("out dx, al", in("dx") 0x3d4 as u16, in("al") 0x0e as u8);
             asm!("out dx, al", in("dx") 0x3d5 as u16, in("al") ((index >> 8) & 0xff) as u8);
         }
+    }
+
+    pub fn set_colors(&mut self, foreground: u8, background: u8) {
+        self.foreground = foreground;
+        self.background = background;
+    }
+
+    pub fn reset_colors(&mut self) {
+        self.foreground = 15;
+        self.background = 0;
     }
 }
 

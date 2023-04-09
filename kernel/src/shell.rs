@@ -20,7 +20,12 @@ impl Shell {
         self.buffer = [0 as char; 256];
         self.cursor = 0;
 
-        print!("{}", PROMPT);
+        unsafe {
+            PRINTER.set_colors(0xc, 0);
+            print!("{}", PROMPT);
+
+            PRINTER.reset_colors();
+        }
     }
 
     pub fn add(&mut self, c: char) {
