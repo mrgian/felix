@@ -1,0 +1,36 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Build the Docker image
+      run: docker build -t felix-image .
+    - name: Run the container
+      run: docker run --name felix-container felix-image
+    - name: Copy from container to host
+      run: docker cp felix-container:/root/felix/build .
+    - name: Get current date
+      id: build_date
+      run: echo "build_date=$(date +%Y%m%d)" >> $GITHUB_ENV
+    - name: Get current commit count
+      id: commit_count
+      run: echo "commit_count=$(git log --oneline | wc -l)" >> $GITHUB_ENV
+    - name: Upload build
+      uses: actions/upload-artifact@v3
+      with:
+        name: felix-${{ env.build_date }}-${{ env.commit_count }}
+        path: build
+  
