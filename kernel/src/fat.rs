@@ -191,9 +191,6 @@ impl FatDriver {
             let sectors: u16 = self.header.sectors_per_cluster as u16;
 
             DISK.read(address as u32, lba, sectors);
-
-                    println!("Adrr: {:X}", address as u32);
-        println!("Buff {:X} {:X} {:X}", self.buffer[0], self.buffer[1], self.buffer[2]);
         }
     }
 

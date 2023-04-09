@@ -35,7 +35,10 @@ Felix running on real hardware
  - Interrupt Descriptor Table loading
  - CPU exceptions handler
  - Programmable Interrupt Controller driver
- - keyboard interrupt handler
+ - keyboard driver
+ - shell
+ - ATA disk driver
+ - FAT16 filesystem file read
 
 ## Building
 
@@ -81,7 +84,12 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *08/03/23* - Implemented println macro
 - *20/03/23* - Switch to 32bit protected mode
 - *29/03/23* - Basic CPU exception handler
-- *30/03/23* - Implemented PIC driver
+- *30/03/23* - PIC driver
+- *06/04/23* - keyboard driver
+- *07/04/23* - start working on shell
+- *08/04/23* - ATA disk driver
+- *09/04/23* - FAT filesystem file read
+
 
 ## Credits
 This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).

@@ -108,22 +108,20 @@ impl Disk {
 
     //check if ata drive is working
     pub fn check(&mut self) {
+        let status: u8;
         unsafe {
-            let status: u8;
-            unsafe {
-                asm!("in al, dx", out("al") status, in("dx") STATUS_COMMAND_REGISTER);
-            }
+            asm!("in al, dx", out("al") status, in("dx") STATUS_COMMAND_REGISTER);
+        }
 
-            if status != 0 && status != 0xff {
-                self.enabled = true;
-                println!("[!] ATA drive found! Status register: {:X}", status);
-            } else {
-                self.enabled = false;
-                println!(
-                    "[ERROR] ATA drive not working! Status register: {:X}",
-                    status
-                );
-            }
+        if status != 0 && status != 0xff {
+            self.enabled = true;
+            println!("[!] ATA drive found! Status register: {:X}", status);
+        } else {
+            self.enabled = false;
+            println!(
+                "[ERROR] ATA drive not working! Status register: {:X}",
+                status
+            );
         }
     }
 
