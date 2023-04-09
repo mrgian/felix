@@ -37,8 +37,6 @@ pub extern "C" fn _start() -> ! {
         asm!("mov esp, {}", in(reg) STACK_START);
     }
 
-    println!("Welcome to Felix {}!", VERSION);
-
     unsafe {
         //init interrupt descriptor table
         IDT.init();
@@ -70,14 +68,19 @@ pub extern "C" fn _start() -> ! {
     }
 
     unsafe {
+        //check if ata drive is working
+        DISK.check();
+
+        //init filesystem
+        FAT.load_header();
+        FAT.load_entries();
+    }
+
+    println!("Welcome to Felix {}!", VERSION);
+
+    unsafe {
+        //init felix shell
         SHELL.init();
-
-        let ata = DISK.check_ata();
-
-        println!("ATA: {:X}", ata);
-
-        //FAT.load_header();
-        //FAT.load_entries();
     }
 
     //halt cpu while waiting for interrupts

@@ -22,13 +22,20 @@ const STATUS_RDY: u8 = 0b01000000;
 //const STATUS_DRQ: u8 = 0b00001000;
 //const STATUS_ERR: u8 = 0b00000001;
 
-pub static mut DISK: Disk = Disk {};
+pub static mut DISK: Disk = Disk { enabled: false };
 
-pub struct Disk {}
+pub struct Disk {
+    enabled: bool,
+}
 
 impl Disk {
     //read multiple sectors from lba to specified adddress
     pub fn read(&self, target: u32, lba: u64, sectors: u16) {
+        if !self.enabled {
+            println!("[ERROR] Cannot read! Disk not enabled");
+            return;
+        }
+
         //wait until not busy
         while self.is_busy() {}
 
@@ -97,25 +104,24 @@ impl Disk {
         (status & STATUS_RDY) != 0
     }
 
-    pub fn check_ata(&self) -> u8 {
+    //check if ata drive is working
+    pub fn check(&mut self) {
         unsafe {
-            asm!("out dx, al", in("dx") 0x3f6, in("al") 0b00000010 as u8);
-
-            /*asm!("out dx, al", in("dx") DRIVE_REGISTER, in("al") 0xa0 as u8);
-
-            asm!("out dx, al", in("dx") SECTOR_COUNT_REGISTER, in("al") 0 as u8);
-            asm!("out dx, al", in("dx") LBA_LOW_REGISTER, in("al") 0 as u8);
-            asm!("out dx, al", in("dx") LBA_MID_REGISTER, in("al") 0 as u8);
-            asm!("out dx, al", in("dx") LBA_HIGH_REGISTER, in("al") 0 as u8);
-
-            asm!("out dx, al", in("dx") STATUS_COMMAND_REGISTER, in("al") 0xec as u8);*/
-
             let status: u8;
             unsafe {
                 asm!("in al, dx", out("al") status, in("dx") STATUS_COMMAND_REGISTER);
             }
 
-            status
+            if status != 0 && status != 0xff {
+                self.enabled = true;
+                println!("[!] ATA drive found! Status register: {:X}", status);
+            } else {
+                self.enabled = false;
+                println!(
+                    "[ERROR] ATA drive not working! Status register: {:X}",
+                    status
+                );
+            }
         }
     }
 }
