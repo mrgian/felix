@@ -20,23 +20,28 @@ Felix running on real hardware:<br>
 ## Features
 
 ### Bootloader
- - boots (you don't say!)
- - BIOS compatible (also works on UEFI with CSM enabled)
- - Global Descriptor Table loading
- - Unreal Mode switching (to use 32bit addresses in 16bit Real Mode)
- - kernel copying from disk to protected memory
- - 32bit Protected Mode switching
- - kernel jumping
+- boots (you don't say!)
+- BIOS compatible (also works on UEFI with CSM enabled)
+- Global Descriptor Table loading
+- Unreal Mode switching (to use 32bit addresses in 16bit Real Mode)
+- kernel copying from disk to protected memory
+- 32bit Protected Mode switching
+- kernel jumping
 
- ### Kernel
- - print! macro able to write formatted text to VGA text buffer 
- - Interrupt Descriptor Table loading
- - CPU exceptions handler
- - Programmable Interrupt Controller driver
- - keyboard driver
- - shell
- - ATA disk driver
- - FAT16 filesystem file read
+### Kernel
+- print! macro able to write formatted text to VGA text buffer 
+- Interrupt Descriptor Table loading
+- CPU exceptions handler
+- Programmable Interrupt Controller driver
+- keyboard driver
+- ATA disk driver
+- FAT16 filesystem file read
+
+### Shell
+Available commands:
+- **help** shows available commands
+- **ls** lists root directory entries
+- **cat <filename>** displays content of a file
 
 ## Building
 

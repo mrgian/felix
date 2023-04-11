@@ -83,6 +83,9 @@ impl Shell {
                     println!("File not found!");
                 }
             },
+            b if equals("help", &b) => {
+                println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
+            }
             _ => {
                 println!("Unknown command!");
             }
