@@ -1,5 +1,6 @@
 use crate::fat::FAT;
 use crate::print::PRINTER;
+use core::arch::asm;
 
 pub static mut SHELL: Shell = Shell {
     buffer: [0 as char; 256],

@@ -1,13 +1,6 @@
 use core::arch::asm;
 use core::mem::size_of;
 
-//GLOBAL DESCRIPTOR TABLE
-//Warning! Mutable static here
-//TODO: Implement a mutex to get safe access to this
-pub static mut GDT: GlobalDescriptorTable = GlobalDescriptorTable {
-    entries: [NULL_ENTRY; GDT_ENTRIES],
-};
-
 const GDT_ENTRIES: usize = 3;
 
 #[derive(Copy, Clone, Debug)]
@@ -15,8 +8,6 @@ const GDT_ENTRIES: usize = 3;
 pub struct GdtEntry {
     entry: u64,
 }
-
-static NULL_ENTRY: GdtEntry = GdtEntry { entry: 0 };
 
 #[repr(C, packed)]
 pub struct GlobalDescriptorTable {
@@ -32,7 +23,7 @@ pub struct GdtDescriptor {
 //global descriptor table for flat memory model
 impl GlobalDescriptorTable {
     //left shifts are used to set bit from specified position
-    pub fn init(&mut self) {
+    pub fn new() -> Self {
         //segment lenght (0xffff means all 32bit memory)
         let limit = {
             let limit_low = 0xffff << 0;
@@ -85,7 +76,9 @@ impl GlobalDescriptorTable {
             entry: limit | base | access | flags,
         };
 
-        self.entries = [zero, code, data];
+        Self {
+            entries: [zero, code, data],
+        }
     }
 
     //load gdt using lgdt instruction

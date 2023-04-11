@@ -16,7 +16,7 @@ use core::arch::asm;
 use core::panic::PanicInfo;
 use disk::DISK;
 use fat::FAT;
-use interrupts::idt::IDT;
+use interrupts::idt::InterruptDescriptorTable;
 use interrupts::pic::PICS;
 use print::PRINTER;
 use shell::SHELL;
@@ -38,27 +38,23 @@ pub extern "C" fn _start() -> ! {
         asm!("mov esp, {}", in(reg) STACK_START);
     }
 
-    unsafe {
-        //init interrupt descriptor table
-        IDT.init();
+    //init idt
+    let mut idt = InterruptDescriptorTable::new();
 
-        //add CPU exceptions to idt
-        IDT.add_exceptions();
+    //add CPU exceptions to idt
+    idt.add_exceptions();
 
-        //add timer interrupt to idt
-        IDT.add(
-            interrupts::timer::TIMER_INT as usize,
-            interrupts::timer::timer as u32,
-        );
+    //add timer interrupt to idt
+    idt.add(
+        interrupts::timer::TIMER_INT as usize,
+        interrupts::timer::timer as u32,
+    );
 
-        //add keyboard interrupt to idt
-        IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
+    //add keyboard interrupt to idt
+    idt.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
 
-        //IDT.add(0x2e as usize, disk::ata_interrupt as u32);
-
-        //load idt
-        IDT.load();
-    }
+    //load idt
+    idt.load();
 
     //init programmable interrupt controllers
     PICS.init();
@@ -83,8 +79,6 @@ pub extern "C" fn _start() -> ! {
             FAT.load_table();
         }
     }
-
-    //print_info();
 
     unsafe {
         //init felix shell

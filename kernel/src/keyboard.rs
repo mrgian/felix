@@ -4,6 +4,7 @@ use core::arch::asm;
 
 pub const KEYBOARD_INT: u8 = 33;
 pub const KEYBAORD_CONTROLLER: u8 = 0x60;
+pub const CHAR_COUNT: usize = 36;
 
 pub static mut KEYBOARD: Keyboard = Keyboard { lshift: false };
 
@@ -15,12 +16,27 @@ pub struct Keyboard {
 #[naked]
 pub extern "C" fn keyboard() {
     unsafe {
-        asm!("call keyboard_handler", "iretd", options(noreturn));
+        //push charset to keyboard handler before calling
+        asm!(
+            "push 0x76626e6d",
+            "push 0x63787a6c",
+            "push 0x6b6a6867",
+            "push 0x66647361",
+            "push 0x706f6975",
+            "push 0x79747265",
+            "push 0x77713039",
+            "push 0x38373635",
+            "push 0x34333231",
+            "call keyboard_handler",
+            "add esp, 36",
+            "iretd",
+            options(noreturn)
+        );
     }
 }
 
 #[no_mangle]
-pub extern "C" fn keyboard_handler() {
+pub extern "C" fn keyboard_handler(charset: [u8; CHAR_COUNT]) {
     //read scancode from keyboard controller
     let scancode: u8;
     unsafe {
@@ -61,7 +77,7 @@ pub extern "C" fn keyboard_handler() {
     }
 
     //print char
-    let key = scancode_to_char(scancode);
+    let key = scancode_to_char(scancode, charset);
 
     if key != '\0' {
         unsafe {
@@ -70,9 +86,7 @@ pub extern "C" fn keyboard_handler() {
     }
 }
 
-fn scancode_to_char(scancode: u8) -> char {
-    let chars = "1234567890qwertyuiopasdfghjklzxcvbnm".as_bytes();
-
+fn scancode_to_char(scancode: u8, charset: [u8; CHAR_COUNT]) -> char {
     let diff;
     match scancode {
         0x02..=0x0b => diff = 2,
@@ -84,24 +98,22 @@ fn scancode_to_char(scancode: u8) -> char {
 
     let index = (scancode - diff) as usize;
 
-    let mut key;
+    let mut key: char = '\0';
 
-    if index < chars.len() {
-        key = chars[index];
+    if index < charset.len() {
+        key = charset[index] as char;
 
         unsafe {
             if KEYBOARD.lshift {
                 key = key.to_ascii_uppercase();
             }
         }
-    } else {
-        key = 0x00;
     }
 
     //space
     if scancode == 0x39 {
-        key = 0x20;
+        key = 0x20 as char;
     }
 
-    key as char
+    key
 }

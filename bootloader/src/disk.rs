@@ -1,11 +1,6 @@
 use core::arch::asm;
 use core::mem;
 
-//DISK READER
-//Warning! Mutable static here
-//TODO: Implement a mutex to get safe access to this
-pub static mut DISK: DiskReader = DiskReader { lba: 0, buffer: 0 };
-
 const SECTOR_SIZE: u64 = 512;
 
 #[repr(C, packed)]
@@ -24,9 +19,11 @@ pub struct DiskReader {
 }
 
 impl DiskReader {
-    pub fn init(&mut self, lba: u64, buffer: u16) {
-        self.lba = lba;
-        self.buffer = buffer;
+    pub fn new(lba: u64, buffer: u16) -> Self {
+        Self {
+            lba: lba,
+            buffer: buffer,
+        }
     }
 
     //read one sector from disk

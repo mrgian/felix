@@ -2,12 +2,6 @@ use crate::interrupts::exceptions;
 use core::arch::asm;
 use core::mem::size_of;
 
-//Warning! Mutable static here
-//TODO: Implement a mutex to get safe access to this
-pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable {
-    entries: [NULL_ENTRY; IDT_ENTRIES],
-};
-
 const IDT_ENTRIES: usize = 256;
 
 #[derive(Copy, Clone, Debug)]
@@ -41,8 +35,10 @@ pub struct IdtDescriptor {
 
 impl InterruptDescriptorTable {
     //fill table with entries with a generic handler
-    pub fn init(&mut self) {
-        self.entries = [IdtEntry::new(exceptions::generic_handler as u32); IDT_ENTRIES];
+    pub fn new() -> Self {
+        Self {
+            entries: [IdtEntry::new(exceptions::generic_handler as u32); IDT_ENTRIES],
+        }
     }
 
     pub fn add(&mut self, int: usize, handler: u32) {
