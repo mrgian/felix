@@ -1,4 +1,4 @@
-<p align="center"><img src="https://user-images.githubusercontent.com/10211171/230798317-84bb8e51-ec80-4fc5-9ef7-86c0bc291c46.jpg" height=150></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/10211171/231185775-eb188a74-a133-45f6-8f2b-21cc1d498a0a.jpg" height=150></p>
 <h1 align="center">Felix OS</h1>
 <h3 align="center">
 x86 operating system
