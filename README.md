@@ -8,7 +8,7 @@ x86 operating system
 
 Felix is my attempt at writing an x86 operating system.
 
-It's **written completely from scratch** in Rust and doesn't use any external dependecies.
+It's **written completely from scratch** in Rust and doesn't use any external dependencies.
 
 ## Pictures
 Felix running in QEMU:<br>
