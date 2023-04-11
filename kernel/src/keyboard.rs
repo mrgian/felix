@@ -18,7 +18,7 @@ pub extern "C" fn keyboard() {
     unsafe {
         //push charset to keyboard handler before calling
         asm!(
-            "push 0x76626e6d",
+            "push 0x6d6e6276",
             "push 0x63787a6c",
             "push 0x6b6a6867",
             "push 0x66647361",

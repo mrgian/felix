@@ -14,14 +14,6 @@ pub struct IdtEntry {
     offset_high: u16,      //higher 16 bits of handler func address
 }
 
-static NULL_ENTRY: IdtEntry = IdtEntry {
-    offset_low: 0,
-    segment_selector: 0,
-    reserved: 0,
-    flags: 0,
-    offset_high: 0,
-};
-
 #[repr(C, packed)]
 pub struct InterruptDescriptorTable {
     entries: [IdtEntry; IDT_ENTRIES],
