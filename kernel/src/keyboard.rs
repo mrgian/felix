@@ -1,6 +1,6 @@
 use crate::interrupts::pic::PICS;
-use crate::shell::SHELL;
 use crate::print::PRINTER;
+use crate::shell::SHELL;
 use core::arch::asm;
 
 pub const KEYBOARD_INT: u8 = 33;
