@@ -22,7 +22,7 @@ echo "Making empty disk image..."
 dd if=/dev/zero of=build/disk.img bs=64MiB count=1
 
 echo "Partitioning disk image..."
-sfdisk build/disk.img < disk.layout
+/sbin/sfdisk build/disk.img < disk.layout
 
 echo "Putting boot sector in disk image..."
 dd if=build/boot.bin of=build/disk.img conv=notrunc
@@ -31,7 +31,7 @@ echo "Getting main partition from disk image..."
 dd if=build/disk.img of=build/partition.img bs=512 skip=36864
 
 echo "Formatting main partition..."
-mkfs.fat -F 16 build/partition.img
+/sbin/mkfs.fat -F 16 build/partition.img
 
 echo "Copying kernel and data to main partition..."
 mcopy -i build/partition.img dante "::dante"
