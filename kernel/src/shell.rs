@@ -48,10 +48,7 @@ impl Shell {
     }
 
     pub fn enter(&mut self) {
-        unsafe {
-            PRINTER.new_line();
-        }
-
+        newln!();
         self.interpret();
         self.init();
     }

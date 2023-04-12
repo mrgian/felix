@@ -35,7 +35,7 @@ impl Printer {
     //copy given char to memory pointed to vga_pointer
     pub fn printc(&mut self, c: char) {
         if c == '\n' {
-            self.new_line();
+            new_line();
             return;
         }
 
@@ -132,7 +132,7 @@ impl Printer {
         self.set_cursor_position();
 
         for a in 0..25 {
-            for i in (80 * a)..((80 * a) + 80) {
+            for i in (80*a)..((80*a)+80) {
                 let new = VGA_START + i * 2;
                 let old = VGA_START + (i + 80) * 2;
 
@@ -166,13 +166,6 @@ impl Printer {
         }
     }
 
-    pub fn new_line(&mut self) {
-        self.x = 0;
-        self.y += 1;
-
-        self.set_cursor_position();
-    }
-
     pub fn set_colors(&mut self, foreground: u8, background: u8) {
         self.foreground = foreground;
         self.background = background;
@@ -194,17 +187,21 @@ macro_rules! print {
 #[macro_export]
 macro_rules! println {
     () => {
-        unsafe {
-            $crate::print::PRINTER.new_line();
-        }
+        $crate::print::new_line();
     };
 
 
     ($($arg:tt)*) => {
         $crate::print!("{}", format_args!($($arg)*));
-        unsafe {
-            $crate::print::PRINTER.new_line();
-        }
+        $crate::print::new_line();
+    };
+}
+
+//macro for newln!
+#[macro_export]
+macro_rules! newln {
+    () => {
+        $crate::print::new_line();
     };
 }
 
@@ -212,6 +209,15 @@ pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {
         PRINTER.write_fmt(args).unwrap();
+    }
+}
+
+pub fn new_line() {
+    unsafe {
+        PRINTER.x = 0;
+        PRINTER.y += 1;
+
+        PRINTER.set_cursor_position();
     }
 }
 
