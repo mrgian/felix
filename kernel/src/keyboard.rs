@@ -1,5 +1,6 @@
 use crate::interrupts::pic::PICS;
 use crate::shell::SHELL;
+use crate::print::PRINTER;
 use core::arch::asm;
 
 pub const KEYBOARD_INT: u8 = 33;
@@ -70,6 +71,11 @@ pub extern "C" fn keyboard_handler(charset: [u8; CHAR_COUNT]) {
             0x1c => {
                 SHELL.enter();
                 return;
+            }
+
+            //scroll
+            0x48 => {
+                PRINTER.scroll();
             }
 
             _ => {}

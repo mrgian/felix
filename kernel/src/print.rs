@@ -43,6 +43,10 @@ impl Printer {
         let pointer = VGA_START + ((self.y * WIDTH + self.x) * 2) as u32;
 
         unsafe {
+            if self.y == HEIGHT {
+                self.scroll();
+            }
+
             //move char byte to pointer
             asm!(
                 "mov [{0}], {1}",
@@ -65,12 +69,6 @@ impl Printer {
             if self.x > WIDTH {
                 self.x = 0;
                 self.y += 1;
-            }
-
-            //if y coord overflow go back up
-            if self.y > HEIGHT {
-                self.x = 0;
-                self.y = 0;
             }
         }
     }
@@ -131,6 +129,45 @@ impl Printer {
             asm!("out dx, al", in("dx") 0x3d5 as u16, in("al") (index & 0xff) as u8);
             asm!("out dx, al", in("dx") 0x3d4 as u16, in("al") 0x0e as u8);
             asm!("out dx, al", in("dx") 0x3d5 as u16, in("al") ((index >> 8) & 0xff) as u8);
+        }
+    }
+
+    pub fn scroll(&mut self) {
+        self.y -= 1;
+        self.set_cursor_position();
+
+        for a in 0..25 {
+            for i in (80*a)..((80*a)+80) {
+                let new = VGA_START + i * 2;
+                let old = VGA_START + (i + 80) * 2;
+
+                let ch: u8;
+                let col: u8;
+
+                unsafe {
+                    asm!(
+                        "mov {0}, [{1}]",
+                        out(reg_byte) ch,
+                        in(reg) old,
+                    );
+                    asm!(
+                        "mov {0}, [{1}]",
+                        out(reg_byte) col,
+                        in(reg) old + 1,
+                    );
+
+                    asm!(
+                        "mov [{0}], {1}",
+                        in(reg) new,
+                        in(reg_byte) ch as u8,
+                    );
+                    asm!(
+                        "mov [{0}], {1}",
+                        in(reg) new + 1,
+                        in(reg_byte) col as u8,
+                    );
+                }
+            }
         }
     }
 
