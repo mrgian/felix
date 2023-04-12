@@ -43,6 +43,10 @@ impl Printer {
         let pointer = VGA_START + ((self.y * WIDTH + self.x) * 2) as u32;
 
         unsafe {
+            if self.y == HEIGHT {
+                self.scroll();
+            }
+
             //move char byte to pointer
             asm!(
                 "mov [{0}], {1}",
@@ -129,6 +133,7 @@ impl Printer {
     }
 
     pub fn scroll(&mut self) {
+        self.y -= 1;
         self.set_cursor_position();
 
         for a in 0..25 {
