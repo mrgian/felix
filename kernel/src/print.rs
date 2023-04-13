@@ -47,20 +47,12 @@ impl Printer {
                 self.scroll();
             }
 
-            //move char byte to pointer
-            asm!(
-                "mov [{0}], {1}",
-                in(reg) pointer,
-                in(reg_byte) c as u8,
-            );
+            //move char byte to pointer (convert addr to pointer and dereference it)
+            *(pointer as *mut u8) = c as u8;
 
             //calculate color byte and move it to pointer + 1
             let color = self.background << 4 | self.foreground;
-            asm!(
-                "mov [{0}], {1}",
-                in(reg) pointer + 1,
-                in(reg_byte) color as u8,
-            );
+            *((pointer + 1) as *mut u8) = color;
 
             //increment x coord
             self.x += 1;
