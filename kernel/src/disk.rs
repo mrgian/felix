@@ -71,7 +71,7 @@ impl Disk {
                     asm!("in eax, dx", out("eax") buffer, in("dx") DATA_REGISTER);
 
                     //copy buffer in memory pointed by target
-                    *(target_address as *mut u32) = buffer;
+                    asm!("mov [{0}], {1}", in(reg) target_address, in(reg) buffer);
                 }
 
                 target_address += 4;

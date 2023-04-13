@@ -71,8 +71,11 @@ impl DiskReader {
             //for each sector copy byte by byte from buffer to target
             for _byte_index in 0..SECTOR_SIZE {
                 unsafe {
-                    //copy byte pointed by byte_address to memory pointer by current_target
-                    *(current_target as *mut u8) = *(byte_address as *mut u8);
+                    let mut byte: u8;
+
+                    asm!("mov {0}, [{1:e}]", out(reg_byte) byte, in(reg) byte_address);
+
+                    asm!("mov [{0:e}], {1}", in(reg) current_target, in(reg_byte) byte);
                 }
 
                 //increment target and byte address by one byte
