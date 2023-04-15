@@ -36,6 +36,7 @@ pub extern "C" fn keyboard() {
     }
 }
 
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 pub extern "C" fn keyboard_handler(charset: [u8; CHAR_COUNT]) {
     //read scancode from keyboard controller

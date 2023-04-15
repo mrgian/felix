@@ -1,6 +1,5 @@
 use crate::fat::FAT;
 use crate::print::PRINTER;
-use core::arch::asm;
 
 //SHELL
 //Warning! Mutable static here
@@ -86,9 +85,13 @@ impl Shell {
                     println!("File not found!");
                 }
             },
+            //help command
             b if equals("help", &b) => {
                 println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
+            //empty, do nothing
+            b if b[0] == '\0' => {}
+            //unknown command
             _ => {
                 println!("Unknown command!");
             }

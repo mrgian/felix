@@ -3,23 +3,7 @@ use core::mem::size_of;
 
 const GDT_ENTRIES: usize = 3;
 
-#[derive(Copy, Clone, Debug)]
-#[repr(C, packed)]
-pub struct GdtEntry {
-    entry: u64,
-}
-
-#[repr(C, packed)]
-pub struct GlobalDescriptorTable {
-    entries: [GdtEntry; GDT_ENTRIES],
-}
-
-#[repr(C, packed)]
-pub struct GdtDescriptor {
-    size: u16,                            //gdt size
-    offset: *const GlobalDescriptorTable, //pointer to gdt
-}
-
+//GLOBAL DESCRIPTOR TABLE
 pub static GDT: GlobalDescriptorTable = {
     //segment lenght (0xffff means all 32bit memory)
     let limit = {
@@ -77,6 +61,23 @@ pub static GDT: GlobalDescriptorTable = {
         entries: [zero, code, data],
     }
 };
+
+#[derive(Copy, Clone, Debug)]
+#[repr(C, packed)]
+pub struct GdtEntry {
+    entry: u64,
+}
+
+#[repr(C, packed)]
+pub struct GlobalDescriptorTable {
+    entries: [GdtEntry; GDT_ENTRIES],
+}
+
+#[repr(C, packed)]
+pub struct GdtDescriptor {
+    size: u16,                            //gdt size
+    offset: *const GlobalDescriptorTable, //pointer to gdt
+}
 
 //global descriptor table for flat memory model
 impl GlobalDescriptorTable {

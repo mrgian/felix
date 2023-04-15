@@ -113,21 +113,21 @@ pub struct FatDriver {
 
 impl FatDriver {
     //get header address and overwrite that mem location with data from boot sector
-    pub fn load_header(&self) {
-        let address = &self.header as *const Header;
+    pub fn load_header(&mut self) {
+        let target = &mut self.header as *mut Header;
 
         let lba: u64 = FAT_START as u64;
         let sectors: u16 = 1;
 
         unsafe {
-            DISK.read(address as u32, lba, sectors);
+            DISK.read(target, lba, sectors);
         }
     }
 
     //get entries array address and overwrite that mem location with data from root directory
     //calculate size and position of root direcotry based on data from header
-    pub fn load_entries(&self) {
-        let address = &self.entries as *const Entry;
+    pub fn load_entries(&mut self) {
+        let target = &mut self.entries as *mut Entry;
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
@@ -139,7 +139,7 @@ impl FatDriver {
         let sectors: u16 = size / self.header.bytes_per_sector;
 
         unsafe {
-            DISK.read(address as u32, lba, sectors);
+            DISK.read(target, lba, sectors);
         }
     }
 
@@ -169,7 +169,7 @@ impl FatDriver {
     }
 
     pub fn load_table(&mut self) {
-        let address = &self.table as *const u16;
+        let target = &mut self.table as *mut u16;
 
         let lba: u64 = FAT_START as u64 + self.header.reserved_sectors as u64;
 
@@ -177,13 +177,12 @@ impl FatDriver {
         let sectors: u16 = 1;
 
         unsafe {
-            DISK.read(address as u32, lba, sectors);
+            DISK.read(target, lba, sectors);
         }
     }
 
-    pub fn read_file(&self, entry: &Entry) {
-        unsafe {
-            let address = &self.buffer as *const u8;
+    pub fn read_file(&mut self, entry: &Entry) {
+            let target = &mut self.buffer as *mut u8;
 
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
@@ -193,7 +192,8 @@ impl FatDriver {
 
             let sectors: u16 = self.header.sectors_per_cluster as u16;
 
-            DISK.read(address as u32, lba, sectors);
+        unsafe {
+            DISK.read(target, lba, sectors);
         }
     }
 

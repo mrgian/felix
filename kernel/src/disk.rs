@@ -32,8 +32,8 @@ pub struct Disk {
 }
 
 impl Disk {
-    //read multiple sectors from lba to specified adddress
-    pub fn read(&self, target: u32, lba: u64, sectors: u16) {
+    //read multiple sectors from lba to specified target
+    pub fn read<T>(&self, target: *mut T, lba: u64, sectors: u16) {
         if !self.enabled {
             println!("[ERROR] Cannot read! Disk not enabled");
             return;
@@ -64,7 +64,7 @@ impl Disk {
         while !self.is_ready() {}
 
         let mut sectors_left = sectors;
-        let mut target_address = target;
+        let mut target_pointer = target;
         while sectors_left > 0 {
             //a sector is 512 byte, buffer size is 4 byte, so loop for 512/4
             for _i in 0..128 {
@@ -74,10 +74,10 @@ impl Disk {
                     asm!("in eax, dx", out("eax") buffer, in("dx") DATA_REGISTER);
 
                     //copy buffer in memory pointed by target
-                    asm!("mov [{0}], {1}", in(reg) target_address, in(reg) buffer);
-                }
+                    *(target_pointer as *mut u32) = buffer;
 
-                target_address += 4;
+                    target_pointer = target_pointer.byte_add(4);
+                }
             }
             sectors_left -= 1;
         }

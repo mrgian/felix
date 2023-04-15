@@ -39,28 +39,20 @@ impl Printer {
             return;
         }
 
-        //calculate pointer from coords
-        let pointer = VGA_START + ((self.y * WIDTH + self.x) * 2) as u32;
+        //calculate target from coords
+        let target = (VGA_START + ((self.y * WIDTH + self.x) * 2) as u32) as *mut u8;
 
         unsafe {
             if self.y == HEIGHT {
                 self.scroll();
             }
 
-            //move char byte to pointer
-            asm!(
-                "mov [{0}], {1}",
-                in(reg) pointer,
-                in(reg_byte) c as u8,
-            );
+            //copy char byte to target
+            *target = c as u8;
 
-            //calculate color byte and move it to pointer + 1
+            //calculate color byte and move it to target + 1 byte
             let color = self.background << 4 | self.foreground;
-            asm!(
-                "mov [{0}], {1}",
-                in(reg) pointer + 1,
-                in(reg_byte) color as u8,
-            );
+            *target.byte_add(1) = color;
 
             //increment x coord
             self.x += 1;
