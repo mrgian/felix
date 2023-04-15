@@ -89,14 +89,14 @@ impl Disk {
             self.lba += 1;
             sectors_left -= 1;
 
-            Self::print_status(sectors, sectors_left);
+            self.print_status(sectors, sectors_left);
         }
 
         println!();
     }
 
     //print a period every 1024 sectors read
-    fn print_status(sectors: u16, sectors_left: u16) {
+    fn print_status(&self, sectors: u16, sectors_left: u16) {
         let sectors_read = sectors - sectors_left;
         if sectors_read % 64 == 0 {
             print!(".");

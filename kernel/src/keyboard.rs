@@ -1,5 +1,4 @@
 use crate::interrupts::pic::PICS;
-use crate::print::PRINTER;
 use crate::shell::SHELL;
 use core::arch::asm;
 
@@ -72,11 +71,6 @@ pub extern "C" fn keyboard_handler(charset: [u8; CHAR_COUNT]) {
             0x1c => {
                 SHELL.enter();
                 return;
-            }
-
-            //scroll
-            0x48 => {
-                PRINTER.scroll();
             }
 
             _ => {}

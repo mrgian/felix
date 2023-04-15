@@ -35,7 +35,7 @@ impl Printer {
     //copy given char to memory pointed to vga_pointer
     pub fn printc(&mut self, c: char) {
         if c == '\n' {
-            new_line();
+            self.new_line();
             return;
         }
 
@@ -44,7 +44,9 @@ impl Printer {
 
         unsafe {
             if self.y == HEIGHT {
+                self.y -= 1;
                 self.scroll();
+                self.set_cursor_position();
             }
 
             //copy char byte to target
@@ -124,40 +126,16 @@ impl Printer {
         }
     }
 
+    //copy content of each row to upper row
     pub fn scroll(&mut self) {
-        self.y -= 1;
-        self.set_cursor_position();
-
         for a in 0..25 {
             for i in (80 * a)..((80 * a) + 80) {
-                let new = VGA_START + i * 2;
-                let old = VGA_START + (i + 80) * 2;
-
-                let ch: u8;
-                let col: u8;
+                let new = (VGA_START + i * 2) as *mut u8;
+                let old = (VGA_START + (i + 80) * 2) as *const u8;
 
                 unsafe {
-                    asm!(
-                        "mov {0}, [{1}]",
-                        out(reg_byte) ch,
-                        in(reg) old,
-                    );
-                    asm!(
-                        "mov {0}, [{1}]",
-                        out(reg_byte) col,
-                        in(reg) old + 1,
-                    );
-
-                    asm!(
-                        "mov [{0}], {1}",
-                        in(reg) new,
-                        in(reg_byte) ch as u8,
-                    );
-                    asm!(
-                        "mov [{0}], {1}",
-                        in(reg) new + 1,
-                        in(reg_byte) col as u8,
-                    );
+                    *new = *old;
+                    *new.byte_add(1) = *old.byte_add(1);
                 }
             }
         }
@@ -172,6 +150,18 @@ impl Printer {
         self.foreground = 0x7;
         self.background = 0;
     }
+
+    pub fn new_line(&mut self) {
+        self.x = 0;
+        self.y += 1;
+
+        if self.y == HEIGHT {
+            self.y -= 1;
+            self.scroll();
+        }
+
+        self.set_cursor_position();
+    }
 }
 
 //macro for print!
@@ -184,21 +174,17 @@ macro_rules! print {
 #[macro_export]
 macro_rules! println {
     () => {
-        $crate::print::new_line();
+        unsafe {
+            $crate::print::PRINTER.new_line();
+        }
     };
 
 
     ($($arg:tt)*) => {
         $crate::print!("{}", format_args!($($arg)*));
-        $crate::print::new_line();
-    };
-}
-
-//macro for newln!
-#[macro_export]
-macro_rules! newln {
-    () => {
-        $crate::print::new_line();
+        unsafe {
+            $crate::print::PRINTER.new_line();
+        }
     };
 }
 
@@ -206,15 +192,6 @@ pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {
         PRINTER.write_fmt(args).unwrap();
-    }
-}
-
-pub fn new_line() {
-    unsafe {
-        PRINTER.x = 0;
-        PRINTER.y += 1;
-
-        PRINTER.set_cursor_position();
     }
 }
 

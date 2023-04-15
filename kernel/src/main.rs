@@ -106,10 +106,14 @@ fn panic(info: &PanicInfo) -> ! {
 fn print_info() {
     unsafe {
         PRINTER.set_colors(0xf, 0);
-        println!();
-        println!("FELIX {}", VERSION);
-        println!("Copyright (c) 2023 Gianmatteo Palmieri");
-        println!();
+    }
+
+    println!();
+    println!("FELIX {}", VERSION);
+    println!("Copyright (c) 2023 Gianmatteo Palmieri");
+    println!();
+
+    unsafe {
         PRINTER.reset_colors();
     }
 }

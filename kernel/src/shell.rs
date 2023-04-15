@@ -50,21 +50,27 @@ impl Shell {
     }
 
     pub fn enter(&mut self) {
-        newln!();
+        unsafe {
+            PRINTER.new_line();
+        }
+
         self.interpret();
         self.init();
     }
 
+    #[allow(unused_unsafe)]
     fn interpret(&mut self) {
         match self.buffer {
             //test command
             b if equals("ping", &b) => {
                 println!("PONG!");
             }
+
             //list root directory
             b if equals("ls", &b) => unsafe {
                 FAT.list_entries();
             },
+
             //display content of file
             b if equals("cat", &b) => unsafe {
                 for i in 4..15 {
@@ -85,12 +91,15 @@ impl Shell {
                     println!("File not found!");
                 }
             },
+
             //help command
             b if equals("help", &b) => {
                 println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
+
             //empty, do nothing
             b if b[0] == '\0' => {}
+
             //unknown command
             _ => {
                 println!("Unknown command!");
