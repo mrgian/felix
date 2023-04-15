@@ -137,7 +137,7 @@ impl Printer {
         self.set_cursor_position();
 
         for a in 0..25 {
-            for i in (80*a)..((80*a)+80) {
+            for i in (80 * a)..((80 * a) + 80) {
                 let new = VGA_START + i * 2;
                 let old = VGA_START + (i + 80) * 2;
 
