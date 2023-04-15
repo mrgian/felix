@@ -1,6 +1,16 @@
 use crate::disk::DISK;
 use core::mem;
 
+//FAT DRIVER
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut FAT: FatDriver = FatDriver {
+    header: NULL_HEADER,
+    entries: [NULL_ENTRY; ENTRY_COUNT],
+    table: [0; FAT_SIZE],
+    buffer: [0; 2048],
+};
+
 const ENTRY_COUNT: usize = 512;
 const FAT_START: u16 = 36864;
 
@@ -100,13 +110,6 @@ pub struct FatDriver {
     table: [u16; FAT_SIZE],
     pub buffer: [u8; 2048],
 }
-
-pub static mut FAT: FatDriver = FatDriver {
-    header: NULL_HEADER,
-    entries: [NULL_ENTRY; ENTRY_COUNT],
-    table: [0; FAT_SIZE],
-    buffer: [0; 2048],
-};
 
 impl FatDriver {
     //get header address and overwrite that mem location with data from boot sector

@@ -2,6 +2,13 @@ use crate::interrupts::exceptions;
 use core::arch::asm;
 use core::mem::size_of;
 
+//INTERRUPT DESCRIPTOR TABLE
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable {
+    entries: [IDT_ENTRY; IDT_ENTRIES],
+};
+
 const IDT_ENTRIES: usize = 256;
 
 #[derive(Copy, Clone, Debug)]
@@ -26,16 +33,14 @@ pub struct IdtDescriptor {
 }
 
 impl InterruptDescriptorTable {
-    //fill table with entries with a generic handler
-    pub fn new() -> Self {
-        Self {
-            entries: [IdtEntry::new(exceptions::generic_handler as u32); IDT_ENTRIES],
+    pub fn init(&mut self) {
+        for i in 0..IDT_ENTRIES {
+            self.add(i, exceptions::generic_handler as u32);
         }
     }
 
     pub fn add(&mut self, int: usize, handler: u32) {
-        let entry = IdtEntry::new(handler);
-        self.entries[int] = entry;
+        self.entries[int].set(handler);
     }
 
     //load idt using lidt instruction
@@ -60,39 +65,40 @@ impl InterruptDescriptorTable {
     }
 }
 
+pub static IDT_ENTRY: IdtEntry = {
+    let segment_selector: u16 = {
+        //segment selector of gdt entry
+        let rpl = 0b00 << 0; //ring privilege level (0 for ring 0)
+        let ti = 0b0 << 2; //0 to use gdt, 1 to use ldt
+        let index = 0b1 << 3; //bits 3-15 of gdt code entry, in my case 0x8 (0b1000)
+
+        rpl | ti | index
+    };
+
+    let reserved: u8 = 0; //always zero
+
+    let flags: u8 = {
+        //entry flags
+        let gate_type = 0xe << 0; //gate type, 0xe for 32bit interrupt gate, 0xf for 32bit trap gate
+        let zero = 0 << 3; //always zero
+        let dpl = 0 << 5; //ring allowed to use this interrupt
+        let p = 1 << 7; //presence bit, 1 to enable
+
+        gate_type | zero | dpl | p
+    };
+
+    IdtEntry {
+        offset_low: 0,
+        segment_selector: segment_selector,
+        reserved: reserved,
+        flags: flags,
+        offset_high: 0,
+    }
+};
+
 impl IdtEntry {
-    pub fn new(offset: u32) -> Self {
-        let offset_low: u16 = ((offset << 16) >> 16) as u16; //calculate lower 16 bits of offset
-
-        let offset_high: u16 = (offset >> 16) as u16; //calculate higher 16 bits of offset
-
-        let segment_selector: u16 = {
-            //segment selector of gdt entry
-            let rpl = 0b00 << 0; //ring privilege level (0 for ring 0)
-            let ti = 0b0 << 2; //0 to use gdt, 1 to use ldt
-            let index = 0b1 << 3; //bits 3-15 of gdt code entry, in my case 0x8 (0b1000)
-
-            rpl | ti | index
-        };
-
-        let reserved: u8 = 0; //always zero
-
-        let flags: u8 = {
-            //entry flags
-            let gate_type = 0xe << 0; //gate type, 0xe for 32bit interrupt gate, 0xf for 32bit trap gate
-            let zero = 0 << 3; //always zero
-            let dpl = 0 << 5; //ring allowed to use this interrupt
-            let p = 1 << 7; //presence bit, 1 to enable
-
-            gate_type | zero | dpl | p
-        };
-
-        Self {
-            offset_low: offset_low,
-            segment_selector: segment_selector,
-            reserved: reserved,
-            flags: flags,
-            offset_high: offset_high,
-        }
+    pub fn set(&mut self, offset: u32) {
+        self.offset_low = ((offset << 16) >> 16) as u16; //calculate lower 16 bits of offset
+        self.offset_high = (offset >> 16) as u16; //calculate higher 16 bits of offset
     }
 }

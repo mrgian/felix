@@ -3,11 +3,11 @@ use crate::print::PRINTER;
 use crate::shell::SHELL;
 use core::arch::asm;
 
+pub static mut KEYBOARD: Keyboard = Keyboard { lshift: false };
+
 pub const KEYBOARD_INT: u8 = 33;
 pub const KEYBAORD_CONTROLLER: u8 = 0x60;
 pub const CHAR_COUNT: usize = 36;
-
-pub static mut KEYBOARD: Keyboard = Keyboard { lshift: false };
 
 pub struct Keyboard {
     lshift: bool,

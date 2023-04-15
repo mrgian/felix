@@ -1,5 +1,19 @@
 use core::arch::asm;
 
+//define a global PICS so it can be accessed from everywhere
+pub static PICS: Pics = Pics {
+    master: Pic {
+        offset: OFFSET,
+        command_port: MASTER_PIC_COMMAND_PORT,
+        data_port: MASTER_PIC_DATA_PORT,
+    },
+    slave: Pic {
+        offset: OFFSET + IRQ_COUNT, //each pic can handle 8 interrupts, so slave pic handles the ints after the master ones
+        command_port: SLAVE_PIC_COMMAND_PORT,
+        data_port: SLAVE_PIC_DATA_PORT,
+    },
+};
+
 //master pic ports
 const MASTER_PIC_COMMAND_PORT: u8 = 0x20;
 const MASTER_PIC_DATA_PORT: u8 = 0x21;
@@ -20,20 +34,6 @@ const OFFSET: u8 = 32;
 
 //how many interrupts a pic can handle
 const IRQ_COUNT: u8 = 8;
-
-//define a global PICS so it can be accessed from everywhere
-pub static PICS: Pics = Pics {
-    master: Pic {
-        offset: OFFSET,
-        command_port: MASTER_PIC_COMMAND_PORT,
-        data_port: MASTER_PIC_DATA_PORT,
-    },
-    slave: Pic {
-        offset: OFFSET + IRQ_COUNT, //each pic can handle 8 interrupts, so slave pic handles the ints after the master ones
-        command_port: SLAVE_PIC_COMMAND_PORT,
-        data_port: SLAVE_PIC_DATA_PORT,
-    },
-};
 
 //single programmable interrupt controller
 struct Pic {

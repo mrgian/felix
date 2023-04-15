@@ -1,6 +1,11 @@
 use core::arch::asm;
 use core::mem;
 
+//DISK
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut DISK: Disk = Disk { lba: 0, buffer: 0 };
+
 const SECTOR_SIZE: u64 = 512;
 
 #[repr(C, packed)]
@@ -13,17 +18,15 @@ struct DiskAddressPacket {
     lba: u64,     //logical block address
 }
 
-pub struct DiskReader {
+pub struct Disk {
     lba: u64,
     buffer: u16,
 }
 
-impl DiskReader {
-    pub fn new(lba: u64, buffer: u16) -> Self {
-        Self {
-            lba: lba,
-            buffer: buffer,
-        }
+impl Disk {
+    pub fn init(&mut self, lba: u64, buffer: u16) {
+        self.lba = lba;
+        self.buffer = buffer;
     }
 
     //read one sector from disk

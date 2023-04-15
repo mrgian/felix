@@ -1,5 +1,10 @@
 use core::arch::asm;
 
+//DISK DRIVER
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
+pub static mut DISK: Disk = Disk { enabled: false };
+
 //controller registers ports
 const DATA_REGISTER: u16 = 0x1f0;
 const SECTOR_COUNT_REGISTER: u16 = 0x1f2;
@@ -21,8 +26,6 @@ const STATUS_RDY: u8 = 0b01000000;
 //const STATUS_DFE: u8 = 0b00100000;
 //const STATUS_DRQ: u8 = 0b00001000;
 //const STATUS_ERR: u8 = 0b00000001;
-
-pub static mut DISK: Disk = Disk { enabled: false };
 
 pub struct Disk {
     pub enabled: bool,

@@ -9,7 +9,7 @@ mod gdt;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
-use disk::DiskReader;
+use disk::DISK;
 use gdt::GDT;
 
 //const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -38,8 +38,10 @@ pub extern "C" fn _start() -> ! {
     //load kernel
     print!("[!] Loading kernel");
 
-    let mut disk = DiskReader::new(KERNEL_LBA, KERNEL_BUFFER);
-    disk.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
+    unsafe {
+        DISK.init(KERNEL_LBA, KERNEL_BUFFER);
+        DISK.read_sectors(KERNEL_SIZE, KERNEL_TARGET);
+    }
 
     println!("[!] Kernel loaded to memory.");
 

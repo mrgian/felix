@@ -2,6 +2,9 @@ use crate::fat::FAT;
 use crate::print::PRINTER;
 use core::arch::asm;
 
+//SHELL
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
 pub static mut SHELL: Shell = Shell {
     buffer: [0 as char; 256],
     arg: [0 as char; 11],
