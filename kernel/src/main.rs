@@ -99,11 +99,8 @@ pub extern "C" fn _start() -> ! {
 
     unsafe {
         PAGE_DIRECTORY.init();
+        PAGE_DIRECTORY.enable();
 
-        let a = (&PAGE_DIRECTORY as *const paging::PageDirectory) as u32;
-        asm!("xchg bx, bx");
-
-        asm!("mov cr3, eax","mov eax, cr0","or eax, 0x80000001","mov cr0, eax", in("eax") a);
         asm!("xchg bx, bx");
     }
 
