@@ -13,6 +13,8 @@ mod shell;
 mod disk;
 mod fat;
 
+mod paging;
+
 use core::arch::asm;
 use core::panic::PanicInfo;
 use disk::DISK;
@@ -21,6 +23,7 @@ use interrupts::idt::IDT;
 use interrupts::pic::PICS;
 use print::PRINTER;
 use shell::SHELL;
+use paging::PAGE_DIRECTORY;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -95,7 +98,11 @@ pub extern "C" fn _start() -> ! {
     }
 
     unsafe {
-        let a = "testporcodio";
+        PAGE_DIRECTORY.init();
+    }
+
+    unsafe {
+        let a = "testtesttest";
 
         asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
     }
