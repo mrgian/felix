@@ -1,4 +1,6 @@
-pub static mut PAGE_DIRECTORY: PageDirectory = PageDirectory { entries: [0x00000002; 1024] };
+pub static mut PAGE_DIRECTORY: PageDirectory = PageDirectory {
+    entries: [0x00000002; 1024],
+};
 
 #[repr(align(4096))]
 pub struct PageDirectory {
@@ -9,7 +11,7 @@ impl PageDirectory {
     pub fn init(&mut self) {
         let table = PageTable::new();
 
-        self.entries[0] = (&table as *const PageTable) as u32;
+        self.entries[0] = (&table as *const PageTable) as u32 | 3;
     }
 }
 
