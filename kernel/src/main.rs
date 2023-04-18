@@ -52,6 +52,12 @@ pub extern "C" fn _start() -> ! {
             interrupts::timer::timer as u32,
         );
 
+        //add print system call
+        IDT.add(
+            interrupts::print::PRINT_INT as usize,
+            interrupts::print::print as u32,
+        );
+
         //add keyboard interrupt to idt
         IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
 
@@ -86,6 +92,12 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         //init felix shell
         SHELL.init();
+    }
+
+    unsafe {
+        let a = "testporcodio";
+
+        asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
     }
 
     //halt cpu while waiting for interrupts
