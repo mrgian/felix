@@ -9,6 +9,7 @@ echo "Building Felix..."
 cargo build --target=x86_16-felix.json --package=felix-boot
 cargo build --target=x86_16-felix.json --package=felix-bootloader
 cargo build --target=x86_32-felix.json --package=felix-kernel
+cargo build --target=x86_32-felix.json --package=hello
 
 echo "Making build directory..."
 mkdir build
