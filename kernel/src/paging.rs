@@ -1,6 +1,6 @@
 use core::arch::asm;
 
-pub static mut PAGE_DIRECTORY: PageDirectory = PageDirectory {
+pub static mut PAGING: PageDirectory = PageDirectory {
     //0b010 (supervisor, write, not present)
     entries: [0x00000002; 1024],
 };
@@ -11,10 +11,8 @@ pub struct PageDirectory {
 }
 
 impl PageDirectory {
-    pub fn init(&mut self) {
-        let table = PageTable::new();
-
-        self.entries[0] = (&table as *const PageTable) as u32 | 0b011;
+    pub fn set_table(&mut self, index: usize, table: &PageTable) {
+        self.entries[index] = (table as *const PageTable) as u32 | 0b011;
     }
 
     pub fn enable(&self) {
@@ -42,6 +40,17 @@ impl PageTable {
         for i in 0..1024 {
             //0b011 (supervisor, write, present)
             table.entries[i] = ((i * 0x1000) | 0b011) as u32;
+        }
+
+        table
+    }
+
+    pub fn test() -> Self {
+        let mut table = Self { entries: [0; 1024] };
+
+        for i in 0..1024 {
+            //0b011 (supervisor, write, present)
+            table.entries[i] = (((1024 + i) * 0x1000) | 0b011) as u32;
         }
 
         table

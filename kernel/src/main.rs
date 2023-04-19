@@ -21,7 +21,7 @@ use disk::DISK;
 use fat::FAT;
 use interrupts::idt::IDT;
 use interrupts::pic::PICS;
-use paging::PAGE_DIRECTORY;
+use paging::PAGING;
 use print::PRINTER;
 use shell::SHELL;
 
@@ -98,16 +98,30 @@ pub extern "C" fn _start() -> ! {
     }
 
     unsafe {
-        PAGE_DIRECTORY.init();
-        PAGE_DIRECTORY.enable();
+        let table = paging::PageTable::new();
+        let table2 = paging::PageTable::test();
+        PAGING.set_table(0, &table);
+        PAGING.set_table(1, &table);
 
-        asm!("xchg bx, bx");
+        PAGING.enable();
     }
 
     unsafe {
+        let a: u32 = 0x003f_fffc;
+        let ptr = a as *mut u32;
+
+        *ptr = 0xdead_beef;
+    }
+
+    /*unsafe {
         let a = "testtesttest";
 
         asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
+    }*/
+
+    //bochs magic breakpoint
+    unsafe {
+        asm!("xchg bx, bx");
     }
 
     //halt cpu while waiting for interrupts
