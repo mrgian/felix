@@ -1,6 +1,8 @@
 use crate::fat::FAT;
 use crate::print::PRINTER;
 
+const APP_TARGET: u32 = 0x0035_0000;
+
 //SHELL
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
@@ -89,6 +91,26 @@ impl Shell {
                     println!();
                 } else {
                     println!("File not found!");
+                }
+            },
+
+            //loads a program
+            b if equals("run", &b) => unsafe {
+                for i in 4..15 {
+                    self.arg[i - 4] = b[i];
+                }
+
+                let entry = FAT.search_file(&self.arg);
+                if entry.name[0] != 0 {
+                    FAT.read_file(&entry);
+
+                    for c in FAT.buffer {
+                        if c != 0 {
+                            print!("{:X}", c);
+                        }
+                    }
+                } else {
+                    println!("Program not found!");
                 }
             },
 

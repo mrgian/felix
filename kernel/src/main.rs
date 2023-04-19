@@ -97,21 +97,14 @@ pub extern "C" fn _start() -> ! {
         SHELL.init();
     }
 
-    unsafe {
+    /*unsafe {
         let table = paging::PageTable::new();
         let table2 = paging::PageTable::test();
         PAGING.set_table(0, &table);
         PAGING.set_table(1, &table);
 
         PAGING.enable();
-    }
-
-    unsafe {
-        let a: u32 = 0x003f_fffc;
-        let ptr = a as *mut u32;
-
-        *ptr = 0xdead_beef;
-    }
+    }*/
 
     /*unsafe {
         let a = "testtesttest";
@@ -120,9 +113,9 @@ pub extern "C" fn _start() -> ! {
     }*/
 
     //bochs magic breakpoint
-    unsafe {
+    /*unsafe {
         asm!("xchg bx, bx");
-    }
+    }*/
 
     //halt cpu while waiting for interrupts
     loop {

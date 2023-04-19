@@ -197,6 +197,20 @@ impl FatDriver {
         }
     }
 
+    pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
+        let data_lba: u64 = FAT_START as u64
+            + (self.header.reserved_sectors
+                + self.header.sectors_per_fat * self.header.fat_count as u16
+                + 32) as u64;
+        let lba: u64 = data_lba + entry.first_cluster_low as u64 - 2;
+
+        let sectors: u16 = self.header.sectors_per_cluster as u16;
+
+        unsafe {
+            DISK.read(target, lba, sectors);
+        }
+    }
+
     pub fn search_file(&self, name: &[char]) -> Entry {
         let mut result = NULL_ENTRY;
 
