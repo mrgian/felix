@@ -38,7 +38,7 @@ echo "Formatting main partition..."
 echo "Copying data to main partition..."
 mcopy -i build/partition.img dante "::dante"
 mcopy -i build/partition.img lorem "::lorem"
-mcopy -i build/partition.img build/hello.bin "::hello"
+mcopy -i build/partition.img hello "::hello"
 
 echo "Putting main partition to disk image..."
 dd if=build/partition.img of=build/disk.img bs=512 seek=36864 conv=notrunc

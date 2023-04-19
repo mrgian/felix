@@ -80,6 +80,7 @@ impl Shell {
                 }
 
                 let entry = FAT.search_file(&self.arg);
+
                 if entry.name[0] != 0 {
                     FAT.read_file(&entry);
 

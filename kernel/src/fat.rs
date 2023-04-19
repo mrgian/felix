@@ -188,7 +188,7 @@ impl FatDriver {
             + (self.header.reserved_sectors
                 + self.header.sectors_per_fat * self.header.fat_count as u16
                 + 32) as u64;
-        let lba: u64 = data_lba + entry.first_cluster_low as u64 - 2;
+        let lba: u64 = data_lba + ((entry.first_cluster_low - 2) * self.header.sectors_per_cluster as u16) as u64;
 
         let sectors: u16 = self.header.sectors_per_cluster as u16;
 
@@ -202,7 +202,7 @@ impl FatDriver {
             + (self.header.reserved_sectors
                 + self.header.sectors_per_fat * self.header.fat_count as u16
                 + 32) as u64;
-        let lba: u64 = data_lba + entry.first_cluster_low as u64 - 2;
+        let lba: u64 = data_lba + ((entry.first_cluster_low - 2) * self.header.sectors_per_cluster as u16) as u64;
 
         let sectors: u16 = self.header.sectors_per_cluster as u16;
 
