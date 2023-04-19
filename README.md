@@ -93,6 +93,16 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *08/04/23* - ATA disk driver
 - *09/04/23* - FAT filesystem file read
 
+## Roadmap
+The following features are planned to be added sooner or later:
+ - system calls 
+ - paging
+ - memory allocator
+ - process manager
+ - CPU scheduler
+ - VESA video driver
+ - SATA AHCI disk driver
+ - graphical user interface
 
 ## Credits
 This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).
