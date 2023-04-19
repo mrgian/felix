@@ -1,5 +1,6 @@
 use crate::fat::FAT;
 use crate::print::PRINTER;
+use core::arch::asm;
 
 const APP_TARGET: u32 = 0x0035_0000;
 
@@ -103,12 +104,10 @@ impl Shell {
 
                 let entry = FAT.search_file(&self.arg);
                 if entry.name[0] != 0 {
-                    FAT.read_file(&entry);
+                    FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
 
-                    for c in FAT.buffer {
-                        if c != 0 {
-                            print!("{:X}", c);
-                        }
+                    unsafe {
+                        asm!("jmp {}", in(reg) APP_TARGET);
                     }
                 } else {
                     println!("Program not found!");

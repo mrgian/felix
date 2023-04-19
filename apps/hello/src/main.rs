@@ -10,7 +10,7 @@ pub extern "C" fn _start() {
     unsafe {
         asm!("xchg bx, bx");
 
-        let a = "hello from app!";
+        let a = "xxx";
 
         asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
     }
