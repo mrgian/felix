@@ -8,9 +8,10 @@ use core::panic::PanicInfo;
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
     unsafe {
-        let a = "hello from app!";
+        asm!("xchg bx, bx");
 
-        asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
+        let ptr = 0x0035_0000 as *mut u32;
+        *ptr = 0xdead_beef;
 
         loop {}
     }

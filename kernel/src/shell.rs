@@ -2,6 +2,8 @@ use crate::fat::FAT;
 use crate::print::PRINTER;
 use core::arch::asm;
 
+use crate::tss::TaskStateSegment;
+
 const APP_TARGET: u32 = 0x0030_0000;
 
 //SHELL
@@ -130,7 +132,14 @@ impl Shell {
             FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
 
             unsafe {
-                asm!("jmp {}", in(reg) APP_TARGET);
+                let tss = TaskStateSegment::new(APP_TARGET);
+                let ptr = &tss as *const TaskStateSegment;
+
+                asm!("xchg bx, bx");
+
+                asm!("cli");
+
+                asm!("ltr [{}]", in(reg) ptr as u32);
             }
         } else {
             println!("Program not found!");

@@ -15,6 +15,8 @@ mod fat;
 
 mod paging;
 
+mod tss;
+
 use core::arch::asm;
 use core::panic::PanicInfo;
 use disk::DISK;
