@@ -16,6 +16,7 @@ mod fat;
 mod paging;
 
 mod tss;
+mod gdt;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
@@ -26,6 +27,7 @@ use interrupts::pic::PICS;
 use paging::PAGING;
 use print::PRINTER;
 use shell::SHELL;
+use gdt::GDT;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
