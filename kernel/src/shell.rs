@@ -2,7 +2,7 @@ use crate::fat::FAT;
 use crate::print::PRINTER;
 use core::arch::asm;
 
-const APP_TARGET: u32 = 0x0035_0000;
+const APP_TARGET: u32 = 0x0030_0000;
 
 //SHELL
 //Warning! Mutable static here
@@ -65,57 +65,27 @@ impl Shell {
     fn interpret(&mut self) {
         match self.buffer {
             //test command
-            b if equals("ping", &b) => {
+            b if self.is_command("ping") => {
                 println!("PONG!");
             }
 
             //list root directory
-            b if equals("ls", &b) => unsafe {
+            b if self.is_command("ls") => unsafe {
                 FAT.list_entries();
             },
 
             //display content of file
-            b if equals("cat", &b) => unsafe {
-                for i in 4..15 {
-                    self.arg[i - 4] = b[i];
-                }
-
-                let entry = FAT.search_file(&self.arg);
-
-                if entry.name[0] != 0 {
-                    FAT.read_file(&entry);
-
-                    for c in FAT.buffer {
-                        if c != 0 {
-                            print!("{}", c as char);
-                        }
-                    }
-                    println!();
-                } else {
-                    println!("File not found!");
-                }
+            b if self.is_command("cat") => unsafe {
+                self.cat(&b);
             },
 
-            //loads a program
-            b if equals("run", &b) => unsafe {
-                for i in 4..15 {
-                    self.arg[i - 4] = b[i];
-                }
-
-                let entry = FAT.search_file(&self.arg);
-                if entry.name[0] != 0 {
-                    FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
-
-                    unsafe {
-                        asm!("jmp {}", in(reg) APP_TARGET);
-                    }
-                } else {
-                    println!("Program not found!");
-                }
+            //jump to specified program
+            b if self.is_command("run") => unsafe {
+                self.run(&b);
             },
 
             //help command
-            b if equals("help", &b) => {
+            b if self.is_command("help") => {
                 println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
 
@@ -128,15 +98,53 @@ impl Shell {
             }
         }
     }
-}
 
-fn equals(short: &str, long: &[char]) -> bool {
-    let mut i = 0;
-    for c in short.chars() {
-        if c != long[i as usize] {
-            return false;
+    pub unsafe fn cat(&mut self, b: &[char]) {
+        for i in 4..15 {
+            self.arg[i - 4] = b[i];
         }
-        i += 1;
+
+        let entry = FAT.search_file(&self.arg);
+
+        if entry.name[0] != 0 {
+            FAT.read_file(&entry);
+
+            for c in FAT.buffer {
+                if c != 0 {
+                    print!("{}", c as char);
+                }
+            }
+            println!();
+        } else {
+            println!("File not found!");
+        }
     }
-    true
+
+    pub unsafe fn run(&mut self, b: &[char]) {
+        for i in 4..15 {
+            self.arg[i - 4] = b[i];
+        }
+
+        let entry = FAT.search_file(&self.arg);
+        if entry.name[0] != 0 {
+            FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
+
+            unsafe {
+                asm!("jmp {}", in(reg) APP_TARGET);
+            }
+        } else {
+            println!("Program not found!");
+        }
+    }
+
+    pub fn is_command(&self, command: &str) -> bool {
+        let mut i = 0;
+        for c in command.chars() {
+            if c != self.buffer[i as usize] {
+                return false;
+            }
+            i += 1;
+        }
+        true
+    }
 }
