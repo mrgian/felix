@@ -18,12 +18,12 @@ pub struct TaskStateSegment {
     ebp: u32,
     esi: u32,
     edi: u32,
-    es: u32, //16 bit
-    cs: u32, //16 bit
-    ss: u32, //16 bit
-    ds: u32, //16 bit
-    fs: u32, //16 bit
-    gs: u32, //16 bit
+    es: u32,   //16 bit
+    cs: u32,   //16 bit
+    ss: u32,   //16 bit
+    ds: u32,   //16 bit
+    fs: u32,   //16 bit
+    gs: u32,   //16 bit
     ldtr: u32, //16 bit
     iopb: u32, //higher 16 bit
     ssp: u32,
@@ -54,10 +54,10 @@ impl TaskStateSegment {
             cs: 0x0008, //16 bit
             ss: 0x0010, //16 bit
             ds: 0x0010, //16 bit
-            fs: 0, //16 bit
-            gs: 0, //16 bit
-            ldtr: 0, //16 bit
-            iopb: 0, //higher 16 bit
+            fs: 0,      //16 bit
+            gs: 0,      //16 bit
+            ldtr: 0,    //16 bit
+            iopb: 0,    //higher 16 bit
             ssp: 0,
         }
     }

@@ -7,18 +7,20 @@ pub const PRINT_INT: u8 = 0x80;
 #[naked]
 pub extern "C" fn print() {
     unsafe {
-        asm!("call print_handler", "iretd", options(noreturn));
+        asm!(
+            "push eax",
+            "push ebx",
+            "call print_handler",
+            "add esp, 8",
+            "iretd",
+            options(noreturn)
+        );
     }
 }
 
 #[no_mangle]
-pub extern "C" fn print_handler() {
-    let address: u32;
-    let size: u32;
-
+pub extern "C" fn print_handler(size: u32, address: u32) {
     unsafe {
-        asm!("mov {0}, esi","mov {1}, eax", out(reg) address, out(reg) size);
-
         let mut pointer = address as *const u8;
         let mut c = *pointer as char;
 

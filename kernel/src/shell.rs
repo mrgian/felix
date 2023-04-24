@@ -132,14 +132,9 @@ impl Shell {
             FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
 
             unsafe {
-                let tss = TaskStateSegment::new(APP_TARGET);
-                let ptr = &tss as *const TaskStateSegment;
-
-                asm!("xchg bx, bx");
-
                 asm!("cli");
 
-                asm!("ltr [{}]", in(reg) ptr as u32);
+                asm!("call {}", in(reg) APP_TARGET);
             }
         } else {
             println!("Program not found!");
