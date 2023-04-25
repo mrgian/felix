@@ -16,9 +16,9 @@ mod fat;
 use core::arch::asm;
 use core::panic::PanicInfo;
 use drivers::disk::DISK;
+use drivers::pic::PICS;
 use fat::FAT;
 use interrupts::idt::IDT;
-use drivers::pic::PICS;
 use print::PRINTER;
 use shell::SHELL;
 
@@ -59,7 +59,10 @@ pub extern "C" fn _start() -> ! {
         );
 
         //add keyboard interrupt to idt
-        IDT.add(drivers::keyboard::KEYBOARD_INT as usize, drivers::keyboard::keyboard as u32);
+        IDT.add(
+            drivers::keyboard::KEYBOARD_INT as usize,
+            drivers::keyboard::keyboard as u32,
+        );
 
         //load idt
         IDT.load();
