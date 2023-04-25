@@ -16,7 +16,7 @@ const FAT_START: u16 = 36864;
 
 const FAT_SIZE: usize = 256;
 
-//FAT12 header
+//FAT16 header
 #[derive(Copy, Clone, Debug)]
 #[repr(C, packed)]
 pub struct Header {
@@ -44,6 +44,7 @@ pub struct Header {
     volume_id: u32,
     volume_label: [u8; 11],
     system_id: [u8; 8],
+    zero: [u8; 460], //needed to make struct 512 bytes big
 }
 
 static NULL_HEADER: Header = Header {
@@ -69,6 +70,7 @@ static NULL_HEADER: Header = Header {
     volume_id: 0,
     volume_label: [0; 11],
     system_id: [0; 8],
+    zero: [0; 460],
 };
 
 //FAT file entry struct
@@ -105,7 +107,7 @@ static NULL_ENTRY: Entry = Entry {
 };
 
 pub struct FatDriver {
-    header: Header,
+    pub header: Header,
     entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
     table: [u16; FAT_SIZE],
     pub buffer: [u8; 2048],

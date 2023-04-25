@@ -89,6 +89,7 @@ pub extern "C" fn _start() -> ! {
         if DISK.enabled {
             //init filesystem
             FAT.load_header();
+
             FAT.load_entries();
             FAT.load_table();
         }
