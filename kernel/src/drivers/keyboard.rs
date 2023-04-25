@@ -1,4 +1,4 @@
-use crate::interrupts::pic::PICS;
+use crate::drivers::pic::PICS;
 use crate::shell::SHELL;
 use core::arch::asm;
 

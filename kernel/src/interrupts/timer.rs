@@ -1,4 +1,4 @@
-use crate::interrupts::pic::PICS;
+use crate::drivers::pic::PICS;
 use core::arch::asm;
 
 pub const TIMER_INT: u8 = 32;

@@ -1,4 +1,4 @@
-use crate::disk::DISK;
+use crate::drivers::disk::DISK;
 use core::mem;
 
 //FAT DRIVER

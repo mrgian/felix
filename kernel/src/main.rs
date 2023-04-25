@@ -6,24 +6,19 @@
 #[macro_use]
 mod print;
 
+mod drivers;
+
 mod interrupts;
-mod keyboard;
 mod shell;
 
-mod disk;
 mod fat;
-
-mod paging;
-
-mod tss;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
-use disk::DISK;
+use drivers::disk::DISK;
 use fat::FAT;
 use interrupts::idt::IDT;
-use interrupts::pic::PICS;
-use paging::PAGING;
+use drivers::pic::PICS;
 use print::PRINTER;
 use shell::SHELL;
 
@@ -64,7 +59,7 @@ pub extern "C" fn _start() -> ! {
         );
 
         //add keyboard interrupt to idt
-        IDT.add(keyboard::KEYBOARD_INT as usize, keyboard::keyboard as u32);
+        IDT.add(drivers::keyboard::KEYBOARD_INT as usize, drivers::keyboard::keyboard as u32);
 
         //load idt
         IDT.load();
@@ -89,7 +84,6 @@ pub extern "C" fn _start() -> ! {
         if DISK.enabled {
             //init filesystem
             FAT.load_header();
-
             FAT.load_entries();
             FAT.load_table();
         }
@@ -99,21 +93,6 @@ pub extern "C" fn _start() -> ! {
         //init felix shell
         SHELL.init();
     }
-
-    /*unsafe {
-        let table = paging::PageTable::new();
-        let table2 = paging::PageTable::test();
-        PAGING.set_table(0, &table);
-        PAGING.set_table(1, &table);
-
-        PAGING.enable();
-    }*/
-
-    /*unsafe {
-        let a = "testtesttest";
-
-        asm!("mov esi, {0}","int 0x80", in(reg) a.as_ptr() as u32, in("eax") a.len() as u32);
-    }*/
 
     //bochs magic breakpoint
     /*unsafe {

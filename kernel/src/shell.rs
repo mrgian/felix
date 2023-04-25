@@ -2,8 +2,6 @@ use crate::fat::FAT;
 use crate::print::PRINTER;
 use core::arch::asm;
 
-use crate::tss::TaskStateSegment;
-
 const APP_TARGET: u32 = 0x0030_0000;
 
 //SHELL
@@ -67,12 +65,12 @@ impl Shell {
     fn interpret(&mut self) {
         match self.buffer {
             //test command
-            b if self.is_command("ping") => {
+            _b if self.is_command("ping") => {
                 println!("PONG!");
             }
 
             //list root directory
-            b if self.is_command("ls") => unsafe {
+            _b if self.is_command("ls") => unsafe {
                 FAT.list_entries();
             },
 
@@ -87,7 +85,7 @@ impl Shell {
             },
 
             //help command
-            b if self.is_command("help") => {
+            _b if self.is_command("help") => {
                 println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
 
