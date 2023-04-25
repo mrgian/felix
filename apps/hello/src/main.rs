@@ -10,7 +10,7 @@ pub extern "C" fn _start() {
     unsafe {
         let a = "ciao\n";
 
-        for i in 0..10 {
+        for _i in 0..10 {
             asm!("push eax", "push ebx", "int 0x80", "pop ebx", "pop eax", in("eax") a.as_ptr() as u32, in("ebx") a.len() as u32);
         }
     }
@@ -30,6 +30,6 @@ pub extern "C" fn _start() {
 }
 
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
+fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }

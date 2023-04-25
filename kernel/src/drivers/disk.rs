@@ -74,7 +74,8 @@ impl Disk {
                     asm!("in eax, dx", out("eax") buffer, in("dx") DATA_REGISTER);
 
                     //copy buffer in memory pointed by target
-                    *(target_pointer as *mut u32) = buffer;
+                    //*(target_pointer as *mut u32) = buffer;
+                    core::ptr::write_unaligned(target_pointer as *mut u32, buffer);
 
                     target_pointer = target_pointer.byte_add(4);
                 }
