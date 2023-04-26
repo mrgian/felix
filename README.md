@@ -92,6 +92,7 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *07/04/23* - start working on shell
 - *08/04/23* - ATA disk driver
 - *09/04/23* - FAT filesystem file read
+- *26/04/23* - CPU scheduler
 
 ## Roadmap
 The following features are planned to be added sooner or later:
@@ -99,7 +100,6 @@ The following features are planned to be added sooner or later:
  - paging
  - memory allocator
  - process manager
- - CPU scheduler
  - VESA video driver
  - SATA AHCI disk driver
  - graphical user interface
