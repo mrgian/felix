@@ -1,7 +1,7 @@
 use crate::drivers::disk::DISK;
 use core::mem;
 
-//FAT DRIVER
+//FAT16 FILESYSTEM IMPLEMENTATION
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut FAT: FatDriver = FatDriver {

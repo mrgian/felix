@@ -1,5 +1,8 @@
 use core::arch::asm;
 
+//PICs DRIVER
+//Used to initialize and configure pics
+
 //define a global PICS so it can be accessed from everywhere
 pub static PICS: Pics = Pics {
     master: Pic {

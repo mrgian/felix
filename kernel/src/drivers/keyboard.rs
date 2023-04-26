@@ -2,6 +2,9 @@ use crate::drivers::pic::PICS;
 use crate::shell::SHELL;
 use core::arch::asm;
 
+//KEYBOARD DRIVER
+//Warning! Mutable static here
+//TODO: Implement a mutex to get safe access to this
 pub static mut KEYBOARD: Keyboard = Keyboard { lshift: false };
 
 pub const KEYBOARD_INT: u8 = 33;

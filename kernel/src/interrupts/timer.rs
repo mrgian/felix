@@ -3,6 +3,9 @@ use crate::task::CPUState;
 use crate::task::TASK_MANAGER;
 use core::arch::asm;
 
+//TIMER INTERRUPT HANDLER
+//Used to trigger the cpu scheduler
+
 pub const TIMER_INT: u8 = 32;
 
 //timer handler
@@ -18,7 +21,7 @@ pub extern "C" fn timer() {
             "push ecx",
             "push ebx",
             "push eax",
-            //give esp and int num to c func
+            //call c function with esp as argument
             "push esp",
             "call timer_handler",
             //set esp to return value of c func
@@ -40,6 +43,7 @@ pub extern "C" fn timer() {
 
 #[no_mangle]
 pub extern "C" fn timer_handler(esp: u32) -> u32 {
+    //trigger scheduler and return the esp returned by scheduler
     unsafe {
         let new_esp: u32 = TASK_MANAGER.schedule(esp as *mut CPUState) as u32;
 
