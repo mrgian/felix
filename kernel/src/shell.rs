@@ -1,5 +1,7 @@
 use crate::fat::FAT;
 use crate::print::PRINTER;
+use crate::task::Task;
+use crate::task::TASK_MANAGER;
 use core::arch::asm;
 
 const APP_TARGET: u32 = 0x0030_0000;
@@ -84,6 +86,17 @@ impl Shell {
                 self.run(&b);
             },
 
+            //add three test tasks to scheduler
+            _b if self.is_command("test") => unsafe {
+                let mut task1 = Task::new(task_a as u32);
+                let mut task2 = Task::new(task_b as u32);
+                let mut task3 = Task::new(task_c as u32);
+
+                TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                TASK_MANAGER.add_task(&mut task2 as *mut Task);
+                TASK_MANAGER.add_task(&mut task3 as *mut Task);
+            }
+
             //help command
             _b if self.is_command("help") => {
                 println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
@@ -148,5 +161,23 @@ impl Shell {
             i += 1;
         }
         true
+    }
+}
+
+fn task_a() {
+    loop {
+        print!("A");
+    }
+}
+
+fn task_b() {
+    loop {
+        print!("B");
+    }
+}
+
+fn task_c() {
+    loop {
+        print!("C");
     }
 }

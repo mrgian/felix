@@ -23,8 +23,8 @@ use fat::FAT;
 use interrupts::idt::IDT;
 use print::PRINTER;
 use shell::SHELL;
-use task::Task;
-use task::TASK_MANAGER;
+//use task::Task;
+//use task::TASK_MANAGER;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
@@ -101,13 +101,6 @@ pub extern "C" fn _start() -> ! {
         asm!("xchg bx, bx");
     }*/
 
-    let mut _task1 = Task::new(task1 as u32);
-    let mut _task2 = Task::new(task2 as u32);
-    unsafe {
-        //TASK_MANAGER.add_task(&mut _task1 as *mut Task);
-        //TASK_MANAGER.add_task(&mut _task2 as *mut Task);
-    }
-
     //enable hardware interrupts
     unsafe {
         asm!("sti");
@@ -140,17 +133,5 @@ fn print_info() {
 
     unsafe {
         PRINTER.reset_colors();
-    }
-}
-
-fn task1() {
-    loop {
-        print!("1");
-    }
-}
-
-fn task2() {
-    loop {
-        print!("2");
     }
 }

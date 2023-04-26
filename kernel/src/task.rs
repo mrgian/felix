@@ -83,21 +83,16 @@ impl TaskManager {
 
 #[repr(C, packed)]
 pub struct CPUState {
+    //manually pushed
     eax: u32,
     ebx: u32,
     ecx: u32,
     edx: u32,
-
     esi: u32,
     edi: u32,
     ebp: u32,
 
-    /*gs: u32,
-    fs: u32,
-    es: u32,
-    ds: u32,*/
-    error: u32,
-
+    //automatically pushed by cpu
     eip: u32,
     cs: u32,
     eflags: u32,
