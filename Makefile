@@ -10,9 +10,9 @@ endif
 
 ifeq ($(UNAME), Linux)
 	SFDISK := /sbin/sfdisk
-	MKFS := /sbin/mkfs.fat
-	MCOPY := /bin/mcopy
-	OBJCOPY := /bin/objcopy
+	MKFS := mkfs.fat
+	MCOPY := mcopy
+	OBJCOPY := objcopy
 endif
 
 .PHONY: all
