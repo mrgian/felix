@@ -63,12 +63,12 @@ First make sure you have Docker installed. Then:
 4. Run the container `docker run --name felix-container felix-image`
 5. Copy build from container to host `docker cp felix-container:/root/felix/build .`
 
-### Build using script
+### Build using makefile
 Make sure you have `rustup`,`mtools`,`dosfstools` and `fdisk` installed on your system. Then:
 
 1. Clone the repo `git clone https://github.com/mrgian/felix`
 2. Change dir to repo `cd felix`
-3. Run build script `./build.sh`
+3. Build `make all`
 
 ## Running
 The final disk image is `build/disk.img`
