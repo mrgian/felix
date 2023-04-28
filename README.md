@@ -63,17 +63,22 @@ First make sure you have Docker installed. Then:
 4. Run the container `docker run --name felix-container felix-image`
 5. Copy build from container to host `docker cp felix-container:/root/felix/build .`
 
-### Build using makefile
-Make sure you have `rustup`,`mtools`,`dosfstools` and `fdisk` installed on your system. Then:
+### Build on MacOS/Linux
+Make sure you have `rustup`,`mtools`,`dosfstools` and `fdisk` installed on your system, in any case makefile script
+will try to install them for you.
 
-1. Clone the repo `git clone https://github.com/mrgian/felix`
-2. Change dir to repo `cd felix`
-3. Build `make all`
+```zsh
+git clone https://github.com/mrgian/felix
+cd felix
+make all
+```
 
 ## Running
 The final disk image is `build/disk.img`
 
-You can run it in QEMU using this command: `qemu-system-i386 -drive file=build/disk.img,index=0,media=disk,format=raw,if=ide`
+```zsh
+make run
+```
 
 Or you can run it on a real x86 computer by copying the disk image to a USB drive using this command: `sudo dd if=build/disk.img of=/dev/sdX status=progress` and then booting from USB.
 
