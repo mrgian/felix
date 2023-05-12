@@ -1,9 +1,12 @@
 //CPU SCHEDULER
 
+const MAX_TASKS: i8 = 127;
+
 //each task has a 4KiB stack containg the cpu state in the bottom part of it
 pub struct Task {
     stack: [u8; 4096],
     cpu_state: *mut CPUState,
+    running: bool,
 }
 
 impl Task {
@@ -12,6 +15,7 @@ impl Task {
         let mut task = Task {
             stack: [0; 4096],
             cpu_state: 0 as *mut CPUState,
+            running: true,
         };
 
         //set cpu state pointer to the bottom part of its stack
@@ -50,14 +54,14 @@ impl Task {
 }
 
 pub struct TaskManager {
-    tasks: [*mut Task; 256], //arry of pointers to tasks
+    tasks: [*mut Task; MAX_TASKS as usize], //arry of pointers to tasks
     task_count: i8, //how many tasks are in the queue
     current_task: i8, //current running task
 }
 
 //init null task manager
 pub static mut TASK_MANAGER: TaskManager = TaskManager {
-    tasks: [0 as *mut Task; 256],
+    tasks: [0 as *mut Task; MAX_TASKS as usize],
     task_count: 0,
     current_task: -1,
 };
@@ -65,29 +69,68 @@ pub static mut TASK_MANAGER: TaskManager = TaskManager {
 impl TaskManager {
     //add given task to next slot
     pub fn add_task(&mut self, task: *mut Task) {
-        self.tasks[self.task_count as usize] = task;
+        let free_slot = self.get_free_slot();
+
+        self.tasks[free_slot as usize] = task;
         self.task_count += 1;
     }
+
+    //remove task
+    pub fn remove_task(&mut self, id: usize) {
+        self.tasks[id] = 0 as *mut Task;
+        self.task_count -= 1;
+    } 
 
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {
         unsafe {
+            //if no tasks return current state
             if self.task_count <= 0 {
                 return cpu_state;
             }
 
+            //save current state of current task
             if self.current_task >= 0 {
                 (*(self.tasks[self.current_task as usize])).cpu_state = cpu_state;
             }
 
-            self.current_task += 1;
-
-            if self.current_task >= self.task_count {
-                self.current_task %= self.task_count;
-            }
+            self.current_task = self.get_next_task();
 
             (*(self.tasks[self.current_task as usize])).cpu_state
         }
+    }
+
+    pub fn get_next_task(&self) -> i8 {
+        unsafe {
+            let mut i = self.current_task + 1;
+            while i < MAX_TASKS {
+                let running = (*(self.tasks[i as usize])).running;
+
+                if running {
+                    return i;
+                }
+
+                i = (i + 1) % MAX_TASKS;
+            }
+        }
+
+        -1
+    }
+
+    pub fn get_free_slot(&self) -> i8 {
+        let mut slot: i8 = -1;
+
+        unsafe {
+            for i in 0..127 {
+                let running = (*(self.tasks[i])).running;
+                if running == false {
+                    slot = i as i8;
+                    return slot
+                }
+            }
+        }
+
+        slot
     }
 }
 
