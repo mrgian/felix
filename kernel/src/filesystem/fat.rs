@@ -148,24 +148,24 @@ impl FatDriver {
     //list each entry in root direcotry
     //TODO: add other info like creation_date ecc
     pub fn list_entries(&self) {
-        println!("Listing root directory entries:");
+        crate::println!("Listing root directory entries:");
 
-        println!("Name          Size          Cluster number");
+        crate::println!("Name          Size          Cluster number");
 
         for i in 0..ENTRY_COUNT {
             if self.entries[i].name[0] != 0 {
                 //print name
                 for c in self.entries[i].name {
-                    print!("{}", c as char);
+                    crate::print!("{}", c as char);
                 }
                 //print size
                 let size = self.entries[i].size;
-                print!("   {} bytes", size);
+                crate::print!("   {} bytes", size);
 
                 //print cluster
                 let cluster = self.entries[i].first_cluster_low;
-                print!("     {}", cluster);
-                println!();
+                crate::print!("     {}", cluster);
+                crate::println!();
             }
         }
     }

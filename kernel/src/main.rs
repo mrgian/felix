@@ -3,14 +3,11 @@
 #![feature(naked_functions)]
 #![feature(pointer_byte_offsets)]
 
-#[macro_use]
-mod print;
-
 mod drivers;
-mod interrupts;
-mod syscalls;
-mod shell;
 mod filesystem;
+mod interrupts;
+mod shell;
+mod syscalls;
 mod task;
 
 use core::arch::asm;
@@ -19,8 +16,9 @@ use drivers::disk::DISK;
 use drivers::pic::PICS;
 use filesystem::fat::FAT;
 use interrupts::idt::IDT;
-use print::PRINTER;
 use shell::SHELL;
+use syscalls::print::PRINTER;
+
 //use task::Task;
 //use task::TASK_MANAGER;
 
@@ -114,7 +112,7 @@ pub extern "C" fn _start() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    println!("PANIC! Info: {}", info);
+    crate::println!("PANIC! Info: {}", info);
 
     loop {}
 }
@@ -124,10 +122,10 @@ fn print_info() {
         PRINTER.set_colors(0xf, 0);
     }
 
-    println!();
-    println!("FELIX {}", VERSION);
-    println!("Copyright (c) 2023 Gianmatteo Palmieri");
-    println!();
+    crate::println!();
+    crate::println!("FELIX {}", VERSION);
+    crate::println!("Copyright (c) 2023 Gianmatteo Palmieri");
+    crate::println!();
 
     unsafe {
         PRINTER.reset_colors();

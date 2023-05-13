@@ -1,5 +1,5 @@
 use crate::filesystem::fat::FAT;
-use crate::print::PRINTER;
+use crate::syscalls::print::PRINTER;
 use crate::task::Task;
 use crate::task::TASK_MANAGER;
 use core::arch::asm;
@@ -30,7 +30,7 @@ impl Shell {
 
         unsafe {
             PRINTER.set_colors(0xc, 0);
-            print!("{}", PROMPT);
+            crate::print!("{}", PROMPT);
 
             PRINTER.reset_colors();
         }
@@ -40,7 +40,7 @@ impl Shell {
         self.buffer[self.cursor] = c;
         self.cursor += 1;
 
-        print!("{}", c);
+        crate::print!("{}", c);
     }
 
     pub fn backspace(&mut self) {
@@ -68,7 +68,7 @@ impl Shell {
         match self.buffer {
             //test command
             _b if self.is_command("ping") => {
-                println!("PONG!");
+                crate::println!("PONG!");
             }
 
             //list root directory
@@ -95,11 +95,11 @@ impl Shell {
                 TASK_MANAGER.add_task(&mut task1 as *mut Task);
                 TASK_MANAGER.add_task(&mut task2 as *mut Task);
                 TASK_MANAGER.add_task(&mut task3 as *mut Task);
-            }
+            },
 
             //help command
             _b if self.is_command("help") => {
-                println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
+                crate::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
 
             //empty, do nothing
@@ -107,7 +107,7 @@ impl Shell {
 
             //unknown command
             _ => {
-                println!("Unknown command!");
+                crate::println!("Unknown command!");
             }
         }
     }
@@ -124,12 +124,12 @@ impl Shell {
 
             for c in FAT.buffer {
                 if c != 0 {
-                    print!("{}", c as char);
+                    crate::print!("{}", c as char);
                 }
             }
-            println!();
+            crate::println!();
         } else {
-            println!("File not found!");
+            crate::println!("File not found!");
         }
     }
 
@@ -148,7 +148,7 @@ impl Shell {
                 asm!("call {}", in(reg) APP_TARGET);
             }
         } else {
-            println!("Program not found!");
+            crate::println!("Program not found!");
         }
     }
 
@@ -166,18 +166,18 @@ impl Shell {
 
 fn task_a() {
     loop {
-        print!("A");
+        crate::print!("A");
     }
 }
 
 fn task_b() {
     loop {
-        print!("B");
+        crate::print!("B");
     }
 }
 
 fn task_c() {
     loop {
-        print!("C");
+        crate::print!("C");
     }
 }

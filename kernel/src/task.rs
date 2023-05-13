@@ -55,8 +55,8 @@ impl Task {
 
 pub struct TaskManager {
     tasks: [*mut Task; MAX_TASKS as usize], //arry of pointers to tasks
-    task_count: i8, //how many tasks are in the queue
-    current_task: i8, //current running task
+    task_count: i8,                         //how many tasks are in the queue
+    current_task: i8,                       //current running task
 }
 
 //init null task manager
@@ -79,7 +79,7 @@ impl TaskManager {
     pub fn remove_task(&mut self, id: usize) {
         self.tasks[id] = 0 as *mut Task;
         self.task_count -= 1;
-    } 
+    }
 
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {
@@ -125,7 +125,7 @@ impl TaskManager {
                 let running = (*(self.tasks[i])).running;
                 if running == false {
                     slot = i as i8;
-                    return slot
+                    return slot;
                 }
             }
         }
