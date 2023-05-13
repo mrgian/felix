@@ -54,10 +54,10 @@ pub extern "C" fn _start() -> ! {
             interrupts::timer::timer as u32,
         );
 
-        //add print system call
+        //add system call handler interrupt
         IDT.add(
-            syscalls::print::PRINT_INT as usize,
-            syscalls::print::print as u32,
+            syscalls::handler::SYSCALL_INT as usize,
+            syscalls::handler::syscall as u32,
         );
 
         //add keyboard interrupt to idt
