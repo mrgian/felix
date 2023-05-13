@@ -7,28 +7,28 @@ use core::arch::asm;
 pub extern "C" fn exception_handler(int: u32, eip: u32, cs: u32, eflags: u32) {
     match int {
         0x00 => {
-            crate::println!("DIVISION ERROR!");
+            stdio::println!("DIVISION ERROR!");
         }
         0x06 => {
-            crate::println!("INVALID OPCODE!");
+            stdio::println!("INVALID OPCODE!");
         }
         0x08 => {
-            crate::println!("DOUBLE FAULT!");
+            stdio::println!("DOUBLE FAULT!");
         }
         0x0D => {
-            crate::println!("GENERAL PROTECTION FAULT!");
+            stdio::println!("GENERAL PROTECTION FAULT!");
         }
         0x0E => {
-            crate::println!("PAGE FAULT!");
+            stdio::println!("PAGE FAULT!");
         }
         0xFF => {
-            crate::println!("EXCEPTION!");
+            stdio::println!("EXCEPTION!");
         }
         _ => {
-            crate::println!("EXCEPTION!");
+            stdio::println!("EXCEPTION!");
         }
     }
-    crate::println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
+    stdio::println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
 
     loop {}
 }

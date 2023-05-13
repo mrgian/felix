@@ -3,17 +3,16 @@
 
 use core::arch::asm;
 use core::panic::PanicInfo;
+use stdio;
 
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() {
     unsafe {
-        let a = "ciao\n";
-
-        for c in a.bytes() {
-            asm!("push eax", "push ebx", "int 0x80", "pop ebx", "pop eax", in("eax") 0, in("ebx") c as u32);
-        }
+        stdio::print!("Ciaoooo {}", 69);
     }
+
+    loop {}
 }
 
 #[panic_handler]

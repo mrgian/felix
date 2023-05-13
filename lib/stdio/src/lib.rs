@@ -16,20 +16,13 @@ impl fmt::Write for Printer {
 }
 
 impl Printer {
-    pub fn printc(&self, c: char) {
-        unsafe {
-            asm!("push eax", "push ebx", "int 0x80", "pop ebx", "pop eax", in("eax") 0, in("ebx") c as u32);
-        }
-    }
-
     pub fn prints(&self, s: &str) {
-        for c in s.chars() {
-            self.printc(c);
-        }
-    }
+        unsafe {
+            let ptr = s.as_ptr();
+            let len = s.len();
 
-    pub fn new_line(&self) {
-        self.printc('\n');
+            asm!("push eax", "push ebx","push ecx", "int 0x80", "pop ecx", "pop ebx", "pop eax", in("eax") 0, in("ebx") ptr as u32, in("ecx") len as u32);
+        }
     }
 }
 
@@ -40,11 +33,11 @@ macro_rules! print {
 }
 
 //macro for println!
-/*#[macro_export]
+#[macro_export]
 macro_rules! println {
     () => {
         unsafe {
-            $crate::PRINTER.new_line();
+            $crate::PRINTER.prints("\n");
         }
     };
 
@@ -52,10 +45,10 @@ macro_rules! println {
     ($($arg:tt)*) => {
         $crate::print!("{}", format_args!($($arg)*));
         unsafe {
-            $crate::PRINTER.new_line();
+            $crate::PRINTER.prints("\n");
         }
     };
-}*/
+}
 
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;

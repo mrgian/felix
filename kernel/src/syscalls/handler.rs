@@ -4,6 +4,9 @@ use crate::drivers::pic::PICS;
 use crate::syscalls::print;
 use core::arch::asm;
 
+use core::slice;
+use core::str;
+
 pub const SYSCALL_INT: u8 = 0x80;
 
 //timer handler
@@ -13,8 +16,9 @@ pub extern "C" fn syscall() {
         asm!(
             "push eax",
             "push ebx",
+            "push ecx",
             "call syscall_handler",
-            "add esp, 8",
+            "add esp, 12",
             "iretd",
             options(noreturn)
         );
@@ -22,12 +26,16 @@ pub extern "C" fn syscall() {
 }
 
 #[no_mangle]
-pub extern "C" fn syscall_handler(data: u32, id: u32) {
+pub extern "C" fn syscall_handler(ecx: u32, ebx: u32, eax: u32) {
     unsafe {
-        match id {
+        match eax {
             0 => {
-                let c = (data as u8) as char;
-                print::PRINTER.printc(c);
+                let s = unsafe {
+                    let slice = slice::from_raw_parts(ebx as *const u8, ecx as usize);
+                    str::from_utf8(slice)
+                };
+
+                print::PRINTER.prints(s.unwrap());
             }
 
             _ => {}

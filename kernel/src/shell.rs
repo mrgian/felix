@@ -30,7 +30,7 @@ impl Shell {
 
         unsafe {
             PRINTER.set_colors(0xc, 0);
-            crate::print!("{}", PROMPT);
+            stdio::print!("{}", PROMPT);
 
             PRINTER.reset_colors();
         }
@@ -40,7 +40,7 @@ impl Shell {
         self.buffer[self.cursor] = c;
         self.cursor += 1;
 
-        crate::print!("{}", c);
+        stdio::print!("{}", c);
     }
 
     pub fn backspace(&mut self) {
@@ -68,7 +68,7 @@ impl Shell {
         match self.buffer {
             //test command
             _b if self.is_command("ping") => {
-                crate::println!("PONG!");
+                stdio::println!("PONG!");
             }
 
             //list root directory
@@ -99,7 +99,7 @@ impl Shell {
 
             //help command
             _b if self.is_command("help") => {
-                crate::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
+                stdio::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
 
             //empty, do nothing
@@ -107,7 +107,7 @@ impl Shell {
 
             //unknown command
             _ => {
-                crate::println!("Unknown command!");
+                stdio::println!("Unknown command!");
             }
         }
     }
@@ -124,12 +124,12 @@ impl Shell {
 
             for c in FAT.buffer {
                 if c != 0 {
-                    crate::print!("{}", c as char);
+                    stdio::print!("{}", c as char);
                 }
             }
-            crate::println!();
+            stdio::println!();
         } else {
-            crate::println!("File not found!");
+            stdio::println!("File not found!");
         }
     }
 
@@ -148,7 +148,7 @@ impl Shell {
                 asm!("call {}", in(reg) APP_TARGET);
             }
         } else {
-            crate::println!("Program not found!");
+            stdio::println!("Program not found!");
         }
     }
 
@@ -166,18 +166,18 @@ impl Shell {
 
 fn task_a() {
     loop {
-        crate::print!("A");
+        stdio::print!("A");
     }
 }
 
 fn task_b() {
     loop {
-        crate::print!("B");
+        stdio::print!("B");
     }
 }
 
 fn task_c() {
     loop {
-        crate::print!("C");
+        stdio::print!("C");
     }
 }
