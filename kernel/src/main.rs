@@ -7,19 +7,17 @@
 mod print;
 
 mod drivers;
-
 mod interrupts;
+mod syscalls;
 mod shell;
-
-mod fat;
-
+mod filesystem;
 mod task;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
 use drivers::disk::DISK;
 use drivers::pic::PICS;
-use fat::FAT;
+use filesystem::fat::FAT;
 use interrupts::idt::IDT;
 use print::PRINTER;
 use shell::SHELL;
@@ -58,8 +56,8 @@ pub extern "C" fn _start() -> ! {
 
         //add print system call
         IDT.add(
-            interrupts::print::PRINT_INT as usize,
-            interrupts::print::print as u32,
+            syscalls::print::PRINT_INT as usize,
+            syscalls::print::print as u32,
         );
 
         //add keyboard interrupt to idt

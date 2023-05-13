@@ -1,5 +1,5 @@
 [workspace]
-members = ["boot", "bootloader", "kernel", "apps/hello"]
+members = ["boot", "bootloader", "kernel", "apps/hello", "lib/print"]
 
 [workspace.package]
 version = "0.3.1"
