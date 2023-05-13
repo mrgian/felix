@@ -26,7 +26,9 @@ pub struct Printer {
 //core lib needs to know how to print a string to implement its print formatted func
 impl fmt::Write for Printer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
-        self.prints(s);
+        for c in s.chars() {
+            self.printc(c);
+        }
         Ok(())
     }
 }
@@ -34,6 +36,11 @@ impl fmt::Write for Printer {
 impl Printer {
     //copy given char to memory pointed to vga_pointer
     pub fn printc(&mut self, c: char) {
+        //set coords to current cursor position
+        let cursor = self.get_cursor_position();
+        self.x = cursor.0;
+        self.y = cursor.1;
+
         if c == '\n' {
             self.new_line();
             return;
@@ -64,11 +71,14 @@ impl Printer {
                 self.x = 0;
                 self.y += 1;
             }
+
+            //set cursors position to new coords
+            self.set_cursor_position();
         }
     }
 
     //print a string by printing one char at the time
-    pub fn prints(&mut self, s: &str) {
+    /*pub fn prints(&mut self, s: &str) {
         //set coords to current cursor position
         let cursor = self.get_cursor_position();
         self.x = cursor.0;
@@ -80,7 +90,7 @@ impl Printer {
 
         //set cursors position to new coords
         self.set_cursor_position();
-    }
+    }*/
 
     pub fn delete(&mut self) {
         self.x -= 1;
