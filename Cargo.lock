@@ -13,11 +13,14 @@ version = "0.3.1"
 [[package]]
 name = "felix-kernel"
 version = "0.3.1"
+dependencies = [
+ "stdio",
+]
 
 [[package]]
 name = "hello"
 version = "0.1.0"
 
 [[package]]
-name = "print"
+name = "stdio"
 version = "0.1.0"

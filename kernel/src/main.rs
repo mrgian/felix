@@ -19,6 +19,8 @@ use interrupts::idt::IDT;
 use shell::SHELL;
 use syscalls::print::PRINTER;
 
+use stdio;
+
 //use task::Task;
 //use task::TASK_MANAGER;
 
@@ -91,6 +93,10 @@ pub extern "C" fn _start() -> ! {
         //init felix shell
         SHELL.init();
     }
+
+    /*unsafe {
+        stdio::PRINTER.printc('X');
+    }*/
 
     //bochs magic breakpoint
     /*unsafe {

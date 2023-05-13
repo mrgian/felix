@@ -5,3 +5,6 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+
+[dependencies.stdio]
+path = "../lib/stdio"
