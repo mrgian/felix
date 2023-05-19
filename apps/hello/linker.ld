@@ -1,7 +1,7 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x00300000;
+    . = 0x00500000;
 
     _app_start = .;
 

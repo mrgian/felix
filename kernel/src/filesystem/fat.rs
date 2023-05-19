@@ -216,7 +216,6 @@ impl FatDriver {
             let sectors: u16 = self.header.sectors_per_cluster as u16;
 
             unsafe {
-                stdio::println!("Reading LBA: {} to address: {:X}", lba, current_target as u32);
                 DISK.read(current_target, lba, sectors);
             }
 
