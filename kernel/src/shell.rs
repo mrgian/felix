@@ -4,7 +4,7 @@ use crate::task::Task;
 use crate::task::TASK_MANAGER;
 use core::arch::asm;
 
-const APP_TARGET: u32 = 0x0030_0000;
+const APP_TARGET: u32 = 0x0050_0000;
 
 //SHELL
 //Warning! Mutable static here
@@ -120,7 +120,7 @@ impl Shell {
         let entry = FAT.search_file(&self.arg);
 
         if entry.name[0] != 0 {
-            FAT.read_file(&entry);
+            FAT.read_file_to_buffer(&entry);
 
             for c in FAT.buffer {
                 if c != 0 {
@@ -142,11 +142,8 @@ impl Shell {
         if entry.name[0] != 0 {
             FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
 
-            unsafe {
-                asm!("cli");
-
-                asm!("call {}", in(reg) APP_TARGET);
-            }
+            let mut task = Task::new(APP_TARGET as u32);
+            TASK_MANAGER.add_task(&mut task as *mut Task);
         } else {
             stdio::println!("Program not found!");
         }

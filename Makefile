@@ -74,11 +74,11 @@ clean:
 	@rm -rf build
 
 .PHONY: run
-run:
+run: all
 	@echo "Running Felix..."
 	@qemu-system-i386 -drive file=build/disk.img,index=0,media=disk,format=raw,if=ide
 
 .PHONY: debug
-debug:
+debug: all
 	@echo "Debugging Felix..."
 	@bochs -q -f bochs.conf

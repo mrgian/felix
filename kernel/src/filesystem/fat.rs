@@ -108,8 +108,8 @@ static NULL_ENTRY: Entry = Entry {
 
 pub struct FatDriver {
     pub header: Header,
-    entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
-    table: [u16; FAT_SIZE],
+    pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
+    pub table: [u16; FAT_SIZE],
     pub buffer: [u8; 2048],
 }
 
@@ -183,7 +183,7 @@ impl FatDriver {
         }
     }
 
-    pub fn read_file(&mut self, entry: &Entry) {
+    pub fn read_file_to_buffer(&mut self, entry: &Entry) {
         let target = &mut self.buffer as *mut u8;
 
         let data_lba: u64 = FAT_START as u64
@@ -201,17 +201,34 @@ impl FatDriver {
     }
 
     pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
-        let data_lba: u64 = FAT_START as u64
-            + (self.header.reserved_sectors
-                + self.header.sectors_per_fat * self.header.fat_count as u16
-                + 32) as u64;
-        let lba: u64 = data_lba
-            + ((entry.first_cluster_low - 2) * self.header.sectors_per_cluster as u16) as u64;
+        let mut next_cluster = entry.first_cluster_low;
+        let mut current_target = target; 
+        
+        loop {
+            let data_lba: u64 = FAT_START as u64
+                + (self.header.reserved_sectors
+                    + self.header.sectors_per_fat * self.header.fat_count as u16
+                    + 32) as u64;
 
-        let sectors: u16 = self.header.sectors_per_cluster as u16;
+            let lba: u64 = data_lba
+                + ((next_cluster - 2) * self.header.sectors_per_cluster as u16) as u64;
 
-        unsafe {
-            DISK.read(target, lba, sectors);
+            let sectors: u16 = self.header.sectors_per_cluster as u16;
+
+            unsafe {
+                stdio::println!("Reading LBA: {} to address: {:X}", lba, current_target as u32);
+                DISK.read(current_target, lba, sectors);
+            }
+
+            next_cluster = self.table[next_cluster as usize];
+
+            unsafe {
+                current_target = current_target.byte_add(2048);
+            }
+            
+            if next_cluster == 0xffff {
+                break;
+            }
         }
     }
 

@@ -107,6 +107,10 @@ pub extern "C" fn _start() -> ! {
         asm!("sti");
     }
 
+    unsafe {
+        stdio::println!("{:?}", FAT.table);
+    }
+
     //halt cpu while waiting for interrupts
     loop {
         unsafe {
