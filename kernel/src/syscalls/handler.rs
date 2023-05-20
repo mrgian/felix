@@ -30,7 +30,7 @@ pub extern "C" fn syscall_handler(ecx: u32, ebx: u32, eax: u32) {
     unsafe {
         match eax {
             0 => {
-                let s = unsafe {
+                let s = {
                     let slice = slice::from_raw_parts(ebx as *const u8, ecx as usize);
                     str::from_utf8(slice)
                 };

@@ -21,9 +21,6 @@ use syscalls::print::PRINTER;
 
 use stdio;
 
-use core::slice;
-use core::str;
-
 //use task::Task;
 //use task::TASK_MANAGER;
 

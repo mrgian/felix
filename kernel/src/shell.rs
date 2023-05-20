@@ -2,7 +2,6 @@ use crate::filesystem::fat::FAT;
 use crate::syscalls::print::PRINTER;
 use crate::task::Task;
 use crate::task::TASK_MANAGER;
-use core::arch::asm;
 
 const APP_TARGET: u32 = 0x0050_0000;
 

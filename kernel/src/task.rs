@@ -76,10 +76,10 @@ impl TaskManager {
     }
 
     //remove task
-    pub fn remove_task(&mut self, id: usize) {
+    /*pub fn remove_task(&mut self, id: usize) {
         self.tasks[id] = 0 as *mut Task;
         self.task_count -= 1;
-    }
+    }*/
 
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {

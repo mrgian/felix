@@ -1,5 +1,4 @@
 use core::arch::asm;
-use core::fmt;
 
 //PRINTER
 //Warning! Mutable static here
