@@ -29,19 +29,23 @@ Felix running on real hardware:<br>
 - kernel jumping
 
 ### Kernel
-- print! macro able to write formatted text to VGA text buffer 
 - Interrupt Descriptor Table loading
 - CPU exceptions handler
 - Programmable Interrupt Controller driver
 - keyboard driver
 - ATA disk driver
 - FAT16 filesystem file read
+- timer interrupt driven CPU scheduler
+- prints system call that writes to VGA text buffer 
 
 ### Shell
 Available commands:
 - **help** shows available commands
 - **ls** lists root directory entries
 - **cat <filename>** displays content of a file
+
+### Standard Library
+- print! macro able to print formatted text to screen
 
 ## Building
 
@@ -98,6 +102,8 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *08/04/23* - ATA disk driver
 - *09/04/23* - FAT filesystem file read
 - *26/04/23* - CPU scheduler
+- *13/05/23* - prints system call
+- *13/05/23* - println! macro in standard library
 
 ## Roadmap
 The following features are planned to be added sooner or later:
