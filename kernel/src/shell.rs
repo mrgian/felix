@@ -75,6 +75,24 @@ impl Shell {
                 FAT.list_entries();
             },
 
+            //list running tasks
+            _b if self.is_command("ps") => unsafe {
+                TASK_MANAGER.list_tasks();
+            },
+
+            //remove runing task
+            b if self.is_command("rt") => unsafe {
+                if (b[3] as u8) < 0x30 {
+                    stdio::println!("No task id provided!");
+                    return;
+                } 
+
+                //convert first char of arg to id
+                let id = ((b[3] as u8) - 0x30) as usize;
+
+                TASK_MANAGER.remove_task(id);
+            },
+
             //display content of file
             b if self.is_command("cat") => unsafe {
                 self.cat(&b);

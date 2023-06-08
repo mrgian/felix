@@ -7,7 +7,7 @@ use stdio;
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() {
-    stdio::print!("Ciaoooo {}", 69);
+    stdio::println!("Ciaoooo {}", 69);
 
     loop {}
 }

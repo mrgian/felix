@@ -76,10 +76,10 @@ impl TaskManager {
     }
 
     //remove task
-    /*pub fn remove_task(&mut self, id: usize) {
+    pub fn remove_task(&mut self, id: usize) {
         self.tasks[id] = 0 as *mut Task;
         self.task_count -= 1;
-    }*/
+    }
 
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {
@@ -131,6 +131,19 @@ impl TaskManager {
         }
 
         slot
+    }
+
+    pub fn list_tasks(&self) {
+        stdio::println!("Running tasks:");
+
+        unsafe {
+            for i in 0..127 {
+                let running = (*(self.tasks[i])).running;
+                if running {
+                    stdio::println!("ID: {}", i);
+                }
+            }
+        }
     }
 }
 
