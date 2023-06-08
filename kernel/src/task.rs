@@ -81,6 +81,10 @@ impl TaskManager {
         self.task_count -= 1;
     }
 
+    pub fn remove_current_task(&mut self) {
+        self.remove_task(self.current_task as usize);
+    }
+
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {
         unsafe {

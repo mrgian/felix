@@ -3,6 +3,7 @@
 use crate::drivers::pic::PICS;
 use crate::syscalls::print;
 use core::arch::asm;
+use crate::task::TASK_MANAGER;
 
 use core::slice;
 use core::str;
@@ -36,6 +37,10 @@ pub extern "C" fn syscall_handler(ecx: u32, ebx: u32, eax: u32) {
                 };
 
                 print::PRINTER.prints(s.unwrap());
+            }
+
+            1 => {
+                TASK_MANAGER.remove_current_task();
             }
 
             _ => {}

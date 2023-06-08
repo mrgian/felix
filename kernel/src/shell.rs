@@ -91,6 +91,7 @@ impl Shell {
                 let id = ((b[3] as u8) - 0x30) as usize;
 
                 TASK_MANAGER.remove_task(id);
+                //TASK_MANAGER.remove_current_task();
             },
 
             //display content of file
