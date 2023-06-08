@@ -57,17 +57,17 @@ impl Disk {
             asm!("out dx, al", in("dx") STATUS_COMMAND_REGISTER, in("al") READ_COMMAND);
         }
 
-        //wait until not busy
-        while self.is_busy() {}
-
-        //wait until ready
-        while !self.is_ready() {}
-
         let mut sectors_left = sectors;
         let mut target_pointer = target;
         while sectors_left > 0 {
             //a sector is 512 byte, buffer size is 4 byte, so loop for 512/4
             for _i in 0..128 {
+                //wait until not busy
+                while self.is_busy() {}
+
+                //wait until ready
+                while !self.is_ready() {}
+
                 let buffer: u32;
                 unsafe {
                     //read 16 bit from controller buffer

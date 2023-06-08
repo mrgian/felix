@@ -202,16 +202,16 @@ impl FatDriver {
 
     pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
         let mut next_cluster = entry.first_cluster_low;
-        let mut current_target = target; 
-        
+        let mut current_target = target;
+
         loop {
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
                     + self.header.sectors_per_fat * self.header.fat_count as u16
                     + 32) as u64;
 
-            let lba: u64 = data_lba
-                + ((next_cluster - 2) * self.header.sectors_per_cluster as u16) as u64;
+            let lba: u64 =
+                data_lba + ((next_cluster - 2) * self.header.sectors_per_cluster as u16) as u64;
 
             let sectors: u16 = self.header.sectors_per_cluster as u16;
 
@@ -224,7 +224,7 @@ impl FatDriver {
             unsafe {
                 current_target = current_target.byte_add(2048);
             }
-            
+
             if next_cluster == 0xffff {
                 break;
             }
