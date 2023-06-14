@@ -37,12 +37,17 @@ Felix running on real hardware:<br>
 - FAT16 filesystem file read
 - timer interrupt driven CPU scheduler
 - prints system call that writes to VGA text buffer 
+- task manager
+- round robin CPU scheduler
 
 ### Shell
 Available commands:
 - **help** shows available commands
 - **ls** lists root directory entries
 - **cat <filename>** displays content of a file
+- **test** tests CPU scheduler with dummy tasks
+- **run <file>** loads file as task and adds it to the task list
+- **rt <id>** removes specified task
 
 ### libfelix (standard library)
 - print! macro able to print formatted text to screen
@@ -107,7 +112,6 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 
 ## Roadmap
 The following features are planned to be added sooner or later:
- - system calls 
  - paging
  - memory allocator
  - process manager
