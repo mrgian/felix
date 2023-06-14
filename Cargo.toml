@@ -1,8 +1,9 @@
 [workspace]
 members = ["boot", "bootloader", "kernel", "apps/hello"]
+resolver = "2"
 
 [workspace.package]
-version = "0.3.1"
+version = "0.4.0"
 authors = ["Gianmatteo Palmieri <mail@gian.im>"]
 edition = "2021"
 

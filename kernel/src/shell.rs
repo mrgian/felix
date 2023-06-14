@@ -172,7 +172,7 @@ impl Shell {
             unsafe {
                 let signature = *(APP_TARGET as *mut u32);
 
-                if signature == 0xB16B00B5 {
+                if signature == APP_SIGNATURE {
                     let mut task = Task::new((APP_TARGET + 4) as u32);
                     TASK_MANAGER.add_task(&mut task as *mut Task);
                 } else {
