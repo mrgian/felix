@@ -1,4 +1,4 @@
-//CPU SCHEDULER
+//TASK MANAGER
 
 const MAX_TASKS: i8 = 127;
 
@@ -85,6 +85,7 @@ impl TaskManager {
         self.remove_task(self.current_task as usize);
     }
 
+    //CPU SCHEDULER LOGIC
     //triggers scheduler with round robin scheduling algorithm, returns new cpu state
     pub fn schedule(&mut self, cpu_state: *mut CPUState) -> *mut CPUState {
         unsafe {

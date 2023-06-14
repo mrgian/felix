@@ -1,6 +1,8 @@
+//DISK DRIVER
+//Driver for ATA disk supporting PIO MODE
+
 use core::arch::asm;
 
-//DISK DRIVER
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut DISK: Disk = Disk { enabled: false };

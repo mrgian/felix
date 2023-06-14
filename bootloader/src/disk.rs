@@ -1,7 +1,10 @@
+//DISK READER
+//Access disk with BIOS routine using INT 0x13 interrupt
+//it uses LBA address instead of CHS, so a DAP data structure is needed
+
 use core::arch::asm;
 use core::mem;
 
-//DISK
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut DISK: Disk = Disk { lba: 0, buffer: 0 };

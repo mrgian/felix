@@ -1,3 +1,7 @@
+//DISK READER
+//Access disk with BIOS routine using INT 0x13 interrupt
+//it uses LBA address instead of CHS, so a DAP data structure is needed
+
 use core::arch::asm;
 use core::mem;
 

@@ -1,7 +1,10 @@
+//PRINTER
+//Prints to screen using INT 0x10 interrupt
+//Implements Write trait from the core libary to be able to print formatted text
+
 use core::arch::asm;
 use core::fmt;
 
-//PRINTER
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut PRINTER: Printer = Printer {};

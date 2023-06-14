@@ -10,7 +10,7 @@ use core::str;
 
 pub const SYSCALL_INT: u8 = 0x80;
 
-//timer handler
+//SYSCALL IRQ, calls local function using cdecl calling convention
 #[naked]
 pub extern "C" fn syscall() {
     unsafe {
@@ -26,10 +26,12 @@ pub extern "C" fn syscall() {
     }
 }
 
+//handle syscalls, get syscall number from eax register
 #[no_mangle]
 pub extern "C" fn syscall_handler(ecx: u32, ebx: u32, eax: u32) {
     unsafe {
         match eax {
+            //SYSCALL 0, print string pointed by ebx with lenght specified in ecx
             0 => {
                 let s = {
                     let slice = slice::from_raw_parts(ebx as *const u8, ecx as usize);
@@ -39,6 +41,7 @@ pub extern "C" fn syscall_handler(ecx: u32, ebx: u32, eax: u32) {
                 print::PRINTER.prints(s.unwrap());
             }
 
+            //SYSCALL 1, remove current active task
             1 => {
                 TASK_MANAGER.remove_current_task();
             }

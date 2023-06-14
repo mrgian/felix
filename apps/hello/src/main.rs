@@ -1,5 +1,5 @@
 //HELLO
-//Simple program to test 
+//Simple program to test libfelix
 
 #![no_std]
 #![no_main]

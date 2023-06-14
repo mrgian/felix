@@ -1,3 +1,5 @@
+//SHELL
+
 use crate::filesystem::fat::FAT;
 use crate::syscalls::print::PRINTER;
 use crate::task::Task;
@@ -5,7 +7,6 @@ use crate::task::TASK_MANAGER;
 
 const APP_TARGET: u32 = 0x0050_0000;
 
-//SHELL
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut SHELL: Shell = Shell {

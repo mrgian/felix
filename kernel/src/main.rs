@@ -33,6 +33,7 @@ const STACK_START: u32 = KERNEL_START + KERNEL_SIZE + STACK_SIZE;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+//KERNEL ENTRY POINT
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {

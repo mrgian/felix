@@ -1,7 +1,8 @@
-use core::arch::asm;
-
 //PICs DRIVER
 //Used to initialize and configure pics
+//Remaps hardware interrupts starting from INT 32
+
+use core::arch::asm;
 
 //define a global PICS so it can be accessed from everywhere
 pub static PICS: Pics = Pics {

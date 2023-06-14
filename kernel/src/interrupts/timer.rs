@@ -1,14 +1,14 @@
+//TIMER INTERRUPT HANDLER
+//Used to trigger the cpu scheduler and to context switch
+
 use crate::drivers::pic::PICS;
 use crate::task::CPUState;
 use crate::task::TASK_MANAGER;
 use core::arch::asm;
 
-//TIMER INTERRUPT HANDLER
-//Used to trigger the cpu scheduler
-
 pub const TIMER_INT: u8 = 32;
 
-//timer handler
+//TIMER IRQ
 #[naked]
 pub extern "C" fn timer() {
     unsafe {

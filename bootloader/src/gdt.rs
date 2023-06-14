@@ -1,9 +1,14 @@
+//GLOBAL DESCRIPTOR TABLE
+//Tells the CPU about memory segment
+//The default here is a flat memory model, 
+//meaning there are only two big segments relative to the whole 4GB memory,
+//one for data, one for code, the first entry is always zero, so three entries in total.
+
 use core::arch::asm;
 use core::mem::size_of;
 
 const GDT_ENTRIES: usize = 3;
 
-//GLOBAL DESCRIPTOR TABLE
 pub static GDT: GlobalDescriptorTable = {
     //segment lenght (0xffff means all 32bit memory)
     let limit = {

@@ -1,6 +1,8 @@
+//PRINTER
+//Manages text output by directly writing to VGA video memory
+
 use core::arch::asm;
 
-//PRINTER
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut PRINTER: Printer = Printer {

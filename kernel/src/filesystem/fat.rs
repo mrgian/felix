@@ -1,7 +1,8 @@
+//FAT16 FILESYSTEM IMPLEMENTATION
+
 use crate::drivers::disk::DISK;
 use core::mem;
 
-//FAT16 FILESYSTEM IMPLEMENTATION
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
 pub static mut FAT: FatDriver = FatDriver {
@@ -170,6 +171,7 @@ impl FatDriver {
         }
     }
 
+    //load file allocation table
     pub fn load_table(&mut self) {
         let target = &mut self.table as *mut u16;
 
@@ -183,6 +185,7 @@ impl FatDriver {
         }
     }
 
+    //read first cluster of file to buffer
     pub fn read_file_to_buffer(&mut self, entry: &Entry) {
         let target = &mut self.buffer as *mut u8;
 
@@ -200,10 +203,12 @@ impl FatDriver {
         }
     }
 
+    //read file reading one cluster at time 
     pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
         let mut next_cluster = entry.first_cluster_low;
         let mut current_target = target;
 
+        //loop cluster read, until it reaches 0xffff in fat
         loop {
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
@@ -221,8 +226,11 @@ impl FatDriver {
 
             next_cluster = self.table[next_cluster as usize];
 
+            //after reading a cluster, increment target by cluster size
             unsafe {
-                current_target = current_target.byte_add(2048);
+                //let cluster_size = 2048;
+                let cluster_size = self.header.sectors_per_cluster as u16 * self.header.bytes_per_sector;
+                current_target = current_target.byte_add(cluster_size as usize);
             }
 
             if next_cluster == 0xffff {
@@ -231,6 +239,7 @@ impl FatDriver {
         }
     }
 
+    //search by filename, returns found root entry
     pub fn search_file(&self, name: &[char]) -> Entry {
         let mut result = NULL_ENTRY;
 
