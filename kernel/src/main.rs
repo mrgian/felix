@@ -129,6 +129,8 @@ fn print_info() {
     libfelix::println!("FELIX {}", VERSION);
     libfelix::println!("Copyright (c) 2023 Gianmatteo Palmieri");
     libfelix::println!();
+    libfelix::println!("Type \"help\" and press enter to show a list of available commands");
+    libfelix::println!();
 
     unsafe {
         PRINTER.reset_colors();

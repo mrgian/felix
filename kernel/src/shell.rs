@@ -6,6 +6,14 @@ use crate::task::Task;
 use crate::task::TASK_MANAGER;
 
 const APP_TARGET: u32 = 0x0050_0000;
+const APP_SIGNATURE: u32 = 0xB16B00B5;
+
+const HELP: &'static str = "Available commands:
+ls - lists root directory entries
+cat <file> - displays content of a file
+test - tests CPU scheduler with dummy tasks
+run <file> - loads file as task and adds it to the task list
+rt <id> - removes specified task";
 
 //Warning! Mutable static here
 //TODO: Implement a mutex to get safe access to this
@@ -86,7 +94,7 @@ impl Shell {
                 if (b[3] as u8) < 0x30 {
                     libfelix::println!("No task id provided!");
                     return;
-                } 
+                }
 
                 //convert first char of arg to id
                 let id = ((b[3] as u8) - 0x30) as usize;
@@ -118,7 +126,7 @@ impl Shell {
 
             //help command
             _b if self.is_command("help") => {
-                libfelix::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
+                libfelix::println!("{}", HELP);
             }
 
             //empty, do nothing
@@ -161,8 +169,16 @@ impl Shell {
         if entry.name[0] != 0 {
             FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
 
-            let mut task = Task::new(APP_TARGET as u32);
-            TASK_MANAGER.add_task(&mut task as *mut Task);
+            unsafe {
+                let signature = *(APP_TARGET as *mut u32);
+
+                if signature == 0xB16B00B5 {
+                    let mut task = Task::new((APP_TARGET + 4) as u32);
+                    TASK_MANAGER.add_task(&mut task as *mut Task);
+                } else {
+                    libfelix::println!("File is not a valid executable!");
+                }
+            }
         } else {
             libfelix::println!("Program not found!");
         }

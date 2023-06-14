@@ -10,7 +10,8 @@ use libfelix;
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() {
-    libfelix::println!("Ciaoooo {}", 69);
+    let a = 0xFFFF;
+    libfelix::println!("Hello world! {:X}", a);
 
     loop {}
 }

@@ -126,8 +126,8 @@ impl TaskManager {
         let mut slot: i8 = -1;
 
         unsafe {
-            for i in 0..127 {
-                let running = (*(self.tasks[i])).running;
+            for i in 0..MAX_TASKS {
+                let running = (*(self.tasks[i as usize])).running;
                 if running == false {
                     slot = i as i8;
                     return slot;
@@ -142,8 +142,8 @@ impl TaskManager {
         libfelix::println!("Running tasks:");
 
         unsafe {
-            for i in 0..127 {
-                let running = (*(self.tasks[i])).running;
+            for i in 0..MAX_TASKS {
+                let running = (*(self.tasks[i as usize])).running;
                 if running {
                     libfelix::println!("ID: {}", i);
                 }

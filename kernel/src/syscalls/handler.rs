@@ -2,8 +2,8 @@
 
 use crate::drivers::pic::PICS;
 use crate::syscalls::print;
-use core::arch::asm;
 use crate::task::TASK_MANAGER;
+use core::arch::asm;
 
 use core::slice;
 use core::str;

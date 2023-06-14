@@ -203,7 +203,7 @@ impl FatDriver {
         }
     }
 
-    //read file reading one cluster at time 
+    //read file reading one cluster at time
     pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
         let mut next_cluster = entry.first_cluster_low;
         let mut current_target = target;
@@ -229,7 +229,8 @@ impl FatDriver {
             //after reading a cluster, increment target by cluster size
             unsafe {
                 //let cluster_size = 2048;
-                let cluster_size = self.header.sectors_per_cluster as u16 * self.header.bytes_per_sector;
+                let cluster_size =
+                    self.header.sectors_per_cluster as u16 * self.header.bytes_per_sector;
                 current_target = current_target.byte_add(cluster_size as usize);
             }
 

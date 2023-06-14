@@ -1,6 +1,6 @@
 //GLOBAL DESCRIPTOR TABLE
 //Tells the CPU about memory segment
-//The default here is a flat memory model, 
+//The default here is a flat memory model,
 //meaning there are only two big segments relative to the whole 4GB memory,
 //one for data, one for code, the first entry is always zero, so three entries in total.
 
