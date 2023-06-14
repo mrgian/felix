@@ -19,7 +19,7 @@ use interrupts::idt::IDT;
 use shell::SHELL;
 use syscalls::print::PRINTER;
 
-use stdio;
+use libfelix;
 
 //use task::Task;
 //use task::TASK_MANAGER;
@@ -114,7 +114,7 @@ pub extern "C" fn _start() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    stdio::println!("PANIC! Info: {}", info);
+    libfelix::println!("PANIC! Info: {}", info);
 
     loop {}
 }
@@ -124,10 +124,10 @@ fn print_info() {
         PRINTER.set_colors(0xf, 0);
     }
 
-    stdio::println!();
-    stdio::println!("FELIX {}", VERSION);
-    stdio::println!("Copyright (c) 2023 Gianmatteo Palmieri");
-    stdio::println!();
+    libfelix::println!();
+    libfelix::println!("FELIX {}", VERSION);
+    libfelix::println!("Copyright (c) 2023 Gianmatteo Palmieri");
+    libfelix::println!();
 
     unsafe {
         PRINTER.reset_colors();

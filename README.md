@@ -44,7 +44,7 @@ Available commands:
 - **ls** lists root directory entries
 - **cat <filename>** displays content of a file
 
-### Standard Library
+### libfelix (standard library)
 - print! macro able to print formatted text to screen
 
 ## Building

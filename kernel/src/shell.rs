@@ -29,7 +29,7 @@ impl Shell {
 
         unsafe {
             PRINTER.set_colors(0xc, 0);
-            stdio::print!("{}", PROMPT);
+            libfelix::print!("{}", PROMPT);
 
             PRINTER.reset_colors();
         }
@@ -39,7 +39,7 @@ impl Shell {
         self.buffer[self.cursor] = c;
         self.cursor += 1;
 
-        stdio::print!("{}", c);
+        libfelix::print!("{}", c);
     }
 
     pub fn backspace(&mut self) {
@@ -67,7 +67,7 @@ impl Shell {
         match self.buffer {
             //test command
             _b if self.is_command("ping") => {
-                stdio::println!("PONG!");
+                libfelix::println!("PONG!");
             }
 
             //list root directory
@@ -83,7 +83,7 @@ impl Shell {
             //remove runing task
             b if self.is_command("rt") => unsafe {
                 if (b[3] as u8) < 0x30 {
-                    stdio::println!("No task id provided!");
+                    libfelix::println!("No task id provided!");
                     return;
                 } 
 
@@ -117,7 +117,7 @@ impl Shell {
 
             //help command
             _b if self.is_command("help") => {
-                stdio::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
+                libfelix::println!("Available commands:\nls - lists root directory entries\ncat <file> - displays content of a file");
             }
 
             //empty, do nothing
@@ -125,7 +125,7 @@ impl Shell {
 
             //unknown command
             _ => {
-                stdio::println!("Unknown command!");
+                libfelix::println!("Unknown command!");
             }
         }
     }
@@ -142,12 +142,12 @@ impl Shell {
 
             for c in FAT.buffer {
                 if c != 0 {
-                    stdio::print!("{}", c as char);
+                    libfelix::print!("{}", c as char);
                 }
             }
-            stdio::println!();
+            libfelix::println!();
         } else {
-            stdio::println!("File not found!");
+            libfelix::println!("File not found!");
         }
     }
 
@@ -163,7 +163,7 @@ impl Shell {
             let mut task = Task::new(APP_TARGET as u32);
             TASK_MANAGER.add_task(&mut task as *mut Task);
         } else {
-            stdio::println!("Program not found!");
+            libfelix::println!("Program not found!");
         }
     }
 
@@ -181,18 +181,18 @@ impl Shell {
 
 fn task_a() {
     loop {
-        stdio::print!("A");
+        libfelix::print!("A");
     }
 }
 
 fn task_b() {
     loop {
-        stdio::print!("B");
+        libfelix::print!("B");
     }
 }
 
 fn task_c() {
     loop {
-        stdio::print!("C");
+        libfelix::print!("C");
     }
 }

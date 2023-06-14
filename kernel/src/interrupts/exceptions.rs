@@ -7,28 +7,28 @@ use core::arch::asm;
 pub extern "C" fn exception_handler(int: u32, eip: u32, cs: u32, eflags: u32) {
     match int {
         0x00 => {
-            stdio::println!("DIVISION ERROR!");
+            libfelix::println!("DIVISION ERROR!");
         }
         0x06 => {
-            stdio::println!("INVALID OPCODE!");
+            libfelix::println!("INVALID OPCODE!");
         }
         0x08 => {
-            stdio::println!("DOUBLE FAULT!");
+            libfelix::println!("DOUBLE FAULT!");
         }
         0x0D => {
-            stdio::println!("GENERAL PROTECTION FAULT!");
+            libfelix::println!("GENERAL PROTECTION FAULT!");
         }
         0x0E => {
-            stdio::println!("PAGE FAULT!");
+            libfelix::println!("PAGE FAULT!");
         }
         0xFF => {
-            stdio::println!("EXCEPTION!");
+            libfelix::println!("EXCEPTION!");
         }
         _ => {
-            stdio::println!("EXCEPTION!");
+            libfelix::println!("EXCEPTION!");
         }
     }
-    stdio::println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
+    libfelix::println!("EIP: {:X}, CS: {:X}, EFLAGS: {:b}", eip, cs, eflags);
 
     loop {}
 }

@@ -138,13 +138,13 @@ impl TaskManager {
     }
 
     pub fn list_tasks(&self) {
-        stdio::println!("Running tasks:");
+        libfelix::println!("Running tasks:");
 
         unsafe {
             for i in 0..127 {
                 let running = (*(self.tasks[i])).running;
                 if running {
-                    stdio::println!("ID: {}", i);
+                    libfelix::println!("ID: {}", i);
                 }
             }
         }

@@ -1,13 +1,16 @@
+//HELLO
+//Simple program to test 
+
 #![no_std]
 #![no_main]
 
 use core::panic::PanicInfo;
-use stdio;
+use libfelix;
 
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() {
-    stdio::println!("Ciaoooo {}", 69);
+    libfelix::println!("Ciaoooo {}", 69);
 
     loop {}
 }
