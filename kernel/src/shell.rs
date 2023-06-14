@@ -13,6 +13,7 @@ ls - lists root directory entries
 cat <file> - displays content of a file
 test - tests CPU scheduler with dummy tasks
 run <file> - loads file as task and adds it to the task list
+ps - lists running tasks
 rt <id> - removes specified task";
 
 //Warning! Mutable static here

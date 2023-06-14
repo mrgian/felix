@@ -47,6 +47,7 @@ Available commands:
 - **cat <filename>** displays content of a file
 - **test** tests CPU scheduler with dummy tasks
 - **run <file>** loads file as task and adds it to the task list
+- **ps** lists running tasks
 - **rt <id>** removes specified task
 
 ### libfelix (standard library)
