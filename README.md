@@ -12,7 +12,10 @@ It's **written completely from scratch** in Rust and doesn't use any external de
 
 ## Pictures
 Felix running in QEMU:<br>
-![felix_qemu](https://user-images.githubusercontent.com/10211171/230795939-eab6ab78-5c88-4ece-8dc1-f0e7faca9df9.png)
+
+![felix_qemu](https://github.com/mrgian/felix/assets/10211171/b371934e-0ac7-40e6-a965-e42bf9e24e86)
+
+![felix_qemu](https://github.com/mrgian/felix/assets/10211171/99a2012b-29af-44d8-a2cf-73fceee665e1)
 
 Felix running on real hardware:<br>
 ![felix_real](https://user-images.githubusercontent.com/10211171/230796141-b2c62d63-5c4e-4d8b-a9ee-3669bdee48b0.jpg)
