@@ -33,6 +33,7 @@ pub struct Shell {
 }
 
 impl Shell {
+    //init shell
     pub fn init(&mut self) {
         self.buffer = [0 as char; 256];
         self.cursor = 0;
@@ -45,6 +46,7 @@ impl Shell {
         }
     }
 
+    //adds new char to shell buffer
     pub fn add(&mut self, c: char) {
         self.buffer[self.cursor] = c;
         self.cursor += 1;
@@ -52,6 +54,7 @@ impl Shell {
         libfelix::print!("{}", c);
     }
 
+    //backspace, removes last char from buffer and updates cursor
     pub fn backspace(&mut self) {
         if self.cursor > 0 {
             self.buffer[self.cursor] = 0 as char;
@@ -63,6 +66,7 @@ impl Shell {
         }
     }
 
+    //shell enter
     pub fn enter(&mut self) {
         unsafe {
             PRINTER.new_line();
@@ -72,6 +76,7 @@ impl Shell {
         self.init();
     }
 
+    //command interpreter
     #[allow(unused_unsafe)]
     fn interpret(&mut self) {
         match self.buffer {
@@ -152,6 +157,7 @@ impl Shell {
         }
     }
 
+    //shows content of a file in ascii format
     pub unsafe fn cat(&mut self, b: &[char]) {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
@@ -173,6 +179,7 @@ impl Shell {
         }
     }
 
+    //loads an executable as a task
     pub unsafe fn run(&mut self, b: &[char]) {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
@@ -218,7 +225,7 @@ fn task_a() {
         if a == 300_000_000 {
             libfelix::println!("Process A running. {}% complete.", b);
             a = 0;
-            b += 5;
+            b += 1;
 
             if b == 100 {
                 libfelix::println!("Process A complete.");
@@ -237,7 +244,7 @@ fn task_b() {
         if a == 300_000_000 {
             libfelix::println!("Process B running. {}% complete.", b);
             a = 0;
-            b += 5;
+            b += 1;
 
             if b == 100 {
                 libfelix::println!("Process B complete.");
@@ -256,7 +263,7 @@ fn task_c() {
         if a == 300_000_000 {
             libfelix::println!("Process C running. {}% complete.", b);
             a = 0;
-            b += 5;
+            b += 1;
 
             if b == 100 {
                 libfelix::println!("Process C complete.");
