@@ -11,7 +11,7 @@ const APP_SIGNATURE: u32 = 0xB16B00B5;
 const HELP: &'static str = "Available commands:
 ls - lists root directory entries
 cat <file> - displays content of a file
-test - tests CPU scheduler with dummy tasks
+test <a,b,c> - runs a dummy task
 run <file> - loads file as task and adds it to the task list
 ps - lists running tasks
 rt <id> - removes specified task";
@@ -114,15 +114,27 @@ impl Shell {
                 self.run(&b);
             },
 
-            //add three test tasks to scheduler
-            _b if self.is_command("test") => unsafe {
-                let mut task1 = Task::new(task_a as u32);
-                let mut task2 = Task::new(task_b as u32);
-                let mut task3 = Task::new(task_c as u32);
+            //run test task
+            b if self.is_command("test") => unsafe {
+                let a = b[5];
 
-                TASK_MANAGER.add_task(&mut task1 as *mut Task);
-                TASK_MANAGER.add_task(&mut task2 as *mut Task);
-                TASK_MANAGER.add_task(&mut task3 as *mut Task);
+                match a {
+                    'a' => {
+                        let mut task1 = Task::new(task_a as u32);
+                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                    }
+                    'b' => {
+                        let mut task1 = Task::new(task_b as u32);
+                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                    }
+                    'c' => {
+                        let mut task1 = Task::new(task_c as u32);
+                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                    }
+                    _ => {
+                        libfelix::println!("Specify test a, b, or c!");
+                    }
+                }
             },
 
             //help command
@@ -197,20 +209,61 @@ impl Shell {
     }
 }
 
+
+//EXAMPLE TASKS
 fn task_a() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
     loop {
-        libfelix::print!("A");
+        if a == 300_000_000 {
+            libfelix::println!("Process A running. {}% complete.", b);
+            a = 0;
+            b += 5;
+
+            if b == 100 {
+                libfelix::println!("Process A complete.");
+                break;
+            }
+        }
+        a += 1;
     }
+    loop{}
 }
 
 fn task_b() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
     loop {
-        libfelix::print!("B");
+        if a == 300_000_000 {
+            libfelix::println!("Process B running. {}% complete.", b);
+            a = 0;
+            b += 5;
+
+            if b == 100 {
+                libfelix::println!("Process B complete.");
+                break;
+            }
+        }
+        a += 1;
     }
+    loop{}
 }
 
 fn task_c() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
     loop {
-        libfelix::print!("C");
+        if a == 300_000_000 {
+            libfelix::println!("Process C running. {}% complete.", b);
+            a = 0;
+            b += 5;
+
+            if b == 100 {
+                libfelix::println!("Process C complete.");
+                break;
+            }
+        }
+        a += 1;
     }
+    loop{}
 }

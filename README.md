@@ -48,7 +48,7 @@ Available commands:
 - **help** shows available commands
 - **ls** lists root directory entries
 - **cat <filename>** displays content of a file
-- **test** tests CPU scheduler with dummy tasks
+- **test <a,b,c>** runs a dummy task
 - **run <file>** loads file as task and adds it to the task list
 - **ps** lists running tasks
 - **rt <id>** removes specified task
