@@ -9,6 +9,7 @@ mod interrupts;
 mod shell;
 mod syscalls;
 mod task;
+mod paging;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
@@ -18,6 +19,8 @@ use filesystem::fat::FAT;
 use interrupts::idt::IDT;
 use shell::SHELL;
 use syscalls::print::PRINTER;
+use paging::PAGING;
+use paging::PageTable;
 
 use libfelix;
 
@@ -40,6 +43,26 @@ pub extern "C" fn _start() -> ! {
     //setup stack
     unsafe {
         asm!("mov esp, {}", in(reg) STACK_START);
+    }
+
+    //setup paging
+    unsafe {
+        let table0 = PageTable::new(0x0);
+        let table1 = PageTable::new(0x0040_0000);
+        let table2 = PageTable::new(0x0080_0000);
+        let table3 = PageTable::new(0x00C0_0000);
+        //let table2 = PageTable::test();
+        PAGING.set_table(0, &table0);
+        PAGING.set_table(1, &table1);
+        PAGING.set_table(2, &table2);
+        PAGING.set_table(3, &table3);
+        //PAGING.set_table(15, &table2);
+
+        PAGING.enable();
+    }
+
+    unsafe {
+        asm!("xchg bx, bx");
     }
 
     unsafe {
@@ -96,9 +119,9 @@ pub extern "C" fn _start() -> ! {
     }
 
     //bochs magic breakpoint
-    /*unsafe {
+    unsafe {
         asm!("xchg bx, bx");
-    }*/
+    }
 
     //enable hardware interrupts
     unsafe {

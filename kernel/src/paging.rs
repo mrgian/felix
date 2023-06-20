@@ -34,12 +34,12 @@ pub struct PageTable {
 }
 
 impl PageTable {
-    pub fn new() -> Self {
+    pub fn new(from: u32) -> Self {
         let mut table = Self { entries: [0; 1024] };
 
         for i in 0..1024 {
             //0b011 (supervisor, write, present)
-            table.entries[i] = ((i * 0x1000) | 0b011) as u32;
+            table.entries[i] = (((i * 0x1000) + from as usize) | 0b011) as u32;
         }
 
         table
@@ -47,10 +47,9 @@ impl PageTable {
 
     pub fn test() -> Self {
         let mut table = Self { entries: [0; 1024] };
-
-        for i in 0..1024 {
+        for i in 0..4 {
             //0b011 (supervisor, write, present)
-            table.entries[i] = (((1024 + i) * 0x1000) | 0b011) as u32;
+            table.entries[i] = (((i * 0x1000) + 0x0050_0000) | 0b011) as u32;
         }
 
         table
