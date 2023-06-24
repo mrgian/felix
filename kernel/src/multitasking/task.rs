@@ -4,9 +4,9 @@ const MAX_TASKS: i8 = 127;
 
 //each task has a 4KiB stack containg the cpu state in the bottom part of it
 pub struct Task {
-    stack: [u8; 4096],
-    cpu_state: *mut CPUState,
-    running: bool,
+    pub stack: [u8; 4096],
+    pub cpu_state: *mut CPUState,
+    pub running: bool,
 }
 
 impl Task {

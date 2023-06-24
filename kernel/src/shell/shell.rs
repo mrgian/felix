@@ -3,10 +3,29 @@
 use crate::filesystem::fat::FAT;
 use crate::syscalls::print::PRINTER;
 use crate::multitasking::task::Task;
+use crate::multitasking::task::CPUState;
 use crate::multitasking::task::TASK_MANAGER;
 
 const APP_TARGET: u32 = 0x0050_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
+
+static mut TASK_A: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_B: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_C: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
 
 const HELP: &'static str = "Available commands:
 ls - lists root directory entries
@@ -125,16 +144,16 @@ impl Shell {
 
                 match a {
                     'a' => {
-                        let mut task1 = Task::new(task_a as u32);
-                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                        TASK_A = Task::new(task_a as u32);
+                        TASK_MANAGER.add_task(&mut TASK_A as *mut Task);
                     }
                     'b' => {
-                        let mut task1 = Task::new(task_b as u32);
-                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                        TASK_B = Task::new(task_b as u32);
+                        TASK_MANAGER.add_task(&mut TASK_B as *mut Task);
                     }
                     'c' => {
-                        let mut task1 = Task::new(task_c as u32);
-                        TASK_MANAGER.add_task(&mut task1 as *mut Task);
+                        TASK_C = Task::new(task_c as u32);
+                        TASK_MANAGER.add_task(&mut TASK_C as *mut Task);
                     }
                     _ => {
                         libfelix::println!("Specify test a, b, or c!");
