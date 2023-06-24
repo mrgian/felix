@@ -6,10 +6,10 @@
 mod drivers;
 mod filesystem;
 mod interrupts;
+mod memory;
+mod multitasking;
 mod shell;
 mod syscalls;
-mod task;
-mod paging;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
@@ -17,10 +17,10 @@ use drivers::disk::DISK;
 use drivers::pic::PICS;
 use filesystem::fat::FAT;
 use interrupts::idt::IDT;
-use shell::SHELL;
+use shell::shell::SHELL;
 use syscalls::print::PRINTER;
-use paging::PAGING;
-use paging::PageTable;
+use memory::paging::PAGING;
+use memory::paging::PageTable;
 
 use libfelix;
 
@@ -56,7 +56,9 @@ pub extern "C" fn _start() -> ! {
         PAGING.set_table(1, &table1);
         PAGING.set_table(2, &table2);
         PAGING.set_table(3, &table3);
-        //PAGING.set_table(15, &table2);
+
+        let table = PageTable::new(0x00C0_0000);
+        PAGING.set_table(4, &table);
 
         PAGING.enable();
     }

@@ -2,7 +2,7 @@
 //Interrupt handler for keyboard, reads scancode from keyboard controller then interprets it
 
 use crate::drivers::pic::PICS;
-use crate::shell::SHELL;
+use crate::shell::shell::SHELL;
 use core::arch::asm;
 
 //Warning! Mutable static here

@@ -2,8 +2,8 @@
 
 use crate::filesystem::fat::FAT;
 use crate::syscalls::print::PRINTER;
-use crate::task::Task;
-use crate::task::TASK_MANAGER;
+use crate::multitasking::task::Task;
+use crate::multitasking::task::TASK_MANAGER;
 
 const APP_TARGET: u32 = 0x0050_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
