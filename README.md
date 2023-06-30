@@ -113,6 +113,7 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 - *26/04/23* - CPU scheduler
 - *13/05/23* - prints system call
 - *13/05/23* - println! macro in standard library
+- *30/06/23* - multitasking finally working
 
 ## Roadmap
 The following features are planned to be added sooner or later:
