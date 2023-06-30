@@ -119,8 +119,8 @@ Or you can run it on a real x86 computer by copying the disk image to a USB driv
 The following features are planned to be added sooner or later:
  - paging
  - memory allocator
- - process manager
  - VESA video driver
+ - networking
  - SATA AHCI disk driver
  - graphical user interface
 

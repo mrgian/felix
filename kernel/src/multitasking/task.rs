@@ -9,24 +9,6 @@ pub struct Task {
     pub running: bool,
 }
 
-static mut TASK_A: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_B: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_C: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
 #[repr(C, packed)]
 pub struct CPUState {
     //manually pushed
@@ -47,6 +29,30 @@ pub struct CPUState {
 }
 
 static mut IDLE_TASK: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut APP_TASK: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_A: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_B: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_C: Task = Task {
     stack: [0; 4096],
     cpu_state: 0 as *mut CPUState,
     running: false,
@@ -192,6 +198,13 @@ impl TaskManager {
                     libfelix::println!("ID: {}", i);
                 }
             }
+        }
+    }
+
+    pub fn run_app(&mut self, app_entry_point: u32) {
+        unsafe {
+            APP_TASK.init(app_entry_point as u32);
+            self.add_task(&mut APP_TASK as *mut Task);
         }
     }
 

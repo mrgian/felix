@@ -191,8 +191,7 @@ impl Shell {
                 let signature = *(APP_TARGET as *mut u32);
 
                 if signature == APP_SIGNATURE {
-                    //let mut task = Task::new((APP_TARGET + 4) as u32);
-                    //TASK_MANAGER.add_task(&mut task as *mut Task);
+                    TASK_MANAGER.run_app((APP_TARGET + 4) as u32);
                 } else {
                     libfelix::println!("File is not a valid executable!");
                 }
