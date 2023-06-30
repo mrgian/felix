@@ -127,8 +127,10 @@ impl TaskManager {
 
     //remove task
     pub fn remove_task(&mut self, id: usize) {
-        self.tasks[id] = 0 as *mut Task;
-        self.task_count -= 1;
+        if id != 0 {
+            self.tasks[id] = 0 as *mut Task;
+            self.task_count -= 1;
+        }
     }
 
     pub fn remove_current_task(&mut self) {
