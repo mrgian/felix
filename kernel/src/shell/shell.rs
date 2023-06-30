@@ -9,24 +9,6 @@ use crate::multitasking::task::TASK_MANAGER;
 const APP_TARGET: u32 = 0x0050_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
 
-static mut TASK_A: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_B: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_C: Task = Task {
-    stack: [0; 4096],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
 const HELP: &'static str = "Available commands:
 ls - lists root directory entries
 cat <file> - displays content of a file
@@ -144,16 +126,13 @@ impl Shell {
 
                 match a {
                     'a' => {
-                        TASK_A.init(task_a as u32);
-                        TASK_MANAGER.add_task(&mut TASK_A as *mut Task);
+                        TASK_MANAGER.add_dummy_task_a();
                     }
                     'b' => {
-                        TASK_B.init(task_b as u32);
-                        TASK_MANAGER.add_task(&mut TASK_B as *mut Task);
+                        TASK_MANAGER.add_dummy_task_b();
                     }
                     'c' => {
-                        TASK_C.init(task_c as u32);
-                        TASK_MANAGER.add_task(&mut TASK_C as *mut Task);
+                        TASK_MANAGER.add_dummy_task_c();
                     }
                     _ => {
                         libfelix::println!("Specify test a, b, or c!");
@@ -235,61 +214,3 @@ impl Shell {
     }
 }
 
-
-//EXAMPLE TASKS
-fn task_a() {
-    let mut a: u32 = 0;
-    let mut b: u8 = 0;
-    loop {
-        if a == 300_000_000 {
-            libfelix::println!("Process A running. {}% complete.", b);
-            a = 0;
-            b += 1;
-
-            if b == 100 {
-                libfelix::println!("Process A complete.");
-                break;
-            }
-        }
-        a += 1;
-    }
-    loop{}
-}
-
-fn task_b() {
-    let mut a: u32 = 0;
-    let mut b: u8 = 0;
-    loop {
-        if a == 300_000_000 {
-            libfelix::println!("Process B running. {}% complete.", b);
-            a = 0;
-            b += 1;
-
-            if b == 100 {
-                libfelix::println!("Process B complete.");
-                break;
-            }
-        }
-        a += 1;
-    }
-    loop{}
-}
-
-fn task_c() {
-    let mut a: u32 = 0;
-    let mut b: u8 = 0;
-    loop {
-        if a == 300_000_000 {
-            libfelix::println!("Process C running. {}% complete.", b);
-            a = 0;
-            b += 1;
-
-            if b == 100 {
-                libfelix::println!("Process C complete.");
-                break;
-            }
-        }
-        a += 1;
-    }
-    loop{}
-}

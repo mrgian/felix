@@ -9,6 +9,24 @@ pub struct Task {
     pub running: bool,
 }
 
+static mut TASK_A: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_B: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
+static mut TASK_C: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
 #[repr(C, packed)]
 pub struct CPUState {
     //manually pushed
@@ -176,8 +194,87 @@ impl TaskManager {
             }
         }
     }
+
+    pub fn add_dummy_task_a(&mut self) {
+        unsafe {
+            TASK_A.init(task_a as u32);
+            self.add_task(&mut TASK_A as *mut Task);
+        }
+    }
+
+    pub fn add_dummy_task_b(&mut self) {
+        unsafe {
+            TASK_B.init(task_b as u32);
+            self.add_task(&mut TASK_B as *mut Task);
+        }
+    }
+
+    pub fn add_dummy_task_c(&mut self) {
+        unsafe {
+            TASK_C.init(task_c as u32);
+            self.add_task(&mut TASK_C as *mut Task);
+        }
+    }
 }
 
 fn idle() {
+    loop{}
+}
+
+//EXAMPLE TASKS
+fn task_a() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
+    loop {
+        if a == 300_000_000 {
+            libfelix::println!("Process A running. {}% complete.", b);
+            a = 0;
+            b += 1;
+
+            if b == 100 {
+                libfelix::println!("Process A complete.");
+                break;
+            }
+        }
+        a += 1;
+    }
+    loop{}
+}
+
+fn task_b() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
+    loop {
+        if a == 300_000_000 {
+            libfelix::println!("Process B running. {}% complete.", b);
+            a = 0;
+            b += 1;
+
+            if b == 100 {
+                libfelix::println!("Process B complete.");
+                break;
+            }
+        }
+        a += 1;
+    }
+    loop{}
+}
+
+fn task_c() {
+    let mut a: u32 = 0;
+    let mut b: u8 = 0;
+    loop {
+        if a == 300_000_000 {
+            libfelix::println!("Process C running. {}% complete.", b);
+            a = 0;
+            b += 1;
+
+            if b == 100 {
+                libfelix::println!("Process C complete.");
+                break;
+            }
+        }
+        a += 1;
+    }
     loop{}
 }
