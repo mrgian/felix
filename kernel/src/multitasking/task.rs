@@ -35,46 +35,40 @@ static mut IDLE_TASK: Task = Task {
 };
 
 impl Task {
-    pub fn new(entry: u32) -> Self {
-        //init null task
-        let mut task = Task {
-            stack: [0; 4096],
-            cpu_state: 0 as *mut CPUState,
-            running: true,
-        };
+    //setup task stack, zeroing its cpu state and setting entry point
+    pub fn init(&mut self, entry_point: u32) {
+        //mark task as running
+        self.running = true;
 
         //set cpu state pointer to the bottom part of its stack
-        let mut state = &task.stack as *const u8;
+        let mut state = &self.stack as *const u8;
         unsafe {
             state = state.byte_add(4096);
             state = state.byte_sub(core::mem::size_of::<CPUState>());
         }
 
         //update cpu state pointer
-        task.cpu_state = state as *mut CPUState;
+        self.cpu_state = state as *mut CPUState;
 
         unsafe {
             //init registers
-            (*(task.cpu_state)).eax = 0;
-            (*(task.cpu_state)).ebx = 0;
-            (*(task.cpu_state)).ecx = 0;
-            (*(task.cpu_state)).edx = 0;
-            (*(task.cpu_state)).esi = 0;
-            (*(task.cpu_state)).edi = 0;
-            (*(task.cpu_state)).ebp = 0;
+            (*(self.cpu_state)).eax = 0;
+            (*(self.cpu_state)).ebx = 0;
+            (*(self.cpu_state)).ecx = 0;
+            (*(self.cpu_state)).edx = 0;
+            (*(self.cpu_state)).esi = 0;
+            (*(self.cpu_state)).edi = 0;
+            (*(self.cpu_state)).ebp = 0;
 
             //set instruction pointer to entry point of task
-            (*(task.cpu_state)).eip = entry;
+            (*(self.cpu_state)).eip = entry_point;
 
             //set code segment
-            (*(task.cpu_state)).cs = 0x8;
+            (*(self.cpu_state)).cs = 0x8;
 
             //set eflags
-            (*(task.cpu_state)).eflags = 0x202;
+            (*(self.cpu_state)).eflags = 0x202;
         }
-
-        //return new task
-        task
     }
 }
 
@@ -94,7 +88,7 @@ pub static mut TASK_MANAGER: TaskManager = TaskManager {
 impl TaskManager {
     pub fn init(&mut self) {
         unsafe {
-            IDLE_TASK = Task::new(idle as u32);
+            IDLE_TASK.init(idle as u32);
             self.add_task(&mut IDLE_TASK as *mut Task);
         }
     }

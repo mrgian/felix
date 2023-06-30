@@ -13,6 +13,8 @@ pub const TIMER_INT: u8 = 32;
 pub extern "C" fn timer() {
     unsafe {
         asm!(
+            //disable interrupts
+            "cli",
             //save registers
             "push ebp",
             "push edi",
@@ -34,7 +36,9 @@ pub extern "C" fn timer() {
             "pop esi",
             "pop edi",
             "pop ebp",
-            //return interrupt
+            //re-enable interrupts
+            "sti",
+            //return irq
             "iretd",
             options(noreturn)
         );

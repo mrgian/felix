@@ -144,15 +144,15 @@ impl Shell {
 
                 match a {
                     'a' => {
-                        TASK_A = Task::new(task_a as u32);
+                        TASK_A.init(task_a as u32);
                         TASK_MANAGER.add_task(&mut TASK_A as *mut Task);
                     }
                     'b' => {
-                        TASK_B = Task::new(task_b as u32);
+                        TASK_B.init(task_b as u32);
                         TASK_MANAGER.add_task(&mut TASK_B as *mut Task);
                     }
                     'c' => {
-                        TASK_C = Task::new(task_c as u32);
+                        TASK_C.init(task_c as u32);
                         TASK_MANAGER.add_task(&mut TASK_C as *mut Task);
                     }
                     _ => {
@@ -212,8 +212,8 @@ impl Shell {
                 let signature = *(APP_TARGET as *mut u32);
 
                 if signature == APP_SIGNATURE {
-                    let mut task = Task::new((APP_TARGET + 4) as u32);
-                    TASK_MANAGER.add_task(&mut task as *mut Task);
+                    //let mut task = Task::new((APP_TARGET + 4) as u32);
+                    //TASK_MANAGER.add_task(&mut task as *mut Task);
                 } else {
                     libfelix::println!("File is not a valid executable!");
                 }
