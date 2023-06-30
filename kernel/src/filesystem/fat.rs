@@ -241,10 +241,8 @@ impl FatDriver {
     }
 
     //search by filename, returns found root entry
-    pub fn search_file(&self, name: &[char]) -> Entry {
-        let mut result = NULL_ENTRY;
-
-        for entry in self.entries {
+    pub fn search_file(&self, name: &[char]) -> &Entry {
+        for entry in self.entries.iter() {
             let mut found = true;
             let mut i = 0;
 
@@ -263,10 +261,10 @@ impl FatDriver {
             }
 
             if found {
-                result = entry;
+                return entry;
             }
         }
 
-        result
+        &NULL_ENTRY
     }
 }
