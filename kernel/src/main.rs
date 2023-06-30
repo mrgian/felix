@@ -48,7 +48,7 @@ pub extern "C" fn _start() -> ! {
     }
 
     //setup paging
-    /*unsafe {
+    unsafe {
         let table0 = PageTable::new(0x0);
         let table1 = PageTable::new(0x0040_0000);
         let table2 = PageTable::new(0x0080_0000);
@@ -63,7 +63,7 @@ pub extern "C" fn _start() -> ! {
         PAGING.set_table(4, &table);
 
         PAGING.enable();
-    }*/
+    }
 
     unsafe {
         asm!("xchg bx, bx");

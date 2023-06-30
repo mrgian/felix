@@ -44,14 +44,4 @@ impl PageTable {
 
         table
     }
-
-    pub fn test() -> Self {
-        let mut table = Self { entries: [0; 1024] };
-        for i in 0..4 {
-            //0b011 (supervisor, write, present)
-            table.entries[i] = (((i * 0x1000) + 0x0050_0000) | 0b011) as u32;
-        }
-
-        table
-    }
 }
