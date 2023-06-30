@@ -9,6 +9,31 @@ pub struct Task {
     pub running: bool,
 }
 
+#[repr(C, packed)]
+pub struct CPUState {
+    //manually pushed
+    eax: u32,
+    ebx: u32,
+    ecx: u32,
+    edx: u32,
+    esi: u32,
+    edi: u32,
+    ebp: u32,
+
+    //automatically pushed by cpu
+    eip: u32,
+    cs: u32,
+    eflags: u32,
+    esp: u32,
+    ss: u32,
+}
+
+static mut IDLE_TASK: Task = Task {
+    stack: [0; 4096],
+    cpu_state: 0 as *mut CPUState,
+    running: false,
+};
+
 impl Task {
     pub fn new(entry: u32) -> Self {
         //init null task
@@ -67,6 +92,13 @@ pub static mut TASK_MANAGER: TaskManager = TaskManager {
 };
 
 impl TaskManager {
+    pub fn init(&mut self) {
+        unsafe {
+            IDLE_TASK = Task::new(idle as u32);
+            self.add_task(&mut IDLE_TASK as *mut Task);
+        }
+    }
+
     //add given task to next slot
     pub fn add_task(&mut self, task: *mut Task) {
         let free_slot = self.get_free_slot();
@@ -152,21 +184,6 @@ impl TaskManager {
     }
 }
 
-#[repr(C, packed)]
-pub struct CPUState {
-    //manually pushed
-    eax: u32,
-    ebx: u32,
-    ecx: u32,
-    edx: u32,
-    esi: u32,
-    edi: u32,
-    ebp: u32,
-
-    //automatically pushed by cpu
-    eip: u32,
-    cs: u32,
-    eflags: u32,
-    esp: u32,
-    ss: u32,
+fn idle() {
+    loop{}
 }

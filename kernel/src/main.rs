@@ -22,6 +22,8 @@ use syscalls::print::PRINTER;
 use memory::paging::PAGING;
 use memory::paging::PageTable;
 
+use multitasking::task::TASK_MANAGER;
+
 use libfelix;
 
 //use task::Task;
@@ -46,7 +48,7 @@ pub extern "C" fn _start() -> ! {
     }
 
     //setup paging
-    unsafe {
+    /*unsafe {
         let table0 = PageTable::new(0x0);
         let table1 = PageTable::new(0x0040_0000);
         let table2 = PageTable::new(0x0080_0000);
@@ -61,7 +63,7 @@ pub extern "C" fn _start() -> ! {
         PAGING.set_table(4, &table);
 
         PAGING.enable();
-    }
+    }*/
 
     unsafe {
         asm!("xchg bx, bx");
@@ -118,6 +120,10 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         //init felix shell
         SHELL.init();
+    }
+
+    unsafe {
+        TASK_MANAGER.init();
     }
 
     //bochs magic breakpoint
