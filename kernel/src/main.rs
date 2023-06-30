@@ -49,19 +49,7 @@ pub extern "C" fn _start() -> ! {
 
     //setup paging
     unsafe {
-        let table0 = PageTable::new(0x0);
-        let table1 = PageTable::new(0x0040_0000);
-        let table2 = PageTable::new(0x0080_0000);
-        let table3 = PageTable::new(0x00C0_0000);
-        //let table2 = PageTable::test();
-        PAGING.set_table(0, &table0);
-        PAGING.set_table(1, &table1);
-        PAGING.set_table(2, &table2);
-        PAGING.set_table(3, &table3);
-
-        let table = PageTable::new(0x00C0_0000);
-        PAGING.set_table(4, &table);
-
+        PAGING.identity();
         PAGING.enable();
     }
 

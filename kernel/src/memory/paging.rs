@@ -5,6 +5,12 @@ pub static mut PAGING: PageDirectory = PageDirectory {
     entries: [0x00000002; 1024],
 };
 
+pub static mut TABLES: [PageTable; 16] = [NULL_TABLE; 16];
+
+pub static NULL_TABLE: PageTable = PageTable {
+    entries: [0; 1024],
+};
+
 #[repr(align(4096))]
 pub struct PageDirectory {
     pub entries: [u32; 1024],
@@ -26,22 +32,29 @@ impl PageDirectory {
                 in("eax") address);
         }
     }
+
+    //indentity page first 16MiB
+    pub fn identity(&mut self) {
+        unsafe {
+            for i in 0..4 {
+                TABLES[i].set((0x0040_0000 * i) as u32);
+                PAGING.set_table(i, &TABLES[i]);
+            }
+        }
+    }
 }
 
+#[derive(Copy, Clone, Debug)]
 #[repr(align(4096))]
 pub struct PageTable {
     pub entries: [u32; 1024],
 }
 
 impl PageTable {
-    pub fn new(from: u32) -> Self {
-        let mut table = Self { entries: [0; 1024] };
-
+    pub fn set(&mut self, from: u32) {
         for i in 0..1024 {
             //0b011 (supervisor, write, present)
-            table.entries[i] = (((i * 0x1000) + from as usize) | 0b011) as u32;
+            self.entries[i] = (((i * 0x1000) + from as usize) | 0b011) as u32;
         }
-
-        table
     }
 }
