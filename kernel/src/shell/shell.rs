@@ -4,7 +4,7 @@ use crate::filesystem::fat::FAT;
 use crate::syscalls::print::PRINTER;
 use crate::multitasking::task::TASK_MANAGER;
 
-const APP_TARGET: u32 = 0x0050_0000;
+const APP_TARGET: u32 = 0x00a0_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
 
 const HELP: &'static str = "Available commands:

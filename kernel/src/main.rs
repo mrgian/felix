@@ -20,6 +20,7 @@ use interrupts::idt::IDT;
 use shell::shell::SHELL;
 use syscalls::print::PRINTER;
 use memory::paging::PAGING;
+use memory::paging::TABLES;
 use memory::paging::PageTable;
 
 use multitasking::task::TASK_MANAGER;
@@ -50,6 +51,10 @@ pub extern "C" fn _start() -> ! {
     //setup paging
     unsafe {
         PAGING.identity();
+
+        TABLES[8].set(0x00a0_0000);
+        PAGING.set_table(8, &TABLES[8]);
+
         PAGING.enable();
     }
 

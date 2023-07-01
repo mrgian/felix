@@ -241,7 +241,7 @@ fn task_a() {
     let mut a: u32 = 0;
     let mut b: u8 = 0;
     loop {
-        if a == 300_000_000 {
+        if a == 100_000_000 {
             libfelix::println!("Process A running. {}% complete.", b);
             a = 0;
             b += 1;
@@ -260,7 +260,7 @@ fn task_b() {
     let mut a: u32 = 0;
     let mut b: u8 = 0;
     loop {
-        if a == 300_000_000 {
+        if a == 100_000_000 {
             libfelix::println!("Process B running. {}% complete.", b);
             a = 0;
             b += 1;
@@ -279,7 +279,7 @@ fn task_c() {
     let mut a: u32 = 0;
     let mut b: u8 = 0;
     loop {
-        if a == 300_000_000 {
+        if a == 100_000_000 {
             libfelix::println!("Process C running. {}% complete.", b);
             a = 0;
             b += 1;
