@@ -42,6 +42,9 @@ build:
 	@cargo build --target=x86_16-felix.json --package=felix-bootloader
 	@cargo build --target=x86_32-felix.json --package=felix-kernel
 	@cargo build --target=x86_32-felix.json --package=hello
+	@cargo build --target=x86_32-felix.json --package=atest
+	@cargo build --target=x86_32-felix.json --package=btest
+	@cargo build --target=x86_32-felix.json --package=ctest
 
 .PHONY: objcopy
 objcopy:
