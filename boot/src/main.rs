@@ -60,6 +60,7 @@ fn print(message: &str) {
 
             "mov ah, 0x0e",
             "mov bh, 0",
+            "out 0xe9, al", //e9 port hack
             "int 0x10", //tell the bios to write content of al to screen
 
             "jmp 2b", //start again

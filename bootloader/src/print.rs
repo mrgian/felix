@@ -22,6 +22,11 @@ impl fmt::Write for Printer {
 impl Printer {
     //print only a char
     pub fn printc(&self, c: char) {
+        //e9 port hack
+        unsafe {
+            asm!("out dx, al", in("dx") 0xe9 as u16, in("al") c as u8);
+        }
+
         unsafe {
             asm!(
                 "int 0x10", //tell the bios to write content of al to screen

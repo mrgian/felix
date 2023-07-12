@@ -7,6 +7,8 @@ use crate::syscalls::print::PRINTER;
 use crate::memory::paging::PAGING;
 use crate::memory::paging::TABLES;
 
+use core::arch::asm;
+
 const APP_TARGET: u32 = 0x00a0_0000;
 const APP_SIZE: u32 = 0x0001_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
@@ -71,6 +73,11 @@ impl Shell {
 
     //shell enter
     pub fn enter(&mut self) {
+        //e9 port hack, new line
+        unsafe {
+            asm!("out dx, al", in("dx") 0xe9 as u16, in("al") '\n' as u8);
+        }
+
         unsafe {
             PRINTER.new_line();
         }

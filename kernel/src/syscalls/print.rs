@@ -27,6 +27,11 @@ pub struct Printer {
 impl Printer {
     //copy given char to memory pointed to vga_pointer
     pub fn printc(&mut self, c: char) {
+        //e9 port hack
+        unsafe {
+            asm!("out dx, al", in("dx") 0xe9 as u16, in("al") c as u8);
+        }
+
         if c == '\n' {
             self.new_line();
             return;
