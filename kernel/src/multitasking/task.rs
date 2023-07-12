@@ -162,6 +162,10 @@ impl TaskManager {
         slot
     }
 
+    pub fn get_current_slot(&self) -> i8 {
+        self.current_task
+    }
+
     pub fn list_tasks(&self) {
         libfelix::println!("Running tasks:");
 

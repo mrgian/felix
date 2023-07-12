@@ -4,7 +4,11 @@ use crate::filesystem::fat::FAT;
 use crate::multitasking::task::TASK_MANAGER;
 use crate::syscalls::print::PRINTER;
 
+use crate::memory::paging::PAGING;
+use crate::memory::paging::TABLES;
+
 const APP_TARGET: u32 = 0x00a0_0000;
+const APP_SIZE: u32 = 0x0001_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
 
 const HELP: &'static str = "Available commands:
@@ -183,13 +187,20 @@ impl Shell {
 
         let entry = FAT.search_file(&self.arg);
         if entry.name[0] != 0 {
-            FAT.read_file_to_target(&entry, APP_TARGET as *mut u32);
+            let slot = TASK_MANAGER.get_free_slot();
+            let target = APP_TARGET + (slot as u32 * APP_SIZE);
+
+            //map table 8 (0x02000000) to the address where the executable is loaded 
+            TABLES[8].set(target);
+            PAGING.set_table(8, &TABLES[8]);
+            
+            FAT.read_file_to_target(&entry, target as *mut u32);
 
             unsafe {
-                let signature = *(APP_TARGET as *mut u32);
+                let signature = *(target as *mut u32);
 
                 if signature == APP_SIGNATURE {
-                    TASK_MANAGER.add_task((APP_TARGET + 4) as u32);
+                    TASK_MANAGER.add_task((target + 4) as u32);
                 } else {
                     libfelix::println!("File is not a valid executable!");
                 }

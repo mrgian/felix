@@ -54,9 +54,6 @@ pub extern "C" fn _start() -> ! {
     unsafe {
         PAGING.identity();
 
-        TABLES[8].set(0x00a0_0000);
-        PAGING.set_table(8, &TABLES[8]);
-
         PAGING.enable();
     }
 
