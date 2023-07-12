@@ -1,4 +1,4 @@
-<p align="center"><img src="https://user-images.githubusercontent.com/10211171/231185775-eb188a74-a133-45f6-8f2b-21cc1d498a0a.jpg" height=150></p>
+<p align="center"><img src="https://github.com/mrgian/felix/assets/10211171/5b3ee648-1886-4727-9d05-cedb53fc828e" height=150></p>
 <h1 align="center">Felix OS</h1>
 <h3 align="center">
 x86 operating system
@@ -6,7 +6,7 @@ x86 operating system
 
 ## Description
 
-Felix is my attempt at writing an x86 operating system.
+Felix is an experimental operating system for the Intel IA-32 architecture (x86).
 
 It's **written completely from scratch** in Rust and doesn't use any external dependencies.
 
@@ -125,4 +125,5 @@ The following features are planned to be added sooner or later:
  - graphical user interface
 
 ## Credits
-This project is entirely developed by **Gianmatteo Palmieri** ([mrgian](https://github.com/mrgian)).
+This project is entirely developed by [**Gianmatteo Palmieri**](https://gian.im)<br>
+Logo design by [**Veronica Grana**](https://www.instagram.com/_.veronica_grana._)
