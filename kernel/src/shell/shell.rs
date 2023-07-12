@@ -197,10 +197,10 @@ impl Shell {
             let slot = TASK_MANAGER.get_free_slot();
             let target = APP_TARGET + (slot as u32 * APP_SIZE);
 
-            //map table 8 (0x02000000) to the address where the executable is loaded 
+            //map table 8 (0x02000000) to the address where the executable is loaded
             TABLES[8].set(target);
             PAGING.set_table(8, &TABLES[8]);
-            
+
             FAT.read_file_to_target(&entry, target as *mut u32);
 
             unsafe {

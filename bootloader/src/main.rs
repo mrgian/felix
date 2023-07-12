@@ -6,6 +6,7 @@ mod print;
 
 mod disk;
 mod gdt;
+mod splash;
 
 use core::arch::asm;
 use core::panic::PanicInfo;
@@ -31,6 +32,13 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
+    clear!();
+
+    splash::splash();
+
+    wait_for_key();
+    clear!();
+
     //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
     println!("[!] Switching to 16bit unreal mode...");
     unreal_mode();
@@ -131,5 +139,11 @@ fn unreal_mode() {
         //restore segment registers
         asm!("mov ds, {0:x}", in(reg) ds);
         asm!("mov ss, {0:x}", in(reg) ss);
+    }
+}
+
+fn wait_for_key() {
+    unsafe {
+        asm!("int 0x16", in("ah") 0x00 as u8);
     }
 }

@@ -45,8 +45,7 @@ impl Printer {
     }
 
     //set bios video mode to clear the screen
-    #[allow(dead_code)]
-    pub fn clear() {
+    pub fn clear(&self) {
         unsafe {
             asm!(
                 "int 0x10",
@@ -54,6 +53,14 @@ impl Printer {
             );
         }
     }
+}
+
+//macro for clear!
+#[macro_export]
+macro_rules! clear {
+    () => {
+        $crate::print::_clear()
+    };
 }
 
 //macro for print!
@@ -73,6 +80,12 @@ pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     unsafe {
         PRINTER.write_fmt(args).unwrap();
+    }
+}
+
+pub fn _clear() {
+    unsafe {
+        PRINTER.clear();
     }
 }
 
