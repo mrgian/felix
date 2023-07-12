@@ -4,9 +4,10 @@ const STACK_SIZE: usize = 4096;
 const MAX_TASKS: i8 = 32;
 
 //each task has a 4KiB stack containg the cpu state in the bottom part of it
+#[derive(Copy, Debug, Clone)]
 pub struct Task {
     pub stack: [u8; STACK_SIZE],
-    pub cpu_state: *mut CPUState,
+    pub cpu_state_ptr: u32, //pub cpu_state: *mut CPUState,
     pub running: bool,
 }
 
@@ -29,33 +30,11 @@ pub struct CPUState {
     ss: u32,
 }
 
-static mut IDLE_TASK: Task = Task {
-    stack: [0; STACK_SIZE],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
+static mut TASKS: [Task; MAX_TASKS as usize] = [NULL_TASK; MAX_TASKS as usize];
 
-static mut APP_TASK: Task = Task {
+static NULL_TASK: Task = Task {
     stack: [0; STACK_SIZE],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_A: Task = Task {
-    stack: [0; STACK_SIZE],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_B: Task = Task {
-    stack: [0; STACK_SIZE],
-    cpu_state: 0 as *mut CPUState,
-    running: false,
-};
-
-static mut TASK_C: Task = Task {
-    stack: [0; STACK_SIZE],
-    cpu_state: 0 as *mut CPUState,
+    cpu_state_ptr: 0 as u32, //cpu_state: 0 as *mut CPUState,
     running: false,
 };
 
@@ -73,26 +52,28 @@ impl Task {
         }
 
         //update cpu state pointer
-        self.cpu_state = state as *mut CPUState;
+        self.cpu_state_ptr = state as u32;
+
+        let cpu_state = self.cpu_state_ptr as *mut CPUState;
 
         unsafe {
             //init registers
-            (*(self.cpu_state)).eax = 0;
-            (*(self.cpu_state)).ebx = 0;
-            (*(self.cpu_state)).ecx = 0;
-            (*(self.cpu_state)).edx = 0;
-            (*(self.cpu_state)).esi = 0;
-            (*(self.cpu_state)).edi = 0;
-            (*(self.cpu_state)).ebp = 0;
+            (*cpu_state).eax = 0;
+            (*cpu_state).ebx = 0;
+            (*cpu_state).ecx = 0;
+            (*cpu_state).edx = 0;
+            (*cpu_state).esi = 0;
+            (*cpu_state).edi = 0;
+            (*cpu_state).ebp = 0;
 
             //set instruction pointer to entry point of task
-            (*(self.cpu_state)).eip = entry_point;
+            (*cpu_state).eip = entry_point;
 
             //set code segment
-            (*(self.cpu_state)).cs = 0x8;
+            (*cpu_state).cs = 0x8;
 
             //set eflags
-            (*(self.cpu_state)).eflags = 0x202;
+            (*cpu_state).eflags = 0x202;
         }
     }
 }
@@ -113,8 +94,8 @@ pub static mut TASK_MANAGER: TaskManager = TaskManager {
 impl TaskManager {
     pub fn init(&mut self) {
         unsafe {
-            IDLE_TASK.init(idle as u32);
-            self.add_task(&mut IDLE_TASK as *mut Task);
+            TASKS[0].init(idle as u32);
+            self.add_task(&mut TASKS[0] as *mut Task);
         }
     }
 
@@ -149,12 +130,12 @@ impl TaskManager {
 
             //save current state of current task
             if self.current_task >= 0 {
-                (*(self.tasks[self.current_task as usize])).cpu_state = cpu_state;
+                (*(self.tasks[self.current_task as usize])).cpu_state_ptr = cpu_state as u32;
             }
 
             self.current_task = self.get_next_task();
 
-            (*(self.tasks[self.current_task as usize])).cpu_state
+            (*(self.tasks[self.current_task as usize])).cpu_state_ptr as *mut CPUState
         }
     }
 
@@ -206,29 +187,29 @@ impl TaskManager {
 
     pub fn run_app(&mut self, app_entry_point: u32) {
         unsafe {
-            APP_TASK.init(app_entry_point as u32);
-            self.add_task(&mut APP_TASK as *mut Task);
+            TASKS[4].init(app_entry_point as u32);
+            self.add_task(&mut TASKS[4] as *mut Task);
         }
     }
 
     pub fn add_dummy_task_a(&mut self) {
         unsafe {
-            TASK_A.init(task_a as u32);
-            self.add_task(&mut TASK_A as *mut Task);
+            TASKS[1].init(task_a as u32);
+            self.add_task(&mut TASKS[1] as *mut Task);
         }
     }
 
     pub fn add_dummy_task_b(&mut self) {
         unsafe {
-            TASK_B.init(task_b as u32);
-            self.add_task(&mut TASK_B as *mut Task);
+            TASKS[2].init(task_b as u32);
+            self.add_task(&mut TASKS[2] as *mut Task);
         }
     }
 
     pub fn add_dummy_task_c(&mut self) {
         unsafe {
-            TASK_C.init(task_c as u32);
-            self.add_task(&mut TASK_C as *mut Task);
+            TASKS[3].init(task_c as u32);
+            self.add_task(&mut TASKS[3] as *mut Task);
         }
     }
 }
