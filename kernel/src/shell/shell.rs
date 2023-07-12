@@ -82,7 +82,7 @@ impl Shell {
             //test command
             _b if self.is_command("ping") => {
                 libfelix::println!("PONG!");
-            }
+            },
 
             //list root directory
             _b if self.is_command("ls") => unsafe {

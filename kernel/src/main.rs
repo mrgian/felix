@@ -3,6 +3,8 @@
 #![feature(naked_functions)]
 #![feature(pointer_byte_offsets)]
 
+extern crate alloc;
+
 mod drivers;
 mod filesystem;
 mod interrupts;
@@ -21,14 +23,15 @@ use shell::shell::SHELL;
 use syscalls::print::PRINTER;
 use memory::paging::PAGING;
 use memory::paging::TABLES;
-use memory::paging::PageTable;
+use memory::allocator::Allocator;
+
 
 use multitasking::task::TASK_MANAGER;
 
 use libfelix;
 
-//use task::Task;
-//use task::TASK_MANAGER;
+#[global_allocator]
+static ALLOCATOR: Allocator = Allocator;
 
 //1MiB. TODO: Get those from linker
 const KERNEL_START: u32 = 0x0010_0000;
