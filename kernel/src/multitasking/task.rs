@@ -1,10 +1,11 @@
 //TASK MANAGER
 
-const MAX_TASKS: i8 = 127;
+const STACK_SIZE: usize = 4096;
+const MAX_TASKS: i8 = 32;
 
 //each task has a 4KiB stack containg the cpu state in the bottom part of it
 pub struct Task {
-    pub stack: [u8; 4096],
+    pub stack: [u8; STACK_SIZE],
     pub cpu_state: *mut CPUState,
     pub running: bool,
 }
@@ -29,31 +30,31 @@ pub struct CPUState {
 }
 
 static mut IDLE_TASK: Task = Task {
-    stack: [0; 4096],
+    stack: [0; STACK_SIZE],
     cpu_state: 0 as *mut CPUState,
     running: false,
 };
 
 static mut APP_TASK: Task = Task {
-    stack: [0; 4096],
+    stack: [0; STACK_SIZE],
     cpu_state: 0 as *mut CPUState,
     running: false,
 };
 
 static mut TASK_A: Task = Task {
-    stack: [0; 4096],
+    stack: [0; STACK_SIZE],
     cpu_state: 0 as *mut CPUState,
     running: false,
 };
 
 static mut TASK_B: Task = Task {
-    stack: [0; 4096],
+    stack: [0; STACK_SIZE],
     cpu_state: 0 as *mut CPUState,
     running: false,
 };
 
 static mut TASK_C: Task = Task {
-    stack: [0; 4096],
+    stack: [0; STACK_SIZE],
     cpu_state: 0 as *mut CPUState,
     running: false,
 };
@@ -67,7 +68,7 @@ impl Task {
         //set cpu state pointer to the bottom part of its stack
         let mut state = &self.stack as *const u8;
         unsafe {
-            state = state.byte_add(4096);
+            state = state.byte_add(STACK_SIZE);
             state = state.byte_sub(core::mem::size_of::<CPUState>());
         }
 
