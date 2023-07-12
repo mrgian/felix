@@ -1,2 +1,2 @@
-pub mod paging;
 pub mod allocator;
+pub mod paging;

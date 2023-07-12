@@ -1,8 +1,8 @@
 //SYSTEM CALLS HANDLER
 
 use crate::drivers::pic::PICS;
-use crate::syscalls::print;
 use crate::multitasking::task::TASK_MANAGER;
+use crate::syscalls::print;
 use core::arch::asm;
 
 use core::slice;

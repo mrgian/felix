@@ -19,12 +19,11 @@ use drivers::disk::DISK;
 use drivers::pic::PICS;
 use filesystem::fat::FAT;
 use interrupts::idt::IDT;
-use shell::shell::SHELL;
-use syscalls::print::PRINTER;
+use memory::allocator::Allocator;
 use memory::paging::PAGING;
 use memory::paging::TABLES;
-use memory::allocator::Allocator;
-
+use shell::shell::SHELL;
+use syscalls::print::PRINTER;
 
 use multitasking::task::TASK_MANAGER;
 

@@ -7,9 +7,7 @@ pub static mut PAGING: PageDirectory = PageDirectory {
 
 pub static mut TABLES: [PageTable; 16] = [NULL_TABLE; 16];
 
-pub static NULL_TABLE: PageTable = PageTable {
-    entries: [0; 1024],
-};
+pub static NULL_TABLE: PageTable = PageTable { entries: [0; 1024] };
 
 #[repr(align(4096))]
 pub struct PageDirectory {

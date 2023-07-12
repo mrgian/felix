@@ -1,8 +1,8 @@
 //SHELL
 
 use crate::filesystem::fat::FAT;
-use crate::syscalls::print::PRINTER;
 use crate::multitasking::task::TASK_MANAGER;
+use crate::syscalls::print::PRINTER;
 
 const APP_TARGET: u32 = 0x00a0_0000;
 const APP_SIGNATURE: u32 = 0xB16B00B5;
@@ -82,7 +82,7 @@ impl Shell {
             //test command
             _b if self.is_command("ping") => {
                 libfelix::println!("PONG!");
-            },
+            }
 
             //list root directory
             _b if self.is_command("ls") => unsafe {
@@ -189,7 +189,7 @@ impl Shell {
                 let signature = *(APP_TARGET as *mut u32);
 
                 if signature == APP_SIGNATURE {
-                    TASK_MANAGER.run_app((APP_TARGET + 4) as u32);
+                    TASK_MANAGER.add_task((APP_TARGET + 4) as u32);
                 } else {
                     libfelix::println!("File is not a valid executable!");
                 }
@@ -210,4 +210,3 @@ impl Shell {
         true
     }
 }
-
