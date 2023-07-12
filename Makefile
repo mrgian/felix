@@ -51,6 +51,9 @@ objcopy:
 	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_16-felix/debug/felix-bootloader build/bootloader.bin
 	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_32-felix/debug/felix-kernel build/kernel.bin
 	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_32-felix/debug/hello build/hello.bin
+	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_32-felix/debug/atest build/atest.bin
+	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_32-felix/debug/btest build/btest.bin
+	@$(OBJCOPY) -I elf32-i386 -O binary target/x86_32-felix/debug/ctest build/ctest.bin
 
 .PHONY: image
 image:
@@ -62,6 +65,9 @@ image:
 	@$(MCOPY) -i build/partition.img dante "::dante"
 	@$(MCOPY) -i build/partition.img lorem "::lorem"
 	@$(MCOPY) -i build/partition.img build/hello.bin "::hello"
+	@$(MCOPY) -i build/partition.img build/atest.bin "::atest"
+	@$(MCOPY) -i build/partition.img build/btest.bin "::btest"
+	@$(MCOPY) -i build/partition.img build/ctest.bin "::ctest"
 	@dd if=build/partition.img of=build/disk.img bs=512 seek=36864 conv=notrunc
 	@rm -rf build/partition.img
 	@dd if=build/bootloader.bin of=build/disk.img bs=512 seek=2048 conv=notrunc

@@ -3,6 +3,27 @@
 version = 3
 
 [[package]]
+name = "atest"
+version = "0.1.0"
+dependencies = [
+ "libfelix",
+]
+
+[[package]]
+name = "btest"
+version = "0.1.0"
+dependencies = [
+ "libfelix",
+]
+
+[[package]]
+name = "ctest"
+version = "0.1.0"
+dependencies = [
+ "libfelix",
+]
+
+[[package]]
 name = "felix-boot"
 version = "0.4.0"
 
