@@ -141,6 +141,7 @@ fn unreal_mode() {
     }
 }
 
+#[allow(dead_code)]
 fn wait_for_key() {
     unsafe {
         asm!("int 0x16", in("ah") 0x00 as u8);

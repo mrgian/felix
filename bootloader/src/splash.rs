@@ -23,7 +23,8 @@ pub const SPLASH: &'static str =
                      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▀▀▀▀▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄                     
                                                                                 
                              Press any key to start...";
-
+                                                          
+#[allow(dead_code)]
 pub fn splash() {
     for c in SPLASH.chars() {
         match c {

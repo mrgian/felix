@@ -1,4 +1,5 @@
 //TASK MANAGER
+use core::arch::asm;
 
 const STACK_SIZE: usize = 4096;
 const MAX_TASKS: i8 = 32;
@@ -191,7 +192,11 @@ impl TaskManager {
 }
 
 fn idle() {
-    loop {}
+    loop {
+        unsafe {
+            asm!("hlt");
+        }
+    }
 }
 
 //EXAMPLE TASKS

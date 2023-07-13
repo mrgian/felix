@@ -21,7 +21,6 @@ use filesystem::fat::FAT;
 use interrupts::idt::IDT;
 use memory::allocator::Allocator;
 use memory::paging::PAGING;
-use memory::paging::TABLES;
 use shell::shell::SHELL;
 use syscalls::print::PRINTER;
 
@@ -45,94 +44,63 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    //setup stack
     unsafe {
+        //setup stack
         asm!("mov esp, {}", in(reg) STACK_START);
-    }
 
-    //setup paging
-    unsafe {
+        //setup paging
         PAGING.identity();
-
         PAGING.enable();
-    }
 
-    unsafe {
+        //bochs magic breakpoint
         asm!("xchg bx, bx");
-    }
 
-    unsafe {
-        //init idt
-        IDT.init();
-
-        //add CPU exceptions to idt
-        IDT.add_exceptions();
-
-        //add timer interrupt to idt
+        //setup idt
+        IDT.init(); //init idt  
+        IDT.add_exceptions(); //add CPU exceptions to idt 
         IDT.add(
             interrupts::timer::TIMER_INT as usize,
             interrupts::timer::timer as u32,
-        );
-
-        //add system call handler interrupt
+        ); //add timer interrupt to idt     
         IDT.add(
             syscalls::handler::SYSCALL_INT as usize,
             syscalls::handler::syscall as u32,
-        );
-
-        //add keyboard interrupt to idt
+        ); //add system call handler interrupt     
         IDT.add(
             drivers::keyboard::KEYBOARD_INT as usize,
             drivers::keyboard::keyboard as u32,
-        );
+        ); //add keyboard interrupt to idt   
+        IDT.load(); //load idt
 
-        //load idt
-        IDT.load();
-    }
+        //init programmable interrupt controllers
+        PICS.init();
 
-    //init programmable interrupt controllers
-    PICS.init();
-
-    unsafe {
-        //check if ata drive is working
+        //enable ata disk if present
         DISK.check();
-    }
 
-    print_info();
-
-    unsafe {
+        //init filesystem
         if DISK.enabled {
-            //init filesystem
             FAT.load_header();
             FAT.load_entries();
             FAT.load_table();
         }
-    }
 
-    unsafe {
+        //print name, version and copyright
+        print_info();
+
         //init felix shell
         SHELL.init();
-    }
 
-    unsafe {
+        //init multitasking
         TASK_MANAGER.init();
-    }
 
-    //bochs magic breakpoint
-    unsafe {
+        //bochs magic breakpoint
         asm!("xchg bx, bx");
-    }
 
-    //enable hardware interrupts
-    unsafe {
+        //enable hardware interrupts
         asm!("sti");
-    }
 
-    //halt cpu while waiting for interrupts
-    loop {
-        unsafe {
-            asm!("hlt");
-        }
+        loop {}
     }
 }
 

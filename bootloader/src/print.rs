@@ -45,6 +45,7 @@ impl Printer {
     }
 
     //set bios video mode to clear the screen
+    #[allow(dead_code)]
     pub fn clear(&self) {
         unsafe {
             asm!(
@@ -83,6 +84,7 @@ pub fn _print(args: fmt::Arguments) {
     }
 }
 
+#[allow(dead_code)]
 pub fn _clear() {
     unsafe {
         PRINTER.clear();
