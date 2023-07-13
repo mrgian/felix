@@ -32,12 +32,11 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[link_section = ".start"]
 pub extern "C" fn _start() -> ! {
-    clear!();
-
-    splash::splash();
-
-    wait_for_key();
-    clear!();
+    //uncomment to enable splashscreen
+    //clear!();
+    //splash::splash();
+    //wait_for_key();
+    //clear!();
 
     //unreal mode is needed because diskreader needs to copy from buffer to protected mode memory
     println!("[!] Switching to 16bit unreal mode...");
