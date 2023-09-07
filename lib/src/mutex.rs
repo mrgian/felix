@@ -20,14 +20,14 @@ impl<T> Mutex<T> {
         }
     }
 
-    //WARNING: You MUST call free()  after using acquire() or acquire_mut() when the target is no longer needed. No doing so can, and will, lead to problems.
+    //WARNING: You MUST call free()  after using acquire() or acquire_mut() when the target is no longer needed. Not doing so can, and will, lead to problems.
     pub fn acquire_mut(&mut self) -> &mut T {
         while !self.free.load(Ordering::SeqCst) {} // Wait until free is true
         self.free.store(false, Ordering::SeqCst); // Set free to false
         return &mut self.target;
     }
 
-    //WARNING: You MUST call free()  after using acquire() or acquire_mut() when the target is no longer needed. No doing so can, and will, lead to problems.
+    //WARNING: You MUST call free()  after using acquire() or acquire_mut() when the target is no longer needed. Not doing so can, and will, lead to problems.
     pub fn acquire(&mut self) -> &T {
         while !self.free.load(Ordering::SeqCst) {} // Wait until free is true
         self.free.store(false, Ordering::SeqCst); // Set free to false
