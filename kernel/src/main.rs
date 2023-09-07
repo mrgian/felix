@@ -17,7 +17,6 @@ use core::arch::asm;
 use core::panic::PanicInfo;
 use drivers::disk::DISK;
 use drivers::pic::PICS;
-use filesystem::fat::FAT;
 use interrupts::idt::IDT;
 use memory::allocator::Allocator;
 use memory::paging::PAGING;
@@ -27,6 +26,7 @@ use syscalls::print::PRINTER;
 use multitasking::task::TASK_MANAGER;
 
 use libfelix;
+use crate::filesystem::fat::{FAT_MUTEX, FatDriver, NULL_ENTRY, NULL_HEADER};
 
 #[global_allocator]
 static ALLOCATOR: Allocator = Allocator;
@@ -80,9 +80,11 @@ pub extern "C" fn _start() -> ! {
 
         //init filesystem
         if DISK.enabled {
-            FAT.load_header();
-            FAT.load_entries();
-            FAT.load_table();
+            let fat = FAT_MUTEX.acquire_mut();
+            fat.load_header();
+            fat.load_table();
+            fat.load_entries();
+            FAT_MUTEX.free();
         }
 
         //print name, version and copyright

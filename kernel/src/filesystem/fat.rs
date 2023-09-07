@@ -2,20 +2,23 @@
 
 use crate::drivers::disk::DISK;
 use core::mem;
+use core::sync::atomic::AtomicBool;
+use libfelix::mutex::Mutex;
 
 //Warning! Mutable static here
-//TODO: Implement a mutex to get safe access to this
-pub static mut FAT: FatDriver = FatDriver {
+pub static mut FAT_MUTEX: Mutex<FatDriver> = Mutex::new(  FatDriver {
     header: NULL_HEADER,
     entries: [NULL_ENTRY; ENTRY_COUNT],
     table: [0; FAT_SIZE],
     buffer: [0; 2048],
-};
+} );
 
 const ENTRY_COUNT: usize = 512;
 const FAT_START: u16 = 36864;
 
 const FAT_SIZE: usize = 256;
+
+
 
 //FAT16 header
 #[derive(Copy, Clone, Debug)]
@@ -48,7 +51,7 @@ pub struct Header {
     zero: [u8; 460], //needed to make struct 512 bytes big
 }
 
-static NULL_HEADER: Header = Header {
+pub static NULL_HEADER: Header = Header {
     boot_jump_instructions: [0; 3],
 
     oem_identifier: [0; 8],
@@ -92,7 +95,7 @@ pub struct Entry {
     size: u32,
 }
 
-static NULL_ENTRY: Entry = Entry {
+pub static NULL_ENTRY: Entry = Entry {
     name: [0; 11],
     attributes: 0,
     reserved: 0,
@@ -107,9 +110,11 @@ static NULL_ENTRY: Entry = Entry {
     size: 0,
 };
 
+#[derive(Copy, Clone)]
 pub struct FatDriver {
     pub header: Header,
-    pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
+    pub entries: [Entry; ENTRY_COUNT],
+    //the root directory is an array of file entries
     pub table: [u16; FAT_SIZE],
     pub buffer: [u8; 2048],
 }
@@ -130,13 +135,14 @@ impl FatDriver {
     //get entries array address and overwrite that mem location with data from root directory
     //calculate size and position of root direcotry based on data from header
     pub fn load_entries(&mut self) {
+        libfelix::print!(" loading entries");
         let target = &mut self.entries as *mut Entry;
 
         let entry_size = mem::size_of::<Entry>() as u16;
 
         let lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
-                + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
+            + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
 
         let size: u16 = entry_size * self.header.dir_entries_count;
         let sectors: u16 = size / self.header.bytes_per_sector;
@@ -145,7 +151,9 @@ impl FatDriver {
             DISK.read(target, lba, sectors);
         }
     }
-
+    pub fn testf(&mut self) -> i32 {
+        return 0;
+    }
     //list each entry in root direcotry
     //TODO: add other info like creation_date ecc
     pub fn list_entries(&self) {
@@ -186,13 +194,13 @@ impl FatDriver {
     }
 
     //read first cluster of file to buffer
-    pub fn read_file_to_buffer(&mut self, entry: &Entry) {
-        let target = &mut self.buffer as *mut u8;
+    pub fn read_file_to_buffer(&self, entry: &Entry) {
+        let target =  self.buffer.as_ptr() as *mut u8;
 
         let data_lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
-                + self.header.sectors_per_fat * self.header.fat_count as u16
-                + 32) as u64;
+            + self.header.sectors_per_fat * self.header.fat_count as u16
+            + 32) as u64;
         let lba: u64 = data_lba
             + ((entry.first_cluster_low - 2) * self.header.sectors_per_cluster as u16) as u64;
 
@@ -204,7 +212,7 @@ impl FatDriver {
     }
 
     //read file reading one cluster at time
-    pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
+    pub fn read_file_to_target(&self, entry: &Entry, target: *mut u32) {
         let mut next_cluster = entry.first_cluster_low;
         let mut current_target = target;
 
@@ -212,8 +220,8 @@ impl FatDriver {
         loop {
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
-                    + self.header.sectors_per_fat * self.header.fat_count as u16
-                    + 32) as u64;
+                + self.header.sectors_per_fat * self.header.fat_count as u16
+                + 32) as u64;
 
             let lba: u64 =
                 data_lba + ((next_cluster - 2) * self.header.sectors_per_cluster as u16) as u64;
