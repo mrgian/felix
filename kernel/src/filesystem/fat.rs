@@ -151,9 +151,7 @@ impl FatDriver {
             DISK.read(target, lba, sectors);
         }
     }
-    pub fn testf(&mut self) -> i32 {
-        return 0;
-    }
+
     //list each entry in root direcotry
     //TODO: add other info like creation_date ecc
     pub fn list_entries(&self) {
