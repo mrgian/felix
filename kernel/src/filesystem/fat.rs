@@ -2,15 +2,14 @@
 
 use crate::drivers::disk::DISK;
 use core::mem;
+use libfelix::mutex::Mutex;
 
-//Warning! Mutable static here
-//TODO: Implement a mutex to get safe access to this
-pub static mut FAT: FatDriver = FatDriver {
+pub static mut FAT: Mutex<FatDriver> = Mutex::new(FatDriver {
     header: NULL_HEADER,
     entries: [NULL_ENTRY; ENTRY_COUNT],
     table: [0; FAT_SIZE],
     buffer: [0; 2048],
-};
+});
 
 const ENTRY_COUNT: usize = 512;
 const FAT_START: u16 = 36864;
@@ -107,9 +106,11 @@ static NULL_ENTRY: Entry = Entry {
     size: 0,
 };
 
+#[derive(Copy, Clone)]
 pub struct FatDriver {
     pub header: Header,
-    pub entries: [Entry; ENTRY_COUNT], //the root directory is an array of file entries
+    pub entries: [Entry; ENTRY_COUNT],
+    //the root directory is an array of file entries
     pub table: [u16; FAT_SIZE],
     pub buffer: [u8; 2048],
 }
@@ -130,6 +131,7 @@ impl FatDriver {
     //get entries array address and overwrite that mem location with data from root directory
     //calculate size and position of root direcotry based on data from header
     pub fn load_entries(&mut self) {
+        libfelix::print!(" loading entries");
         let target = &mut self.entries as *mut Entry;
 
         let entry_size = mem::size_of::<Entry>() as u16;
@@ -186,8 +188,8 @@ impl FatDriver {
     }
 
     //read first cluster of file to buffer
-    pub fn read_file_to_buffer(&mut self, entry: &Entry) {
-        let target = &mut self.buffer as *mut u8;
+    pub fn read_file_to_buffer(&self, entry: &Entry) {
+        let target = self.buffer.as_ptr() as *mut u8;
 
         let data_lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
@@ -204,7 +206,7 @@ impl FatDriver {
     }
 
     //read file reading one cluster at time
-    pub fn read_file_to_target(&mut self, entry: &Entry, target: *mut u32) {
+    pub fn read_file_to_target(&self, entry: &Entry, target: *mut u32) {
         let mut next_cluster = entry.first_cluster_low;
         let mut current_target = target;
 

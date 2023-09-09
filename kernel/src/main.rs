@@ -17,12 +17,12 @@ use core::arch::asm;
 use core::panic::PanicInfo;
 use drivers::disk::DISK;
 use drivers::pic::PICS;
-use filesystem::fat::FAT;
 use interrupts::idt::IDT;
 use memory::allocator::Allocator;
 use memory::paging::PAGING;
 use shell::shell::SHELL;
 use syscalls::print::PRINTER;
+use filesystem::fat::FAT;
 
 use multitasking::task::TASK_MANAGER;
 
@@ -80,9 +80,11 @@ pub extern "C" fn _start() -> ! {
 
         //init filesystem
         if DISK.enabled {
-            FAT.load_header();
-            FAT.load_entries();
-            FAT.load_table();
+            let fat = FAT.acquire_mut();
+            fat.load_header();
+            fat.load_table();
+            fat.load_entries();
+            FAT.free();
         }
 
         //print name, version and copyright

@@ -97,7 +97,8 @@ impl Shell {
 
             //list root directory
             _b if self.is_command("ls") => unsafe {
-                FAT.list_entries();
+                FAT.acquire().list_entries();
+                FAT.free();
             },
 
             //list running tasks
@@ -169,13 +170,14 @@ impl Shell {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
         }
+        let fat = FAT.acquire();
 
-        let entry = FAT.search_file(&self.arg);
+        let entry = fat.search_file(&self.arg);
 
         if entry.name[0] != 0 {
-            FAT.read_file_to_buffer(entry);
+            fat.read_file_to_buffer(entry);
 
-            for c in FAT.buffer {
+            for c in fat.buffer {
                 if c != 0 {
                     libfelix::print!("{}", c as char);
                 }
@@ -184,6 +186,7 @@ impl Shell {
         } else {
             libfelix::println!("File not found!");
         }
+        FAT.free();
     }
 
     //loads an executable as a task
@@ -191,8 +194,9 @@ impl Shell {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
         }
+        let fat = FAT.acquire();
 
-        let entry = FAT.search_file(&self.arg);
+        let entry = fat.search_file(&self.arg);
         if entry.name[0] != 0 {
             let slot = TASK_MANAGER.get_free_slot();
             let target = APP_TARGET + (slot as u32 * APP_SIZE);
@@ -201,7 +205,7 @@ impl Shell {
             TABLES[8].set(target);
             PAGING.set_table(8, &TABLES[8]);
 
-            FAT.read_file_to_target(&entry, target as *mut u32);
+            fat.read_file_to_target(&entry, target as *mut u32);
 
             unsafe {
                 let signature = *(target as *mut u32);
@@ -215,6 +219,7 @@ impl Shell {
         } else {
             libfelix::println!("Program not found!");
         }
+        FAT.free();
     }
 
     pub fn is_command(&self, command: &str) -> bool {
