@@ -1,5 +1,5 @@
-pub const SPLASH: &'static str = 
-"▄              ▄                                                ▄               
+pub const SPLASH: &'static str =
+    "▄              ▄                                                ▄               
                ██▄                                            ▄██               
                █ ▀█▄                                        ▄█▀▐█               
                █    ▀▄                                    ▄▀   ▐█               
@@ -23,7 +23,7 @@ pub const SPLASH: &'static str =
                      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▀▀▀▀▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄                     
                                                                                 
                              Press any key to start...";
-                                                          
+
 #[allow(dead_code)]
 pub fn splash() {
     for c in SPLASH.chars() {
@@ -33,7 +33,7 @@ pub fn splash() {
             '▌' => print!("{}", 0xdd as char),
             '▄' => print!("{}", 0xdc as char),
             '█' => print!("{}", 0xdb as char),
-            '\n' => {},
+            '\n' => {}
             _ => print!("{}", c),
         }
     }

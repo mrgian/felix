@@ -2,23 +2,19 @@
 
 use crate::drivers::disk::DISK;
 use core::mem;
-use core::sync::atomic::AtomicBool;
 use libfelix::mutex::Mutex;
 
-//Warning! Mutable static here
-pub static mut FAT_MUTEX: Mutex<FatDriver> = Mutex::new(  FatDriver {
+pub static mut FAT: Mutex<FatDriver> = Mutex::new(FatDriver {
     header: NULL_HEADER,
     entries: [NULL_ENTRY; ENTRY_COUNT],
     table: [0; FAT_SIZE],
     buffer: [0; 2048],
-} );
+});
 
 const ENTRY_COUNT: usize = 512;
 const FAT_START: u16 = 36864;
 
 const FAT_SIZE: usize = 256;
-
-
 
 //FAT16 header
 #[derive(Copy, Clone, Debug)]
@@ -51,7 +47,7 @@ pub struct Header {
     zero: [u8; 460], //needed to make struct 512 bytes big
 }
 
-pub static NULL_HEADER: Header = Header {
+static NULL_HEADER: Header = Header {
     boot_jump_instructions: [0; 3],
 
     oem_identifier: [0; 8],
@@ -95,7 +91,7 @@ pub struct Entry {
     size: u32,
 }
 
-pub static NULL_ENTRY: Entry = Entry {
+static NULL_ENTRY: Entry = Entry {
     name: [0; 11],
     attributes: 0,
     reserved: 0,
@@ -142,7 +138,7 @@ impl FatDriver {
 
         let lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
-            + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
+                + self.header.sectors_per_fat * self.header.fat_count as u16) as u64;
 
         let size: u16 = entry_size * self.header.dir_entries_count;
         let sectors: u16 = size / self.header.bytes_per_sector;
@@ -193,12 +189,12 @@ impl FatDriver {
 
     //read first cluster of file to buffer
     pub fn read_file_to_buffer(&self, entry: &Entry) {
-        let target =  self.buffer.as_ptr() as *mut u8;
+        let target = self.buffer.as_ptr() as *mut u8;
 
         let data_lba: u64 = FAT_START as u64
             + (self.header.reserved_sectors
-            + self.header.sectors_per_fat * self.header.fat_count as u16
-            + 32) as u64;
+                + self.header.sectors_per_fat * self.header.fat_count as u16
+                + 32) as u64;
         let lba: u64 = data_lba
             + ((entry.first_cluster_low - 2) * self.header.sectors_per_cluster as u16) as u64;
 
@@ -218,8 +214,8 @@ impl FatDriver {
         loop {
             let data_lba: u64 = FAT_START as u64
                 + (self.header.reserved_sectors
-                + self.header.sectors_per_fat * self.header.fat_count as u16
-                + 32) as u64;
+                    + self.header.sectors_per_fat * self.header.fat_count as u16
+                    + 32) as u64;
 
             let lba: u64 =
                 data_lba + ((next_cluster - 2) * self.header.sectors_per_cluster as u16) as u64;

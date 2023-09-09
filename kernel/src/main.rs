@@ -22,11 +22,11 @@ use memory::allocator::Allocator;
 use memory::paging::PAGING;
 use shell::shell::SHELL;
 use syscalls::print::PRINTER;
+use filesystem::fat::FAT;
 
 use multitasking::task::TASK_MANAGER;
 
 use libfelix;
-use crate::filesystem::fat::{FAT_MUTEX, FatDriver, NULL_ENTRY, NULL_HEADER};
 
 #[global_allocator]
 static ALLOCATOR: Allocator = Allocator;
@@ -80,11 +80,11 @@ pub extern "C" fn _start() -> ! {
 
         //init filesystem
         if DISK.enabled {
-            let fat = FAT_MUTEX.acquire_mut();
+            let fat = FAT.acquire_mut();
             fat.load_header();
             fat.load_table();
             fat.load_entries();
-            FAT_MUTEX.free();
+            FAT.free();
         }
 
         //print name, version and copyright

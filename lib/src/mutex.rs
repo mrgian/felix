@@ -1,15 +1,14 @@
-use core::fmt;
 use core::sync::atomic::{AtomicBool, Ordering};
 /*
-	This is a oversimplified mutex created from scratch. Meant to be used for global, static definitions of objects, visible for all active threads. Once a thread acquires the target object, all other threads trying to do so will wait until it is freed. 
-	
-	There is plenty of room for improvements, since there are no mechanisms for e.g. creating a queue of threads that requested access to an object and giving it to the first that needs it.
-	
-	 TODO: Improve it
+    This is a oversimplified mutex created from scratch. Meant to be used for global, static definitions of objects, visible for all active threads. Once a thread acquires the target object, all other threads trying to do so will wait until it is freed.
+
+    There is plenty of room for improvements, since there are no mechanisms for e.g. creating a queue of threads that requested access to an object and giving it to the first that needs it.
+
+    TODO: Improve it
 */
 pub struct Mutex<T> {
-     target: T,
-     free: AtomicBool,
+    target: T,
+    free: AtomicBool,
 }
 
 impl<T> Mutex<T> {
@@ -39,9 +38,8 @@ impl<T> Mutex<T> {
     }
 }
 
-impl<T>  Drop for Mutex<T> {
+impl<T> Drop for Mutex<T> {
     fn drop(&mut self) {
         self.free = AtomicBool::from(true);
     }
 }
-

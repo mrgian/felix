@@ -1,6 +1,6 @@
 //SHELL
 
-use crate::filesystem::fat::{FAT_MUTEX};
+use crate::filesystem::fat::FAT;
 use crate::multitasking::task::TASK_MANAGER;
 use crate::syscalls::print::PRINTER;
 
@@ -97,8 +97,8 @@ impl Shell {
 
             //list root directory
             _b if self.is_command("ls") => unsafe {
-                FAT_MUTEX.acquire().list_entries();
-                FAT_MUTEX.free();
+                FAT.acquire().list_entries();
+                FAT.free();
             },
 
             //list running tasks
@@ -170,15 +170,14 @@ impl Shell {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
         }
-        let fat_driver = FAT_MUTEX.acquire();
+        let fat = FAT.acquire();
 
-        let entry = fat_driver.search_file(&self.arg);
+        let entry = fat.search_file(&self.arg);
 
         if entry.name[0] != 0 {
+            fat.read_file_to_buffer(entry);
 
-            fat_driver.read_file_to_buffer(entry);
-
-            for c in fat_driver.buffer {
+            for c in fat.buffer {
                 if c != 0 {
                     libfelix::print!("{}", c as char);
                 }
@@ -187,7 +186,7 @@ impl Shell {
         } else {
             libfelix::println!("File not found!");
         }
-        FAT_MUTEX.free();
+        FAT.free();
     }
 
     //loads an executable as a task
@@ -195,9 +194,9 @@ impl Shell {
         for i in 4..15 {
             self.arg[i - 4] = b[i];
         }
-        let ft = FAT_MUTEX.acquire();
+        let fat = FAT.acquire();
 
-        let entry = ft.search_file(&self.arg);
+        let entry = fat.search_file(&self.arg);
         if entry.name[0] != 0 {
             let slot = TASK_MANAGER.get_free_slot();
             let target = APP_TARGET + (slot as u32 * APP_SIZE);
@@ -206,7 +205,7 @@ impl Shell {
             TABLES[8].set(target);
             PAGING.set_table(8, &TABLES[8]);
 
-            ft.read_file_to_target(&entry, target as *mut u32);
+            fat.read_file_to_target(&entry, target as *mut u32);
 
             unsafe {
                 let signature = *(target as *mut u32);
@@ -220,8 +219,7 @@ impl Shell {
         } else {
             libfelix::println!("Program not found!");
         }
-        FAT_MUTEX.free();
-
+        FAT.free();
     }
 
     pub fn is_command(&self, command: &str) -> bool {
