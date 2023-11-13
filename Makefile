@@ -65,7 +65,7 @@ image:
 	@dd if=build/boot.bin of=build/disk.img conv=notrunc
 	@dd if=build/disk.img of=build/partition.img bs=512 skip=36864
 	@$(MKFS) -F 16 build/partition.img
-	@$(MCOPY) -i build/partition.img dante "::dante"
+	@$(MCOPY) -i build/partition.img pacciani "::pacciani"
 	@$(MCOPY) -i build/partition.img lorem "::lorem"
 	@$(MCOPY) -i build/partition.img build/hello.bin "::hello"
 	@$(MCOPY) -i build/partition.img build/atest.bin "::atest"
