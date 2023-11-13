@@ -15,7 +15,7 @@ Felix running in QEMU:<br>
 
 ![felix_qemu](https://github.com/mrgian/felix/assets/10211171/b371934e-0ac7-40e6-a965-e42bf9e24e86)
 
-![felix_qemu](https://github.com/mrgian/felix/assets/10211171/99a2012b-29af-44d8-a2cf-73fceee665e1)
+![felix_qemu](https://github.com/mrgian/felix/assets/10211171/a01652f4-f199-4544-9f15-b2cd1962df1d)
 
 Felix running on real hardware:<br>
 ![felix_real](https://user-images.githubusercontent.com/10211171/230796141-b2c62d63-5c4e-4d8b-a9ee-3669bdee48b0.jpg)
