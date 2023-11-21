@@ -10,8 +10,6 @@ Felix is an experimental operating system for the Intel IA-32 architecture (x86)
 
 It's **written completely from scratch** in Rust and doesn't use any external dependencies.
 
-This project is part of the work for my bachelor thesis in computer engineering. You can read it [here](https://github.com/mrgian/felix/blob/main/thesis.pdf).
-
 ## Pictures
 Felix running in QEMU:<br>
 
